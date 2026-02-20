@@ -19,6 +19,7 @@
 /public/plates
 /storage/*.key
 /storage/pail
+/storage/framework/views/*
 /vendor
 /mlp_code
 Homestead.json
