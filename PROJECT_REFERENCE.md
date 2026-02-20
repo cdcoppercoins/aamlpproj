@@ -76,15 +76,46 @@ This file is the single source of truth for what has been done, how the project 
 
 ---
 
-## 6. How to Run the App
+## 6. Turn on site (saved instruction)
 
-- Start MySQL (XAMPP).
-- From project root: `php artisan serve` (or use XAMPP Apache with document root pointing to `public/`).
-- Open http://localhost:8000 (or the configured vhost).
+**When the user says "turn on site", do the following in order:**
+
+1. **MySQL must be running** (database for app, sessions, cache).
+   - User uses XAMPP: they must start **MySQL** in XAMPP Control Panel (green = running).
+   - Assistant cannot start XAMPP/MySQL programmatically; remind user to start MySQL in XAMPP if the site fails with a database error.
+
+2. **Start the Laravel development server** (serves the site at http://localhost:8000).
+   - From project root `d:\aamlpproj`: run `php artisan serve`.
+   - Run it in the background so it keeps running (e.g. `php artisan serve` as a background command).
+   - If a server is already running on port 8000, either use that or stop the old process and start again.
+
+3. **Tell the user:**
+   - Site URL: **http://localhost:8000**
+   - Open that in a browser. If it doesn’t load, confirm MySQL is running in XAMPP and that `php artisan serve` is still running.
+
+**Checklist – everything that must be running for the site to work locally:**
+
+| Requirement        | What to do / note |
+|--------------------|--------------------|
+| MySQL              | Start in XAMPP Control Panel (user action). DB: `minilicenseplates`, user: root, no password. |
+| Laravel web server | Run `php artisan serve` from `d:\aamlpproj` (assistant can start this). Serves at http://localhost:8000. |
+| PHP                | Must be on PATH (XAMPP or standalone). Required for `php artisan serve`. |
+| Project files      | Code and `public/` assets (e.g. main.css, header_banner.png) and `public/plates/` images must exist locally. |
+| .env               | Must exist with `DB_CONNECTION=mysql`, `DB_DATABASE=minilicenseplates`, `DB_USERNAME=root`, `DB_PASSWORD=` (empty). |
+
+**Summary:** For "turn on site": (1) Remind user to start MySQL in XAMPP if needed. (2) Start Laravel with `php artisan serve` from `d:\aamlpproj`. (3) Tell user to open http://localhost:8000.
 
 ---
 
-## 7. Optional / Future
+## 7. How to Run the App (short)
+
+- Start MySQL (XAMPP).
+- From project root: `php artisan serve`.
+- Open http://localhost:8000.
+
+---
+
+## 8. Optional / Future
 
 - **DOWNLOAD_IMAGES.md** / **download-plates.ps1** – used when plate images weren’t local; user later copied images via FileZilla. Can be ignored for normal use.
 - **MIGRATION_NOTES.md** – original migration plan; kept for history. **PROJECT_REFERENCE.md** (this file) is the authoritative reference.
