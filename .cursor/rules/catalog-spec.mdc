@@ -1,0 +1,25 @@
+---
+description: Catalog/plates schema and conventions for MiniLicensePlates.com
+globs: "**/Catalog*.php,**/Plate*.php,**/catalog/**/*.blade.php,**/admin/**/*,**/migrations/*plates*,**/GALLERY_CATALOG_SPEC.md,**/PLATE_CSV*.html"
+alwaysApply: false
+---
+
+# Catalog and Plates Schema
+
+When working on catalog, plates, or admin features:
+
+## Plates Table
+- **Pricing guide** (not individual physical plates). Six value columns: value_mt, value_ex, value_vg, value_g, value_fr, value_po
+- **cat_ref**: catalog reference (varchar 10)
+- **company**: issuer/manufacturer (e.g. Post, General Mills, Topps)
+- **Images**: image_base, image_ext nullable; NULL = no photo. has_back_image (1/0/NULL); back at {base}_b.{ext} when 1
+- **Jurisdiction**: jurisdiction + jurisdiction_type (us_state, ca_province, ca_territory, foreign_country)
+- **serial_number** = numbers/letters displayed on the plate (not a catalog ID)
+- **width_inches, height_inches** = dimensions in inches
+- **variety_key** + variety_notes for plate varieties (e.g. "4-hole embossed")
+
+## Conventions
+- MySQL DB: minilicenseplates. No SQLite.
+- Images at public/plates/{set_code}/. That folder is gitignored.
+- CMS panel: auth-protected, admin-only. Add/edit sets and plates.
+- See GALLERY_CATALOG_SPEC.md and PROJECT_REFERENCE.md §9 for full details.

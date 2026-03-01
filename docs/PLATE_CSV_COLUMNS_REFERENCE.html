@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plate CSV Columns Reference - MiniLicensePlates.com</title>
+    <style>
+        @page {
+            size: letter;
+            margin: 0.5in;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: Georgia, serif;
+            font-size: 10pt;
+            line-height: 1.3;
+            color: #222;
+            margin: 0;
+            padding: 0;
+            max-width: 7.5in;
+        }
+        h1 {
+            font-size: 14pt;
+            border-bottom: 2px solid #333;
+            padding-bottom: 0.2em;
+            margin: 0 0 0.4em 0;
+        }
+        h2 {
+            font-size: 11pt;
+            margin: 0.6em 0 0.25em 0;
+            page-break-after: avoid;
+        }
+        p { margin: 0.25em 0; }
+        .instructions {
+            background: #f0f0f0;
+            border: 1px solid #999;
+            padding: 0.4em 0.6em;
+            margin: 0.25em 0;
+            font-family: "Courier New", monospace;
+            font-size: 9pt;
+            overflow-wrap: break-word;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.25em 0 0.5em 0;
+            font-size: 9pt;
+            page-break-inside: avoid;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 0.2em 0.35em;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background: #e0e0e0;
+            font-weight: bold;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        tr:nth-child(even) td {
+            background: #f8f8f8;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .defs-table td:first-child { width: 22%; font-weight: bold; }
+        .example-table { font-size: 7.5pt; table-layout: fixed; }
+        .example-table th, .example-table td { padding: 0.12em 0.2em; }
+        .example-table .col-set-name { width: 18%; }
+        .example-table .col-jurisdiction { width: 12%; }
+        .example-table .col-type { width: 14%; }
+        .notes { font-size: 8pt; color: #444; margin-top: 0.5em; }
+        @media print {
+            body { margin: 0; padding: 0; }
+            h2 { margin-top: 0.5em; }
+        }
+    </style>
+</head>
+<body>
+    <h1>Plate CSV Columns Reference</h1>
+    <p><strong>MiniLicensePlates.com</strong> — Catalog pricing guide. Each row is a plate type (or variety) with values for six conditions (MT, EX, VG, G, FR, PO). Many plates have no photos; those with photos may have an optional back image. Export as CSV when ready for database import.</p>
+
+    <h2>Column headers (copy into row 1)</h2>
+    <div class="instructions">set_code,set_name,cat_ref,company,image_base,image_ext,has_back_image,jurisdiction,jurisdiction_type,year,serial_number,width_inches,height_inches,value_mt,value_ex,value_vg,value_g,value_fr,value_po,variety_key,variety_notes,state_embossed,legend_embossed,notes,sort_order</div>
+
+    <h2>Column definitions</h2>
+    <table class="defs-table">
+        <thead>
+            <tr>
+                <th>Column</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>set_code</td><td>Folder code, e.g. m88p, c36g</td></tr>
+            <tr><td>set_name</td><td>Display name, e.g. 1988 Post Cereal Plates</td></tr>
+            <tr><td>cat_ref</td><td>Catalog reference number (max 10 chars)</td></tr>
+            <tr><td>company</td><td>Company that issued/manufactured the plate (e.g. Post, General Mills, Topps)</td></tr>
+            <tr><td>image_base</td><td>Base filename without _a/_b suffix, e.g. AL, ON. Leave blank for plates with no photo.</td></tr>
+            <tr><td>image_ext</td><td>Image extension: jpg, jpeg, png, gif, etc. Leave blank when no photo. Back image ({base}_b.{ext}) is optional when front exists.</td></tr>
+            <tr><td>has_back_image</td><td>1 = back image exists, 0 = front only, blank = unknown</td></tr>
+            <tr><td>jurisdiction</td><td>Region/country name: Alabama, Ontario, Mexico, etc.</td></tr>
+            <tr><td>jurisdiction_type</td><td>One of: us_state, ca_province, ca_territory, foreign_country</td></tr>
+            <tr><td>year</td><td>Numeric year, e.g. 1988</td></tr>
+            <tr><td>serial_number</td><td>Numbers or letters displayed on the plate itself</td></tr>
+            <tr><td>width_inches</td><td>Width in inches (e.g. 0.0625, 1.625). Up to 4 decimal places (thousandths).</td></tr>
+            <tr><td>height_inches</td><td>Height in inches (e.g. 0.0625, 1.625). Up to 4 decimal places (thousandths).</td></tr>
+            <tr><td>value_mt</td><td>Value for Mint condition. Use number or range (e.g. 3.50 or 3-5). Leave blank if N/A.</td></tr>
+            <tr><td>value_ex</td><td>Value for Excellent condition. Leave blank if N/A.</td></tr>
+            <tr><td>value_vg</td><td>Value for Very Good condition. Leave blank if N/A.</td></tr>
+            <tr><td>value_g</td><td>Value for Good condition. Leave blank if N/A.</td></tr>
+            <tr><td>value_fr</td><td>Value for Fair condition. Leave blank if N/A.</td></tr>
+            <tr><td>value_po</td><td>Value for Poor condition. Leave blank if N/A.</td></tr>
+            <tr><td>variety_key</td><td>Short ID for variety: "base" or blank for base plate; "4h", "6e", etc. for varieties. Needed to distinguish multiple rows per plate.</td></tr>
+            <tr><td>variety_notes</td><td>Free-text description of variety differences (e.g. "4-hole embossed", "6-hole flat", "large font").</td></tr>
+            <tr><td>state_embossed</td><td>1 = state name on plate is embossed, 0 = no, blank = unknown</td></tr>
+            <tr><td>legend_embossed</td><td>1 = legend/slogan on plate is embossed, 0 = no, blank = unknown</td></tr>
+            <tr><td>notes</td><td>Optional notes or variety info</td></tr>
+            <tr><td>sort_order</td><td>Integer for display order within set (0, 1, 2…)</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Example rows</h2>
+    <table class="example-table">
+        <thead>
+            <tr>
+                <th>set_code</th>
+                <th class="col-set-name">set_name</th>
+                <th>cat_ref</th>
+                <th>company</th>
+                <th>image_base</th>
+                <th>image_ext</th>
+                <th>has_back_image</th>
+                <th class="col-jurisdiction">jurisdiction</th>
+                <th class="col-type">jurisdiction_type</th>
+                <th>year</th>
+                <th>serial_number</th>
+                <th>width_inches</th>
+                <th>height_inches</th>
+                <th>value_mt</th>
+                <th>value_ex</th>
+                <th>value_vg</th>
+                <th>value_g</th>
+                <th>value_fr</th>
+                <th>value_po</th>
+                <th>variety_key</th>
+                <th>variety_notes</th>
+                <th>state_embossed</th>
+                <th>legend_embossed</th>
+                <th>notes</th>
+                <th>sort_order</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>m88p</td><td>1988 Post Cereal Plates</td><td>M88P-001</td><td>Post</td><td>AL</td><td>jpg</td><td>1</td><td>Alabama</td><td>us_state</td><td>1988</td><td>123ABC</td><td>1.5</td><td>2.25</td><td>3.50</td><td>2.00</td><td>1.00</td><td>0.75</td><td>0.50</td><td>0.25</td><td>base</td><td></td><td>1</td><td></td><td></td><td>0</td></tr>
+            <tr><td>m88p</td><td>1988 Post Cereal Plates</td><td>M88P-002</td><td>Post</td><td>AL</td><td>jpg</td><td>0</td><td>Alabama</td><td>us_state</td><td>1988</td><td>456XYZ</td><td>1.5</td><td>2.25</td><td>5.00</td><td>3.00</td><td></td><td></td><td></td><td></td><td>4h</td><td>4-hole embossed</td><td>1</td><td></td><td></td><td>1</td></tr>
+            <tr><td>m88p</td><td>1988 Post Cereal Plates</td><td>M88P-003</td><td>Post</td><td>ON</td><td>jpg</td><td>1</td><td>Ontario</td><td>ca_province</td><td>1988</td><td>789</td><td>1.5</td><td>2.25</td><td>4.00</td><td>2.50</td><td>1.25</td><td>0.75</td><td></td><td></td><td>6f</td><td>6-hole flat</td><td>0</td><td>1</td><td></td><td>2</td></tr>
+        </tbody>
+    </table>
+
+    <h2>How to export as CSV from Google Sheets</h2>
+    <p>File → Download → Comma-separated values (.csv, current sheet)</p>
+
+    <p class="notes" style="margin-top: 2em;">— Reference for GALLERY_CATALOG_SPEC.md · February 2026 —</p>
+</body>
+</html>

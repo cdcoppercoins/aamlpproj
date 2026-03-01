@@ -117,9 +117,39 @@ This file is the single source of truth for what has been done, how the project 
 
 ## 8. Optional / Future
 
+- **GALLERY_CATALOG_SPEC.md** – full plan for database-backed catalog. See section 9 and that file for details.
+- **docs/PLATE_CSV_COLUMNS_REFERENCE.html** – printable column reference for CSV import; defines plate data schema.
 - **DOWNLOAD_IMAGES.md** / **download-plates.ps1** – used when plate images weren’t local; user later copied images via FileZilla. Can be ignored for normal use.
 - **MIGRATION_NOTES.md** – original migration plan; kept for history. **PROJECT_REFERENCE.md** (this file) is the authoritative reference.
 
 ---
 
-*Last updated to reflect: Laravel migration complete, MySQL (XAMPP) in use, plates and mlp_code gitignored, GitHub Desktop for git, and all fixes applied.*
+## 9. Planned Catalog (AI Reference)
+
+*Consolidates catalog design for AI context. Full details in GALLERY_CATALOG_SPEC.md.*
+
+### Purpose
+Catalog pricing guide (not individual plates). Each row = one plate type/variety with six value columns. Gallery becomes searchable catalog; home page gets search form.
+
+### Plates Table (Key Columns)
+- set_code, set_name, cat_ref (varchar 10), company (issuer/manufacturer), image_base, image_ext (nullable; NULL = no photo), has_back_image (1/0/NULL)
+- jurisdiction, jurisdiction_type (us_state, ca_province, ca_territory, foreign_country)
+- year, serial_number (numbers/letters on the plate), width_inches, height_inches
+- value_mt, value_ex, value_vg, value_g, value_fr, value_po (six conditions)
+- variety_key, variety_notes (plate varieties)
+- state_embossed, legend_embossed (1/0/NULL)
+
+**Images**: Many plates have no photo. Back image optional at {base}_b.{ext} when front exists.
+
+### Behavior
+Browse by set; search from home; CMS panel (auth-protected) to add/edit sets and plates. CMS includes: drag-and-drop/browse for per-plate images; CSV bulk import for multiple plates.
+
+### Key Files
+Migration (plates), Plate model, CatalogController, admin controllers, catalog/search views, docs/PLATE_CSV_COLUMNS_REFERENCE.html for CSV schema.
+
+### Conventions
+MySQL (minilicenseplates), no SQLite. Do not add public/plates/ or mlp_code/ to git. Use GitHub Desktop for commits.
+
+---
+
+*Last updated to reflect: Laravel migration complete, MySQL (XAMPP) in use, plates and mlp_code gitignored, GitHub Desktop for git, catalog spec documented.*
