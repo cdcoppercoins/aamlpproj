@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Contribute | MiniLicensePlates.com')
+@section('title', 'Contribute Photos & Information | MiniLicensePlates.com')
+
+@section('meta_description', 'Contribute missing miniature license plates, varieties, better images, or historical information to the MiniLicensePlates.com catalog. Help expand the reference for collectors.')
+
+@section('canonical_url', route('contribute'))
 
 @section('content')
 <div class="set-width">

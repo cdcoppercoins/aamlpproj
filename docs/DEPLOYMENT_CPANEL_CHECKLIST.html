@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniLicensePlates.com — cPanel / WHM Pre-Deploy Checklist</title>
+    <style>
+        :root {
+            --ink: #1a3344;
+            --muted: #556677;
+            --accent: #4079a5;
+            --line: #d8e4ec;
+            --paper: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px 32px 40px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 11pt;
+            line-height: 1.45;
+            color: var(--ink);
+            background: #eef2f5;
+        }
+
+        .page {
+            max-width: 7.5in;
+            margin: 0 auto;
+            background: var(--paper);
+            padding: 0.65in 0.75in 0.8in;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 20pt;
+            font-weight: 700;
+            margin: 0 0 6px;
+            color: var(--accent);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 11pt;
+            color: var(--muted);
+            margin: 0 0 18px;
+        }
+
+        .notice {
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--accent);
+            padding: 10px 14px;
+            margin: 0 0 22px;
+            font-size: 10pt;
+            background: #f7fafc;
+        }
+
+        h2 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 13pt;
+            font-weight: 700;
+            margin: 24px 0 10px;
+            padding-bottom: 4px;
+            border-bottom: 2px solid var(--accent);
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 11pt;
+            font-weight: 700;
+            margin: 16px 0 8px;
+            page-break-after: avoid;
+        }
+
+        p {
+            margin: 0 0 10px;
+        }
+
+        ul, ol {
+            margin: 0 0 12px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin: 0 0 6px;
+        }
+
+        .checklist li {
+            list-style: none;
+            position: relative;
+            padding-left: 22px;
+        }
+
+        .checklist li::before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 14px;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid var(--line);
+            padding: 7px 9px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f0f6fa;
+            font-weight: 700;
+        }
+
+        code, pre {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9pt;
+        }
+
+        pre {
+            background: #f4f8fb;
+            border: 1px solid var(--line);
+            padding: 10px 12px;
+            overflow-x: auto;
+            margin: 8px 0 12px;
+            white-space: pre-wrap;
+        }
+
+        .fill-in {
+            border: 1px dashed #aabbc7;
+            min-height: 28px;
+            margin: 6px 0 10px;
+            padding: 6px 8px;
+            background: #fafcfd;
+        }
+
+        .fill-label {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 9pt;
+            font-weight: 700;
+            color: var(--muted);
+            margin: 8px 0 2px;
+        }
+
+        .phase-tag {
+            display: inline-block;
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 8.5pt;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #fff;
+            background: var(--accent);
+            padding: 2px 8px;
+            border-radius: 3px;
+            margin-bottom: 6px;
+        }
+
+        .footer {
+            margin-top: 28px;
+            padding-top: 12px;
+            border-top: 1px solid var(--line);
+            font-size: 9pt;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+
+            .page {
+                max-width: none;
+                box-shadow: none;
+                padding: 0;
+            }
+
+            h2 {
+                page-break-before: auto;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <p class="no-print notice"><strong>Save as PDF:</strong> Open this file in your browser, press Ctrl+P (or File → Print), choose “Save as PDF” or “Microsoft Print to PDF,” then save. A copy is also at <code>docs/DEPLOYMENT_CPANEL_CHECKLIST.pdf</code> if generated.</p>
+
+    <h1>MiniLicensePlates.com</h1>
+    <p class="subtitle">Pre-deployment checklist for WHM / cPanel — read before changing anything on the server</p>
+
+    <div class="notice">
+        <strong>Purpose:</strong> Work through this checklist in the break room before uploading files or changing live settings.
+        This app is <strong>Laravel 12</strong> and requires <strong>PHP 8.2 or newer</strong>. Your legacy site can stay on an older PHP version on the <em>same server</em> as long as each domain uses the correct PHP version in cPanel.
+        <br><br>
+        <strong>Not in Git:</strong> <code>.env</code>, <code>vendor/</code>, <code>public/plates/</code>, and MySQL data must be handled separately.
+    </div>
+
+    <h2>Overview — what lives where</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>In Git?</th>
+                <th>How it reaches production</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Laravel code, views, CSS, banners</td>
+                <td>Yes</td>
+                <td>Git clone, ZIP upload, or deploy script</td>
+            </tr>
+            <tr>
+                <td><code>.env</code> (secrets, DB, mail)</td>
+                <td>No</td>
+                <td>Create manually on server</td>
+            </tr>
+            <tr>
+                <td><code>vendor/</code> (Composer packages)</td>
+                <td>No</td>
+                <td><code>composer install</code> on server (needs SSH usually)</td>
+            </tr>
+            <tr>
+                <td><code>public/plates/</code> (plate photos)</td>
+                <td>No</td>
+                <td>ZIP, File Manager, or rsync</td>
+            </tr>
+            <tr>
+                <td>MySQL data (<code>plates</code> table, etc.)</td>
+                <td>No</td>
+                <td>phpMyAdmin import or mysqldump</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2><span class="phase-tag">Phase 1</span> WHM (root / reseller access)</h2>
+    <p>Skip Phase 1 if you only have cPanel access for your domain account.</p>
+
+    <h3>1.1 PHP versions installed</h3>
+    <p><strong>Where:</strong> WHM → Software → <strong>EasyApache 4</strong> (or <strong>MultiPHP Manager</strong>)</p>
+    <ul class="checklist">
+        <li>Is <strong>PHP 8.2</strong> or <strong>8.3</strong> installed?</li>
+        <li>Which old PHP version runs the legacy site? (e.g. 5.6, 7.2, 7.4)</li>
+    </ul>
+    <p class="fill-label">Installed PHP versions (write here):</p>
+    <div class="fill-in">&nbsp;</div>
+
+    <h3>1.2 PHP extensions for Laravel (PHP 8.2+)</h3>
+    <p><strong>Where:</strong> EasyApache 4 → PHP Extensions for PHP 8.2/8.3</p>
+    <ul class="checklist">
+        <li>mysqlnd / PDO MySQL</li>
+        <li>mbstring, xml/dom, curl, zip, openssl</li>
+        <li>fileinfo, bcmath, tokenizer, json</li>
+    </ul>
+    <p class="fill-label">PHP 8.2+ available? Missing extensions?</p>
+    <div class="fill-in">&nbsp;</div>
+
+    <h3>1.3 SSH and Composer</h3>
+    <p><strong>Where:</strong> WHM → Security Center → Shell Access (or ask host)</p>
+    <ul class="checklist">
+        <li>SSH enabled for your cPanel user?</li>
+        <li>Composer available on server? (Often not preinstalled.)</li>
+    </ul>
+    <p>If you have SSH, run these and note the output:</p>
+    <pre>php -v
+which composer
+composer -V</pre>
+    <p class="fill-label">SSH: yes / no &nbsp;&nbsp;|&nbsp;&nbsp; Composer: yes / no</p>
+    <div class="fill-in">&nbsp;</div>
+
+    <h2><span class="phase-tag">Phase 2</span> cPanel (your domain account)</h2>
+    <p>Log into cPanel for the domain that will run the <strong>new</strong> Laravel site.</p>
+
+    <h3>2.1 Choose the domain</h3>
+    <ul class="checklist">
+        <li><strong>Main domain</strong> — replaces legacy when ready</li>
+        <li><strong>Subdomain first</strong> (recommended) — e.g. <code>new.yourdomain.com</code> or <code>beta.yourdomain.com</code></li>
+    </ul>
+    <p class="fill-label">Domain / subdomain I will use for Laravel:</p>
+    <div class="fill-in">&nbsp;</div>
+
+    <h3>2.2 PHP version for the new site</h3>
+    <p><strong>Where:</strong> cPanel → Software → <strong>MultiPHP Manager</strong> (or Select PHP Version)</p>
+    <ul class="checklist">
+        <li>Set the <strong>new</strong> domain/subdomain to PHP <strong>8.2</strong> or <strong>8.3</strong></li>
+        <li>Leave the <strong>legacy</strong> domain on its old PHP version</li>
+    </ul>
+    <p><strong>Also check:</strong> MultiPHP INI Editor — note <code>memory_limit</code> (256M+ ideal), <code>upload_max_filesize</code>, <code>post_max_size</code>.</p>
+    <p class="fill-label">PHP version for new domain &nbsp;|&nbsp; memory_limit &nbsp;|&nbsp; upload_max_filesize</p>
+    <div class="fill-in">&nbsp;</div>
+
+    <h3>2.3 Document root (critical for Laravel)</h3>
+    <p><strong>Where:</strong> cPanel → Domains (or Domains → Subdomains)</p>
+    <p>Laravel must be served from the <strong><code>public</code></strong> folder inside the project — not the project root.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Setup</th>
+                <th>Typical document root</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Subdomain for testing</td>
+                <td><code>/home/user/minilicenseplates/public</code></td>
+            </tr>
+            <tr>
+                <td>Main domain (later)</td>
+                <td><code>/home/user/public_html/public</code> after rearranging files</td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="fill-label">Legacy domain document root:</p>
+    <div class="fill-in">&nbsp;</div>
+    <p class="fill-label">New Laravel domain document root (current or planned):</p>
+    <div class="fill-in">&nbsp;</div>
+
+    <h3>2.4 Legacy site — do not break yet</h3>
+    <p class="fill-label">Legacy domain &nbsp;|&nbsp; document root &nbsp;|&nbsp; PHP version</p>
+    <div class="fill-in">&nbsp;</div>
+
+    <h3>2.5 MySQL database</h3>
+    <p><strong>Where:</strong> cPanel → Databases → MySQL Databases</p>
+    <ul class="checklist">
+        <li>Create a new database (e.g. <code>user_minilp</code>)</li>
+        <li>Create a database user with ALL PRIVILEGES on that database</li>
+        <li>Note the hostname (usually <code>localhost</code> on cPanel)</li>
+    </ul>
+    <p class="fill-label">MySQL hostname &nbsp;|&nbsp; database name &nbsp;|&nbsp; user created: yes/no</p>
+    <div class="fill-in">&nbsp;</div>
+
+    <h3>2.6 SSL (HTTPS)</h3>
+    <p><strong>Where:</strong> cPanel → Security → SSL/TLS Status (or Let’s Encrypt)</p>
+    <ul class="checklist">
+        <li>SSL active for the domain/subdomain you will use?</li>
+        <li><code>https://yourdomain.com</code> loads without certificate warnings?</li>
+    </ul>
+    <p class="fill-label">SSL working: yes / no</p>
+    <div class="fill-in">&nbsp;</div>
+
+    <h3>2.7 Home directory layout</h3>
+    <p><strong>Where:</strong> cPanel → File Manager</p>
+    <p>Recommended layout:</p>
+    <pre>/home/username/
+  public_html/              ← legacy site (leave alone for now)
+  minilicenseplates/        ← Laravel project root (not directly web-accessible)
+    app/
+    public/                 ← point subdomain document root HERE
+    storage/
+    ...</pre>
+    <p class="fill-label">cPanel home path (e.g. /home/username/):</p>
+    <div class="fill-in">&nbsp;</div>
+    <p class="fill-label">Test on subdomain first: yes / no</p>
+    <div class="fill-in">&nbsp;</div>
+
+    <h3>2.8 Cron jobs (optional for now)</h3>
+    <p><strong>Where:</strong> cPanel → Advanced → Cron Jobs</p>
+    <p>Laravel may later use: <code>* * * * * cd /path/to/project && php artisan schedule:run</code></p>
+    <p class="fill-label">Cron available: yes / no</p>
+    <div class="fill-in">&nbsp;</div>
+
+    <h3>2.9 Email (contact / newsletter forms)</h3>
+    <p><strong>Where:</strong> cPanel → Email</p>
+    <ul class="checklist">
+        <li>Does PHP <code>mail()</code> work on this server?</li>
+        <li>Or do you use SMTP? (note host/port — do not write passwords here)</li>
+    </ul>
+    <p class="fill-label">Mail method: PHP mail / SMTP / unknown</p>
+    <div class="fill-in">&nbsp;</div>
+
+    <h2><span class="phase-tag">Phase 3</span> Quick tests (before uploading Laravel)</h2>
+
+    <h3>3.1 PHP version test</h3>
+    <p>In File Manager, create a temporary file in the <strong>new</strong> domain’s document root:</p>
+    <pre>&lt;?php phpinfo();</pre>
+    <p>Visit it in the browser. Confirm PHP <strong>8.2+</strong> and required extensions. <strong>Delete the file immediately.</strong></p>
+    <p class="fill-label">PHP version shown on new domain:</p>
+    <div class="fill-in">&nbsp;</div>
+
+    <h3>3.2 URL rewriting (mod_rewrite)</h3>
+    <p>Laravel needs <code>mod_rewrite</code> (Apache). Check phpinfo or cPanel Apache Modules.</p>
+    <p class="fill-label">Web server: Apache / Nginx / both &nbsp;|&nbsp; mod_rewrite: yes / no</p>
+    <div class="fill-in">&nbsp;</div>
+
+    <h2><span class="phase-tag">Phase 4</span> Capabilities summary</h2>
+    <ul class="checklist">
+        <li>SSH access</li>
+        <li>phpMyAdmin for database import</li>
+        <li>Git on server (Terminal: <code>git --version</code>)</li>
+        <li>Preferred upload method: SSH / Git / ZIP / File Manager</li>
+    </ul>
+
+    <h2>Reply template — fill in and bring back</h2>
+    <pre>WHM / server:
+- Installed PHP versions:
+- PHP 8.2+ available: yes/no
+- SSH enabled: yes/no
+- Composer on server: yes/no
+
+Legacy site:
+- Domain:
+- Document root:
+- PHP version:
+
+New Laravel site:
+- Domain/subdomain I will use:
+- Document root (current or planned):
+- PHP version set to:
+- SSL working: yes/no
+
+MySQL:
+- Hostname:
+- Database created: yes/no (name: ___)
+
+cPanel account home path:
+
+Preferences:
+- Test on subdomain first: yes/no
+- File upload method: SSH / Git / ZIP / File Manager
+
+Other:
+- Apache or Nginx:
+- mail() or SMTP:</pre>
+
+    <h2>What happens after this checklist</h2>
+    <ol>
+        <li>Create subdomain and point document root at <code>.../public</code></li>
+        <li>Create production database and <code>.env</code></li>
+        <li>Upload code and run <code>composer install --no-dev</code></li>
+        <li>Import local MySQL dump and upload <code>public/plates/</code></li>
+        <li>Set permissions on <code>storage/</code> and <code>bootstrap/cache/</code></li>
+        <li>Test on subdomain, then switch main domain when ready</li>
+        <li>Set up one-click deploy (Git push + script or GitHub Action)</li>
+    </ol>
+
+    <div class="footer">
+        MiniLicensePlates.com — docs/DEPLOYMENT_CPANEL_CHECKLIST.html — generated for pre-deployment review
+    </div>
+</div>
+</body>
+</html>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'MiniLicensePlates.com')</title>
+    @include('components.seo-head')
     <link rel="stylesheet" href="{{ asset('main.css') }}" />
 </head>
 <body>

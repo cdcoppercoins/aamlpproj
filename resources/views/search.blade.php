@@ -1,20 +1,28 @@
 @extends('layouts.app')
 
-@section('title', 'Gallery | MiniLicensePlates.com')
+@section('title', 'Search the Mini License Plate Catalog | MiniLicensePlates.com')
+
+@section('meta_description', 'Search the miniature license plate catalog by year, jurisdiction, set name, company, and set type. View catalog values and printable checklist results for Post, Topps, and other premiums.')
+
+@section('canonical_url', route('search'))
+
+@if ($hasSearch)
+@section('robots', 'noindex, follow')
+@endif
 
 @section('content')
-<div class="home-page gallery-page">
+<div class="home-page gallery-page search-page">
     <section class="home-hero gallery-hero">
         <div class="gallery-hero-row">
             <div class="gallery-hero-copy">
                 <nav class="gallery-breadcrumbs" aria-label="Breadcrumb">
                     <ol class="gallery-breadcrumbs-list">
                         <li><a href="{{ route('home') }}">Home</a></li>
-                        <li aria-current="page">Gallery</li>
+                        <li aria-current="page">Catalog Search</li>
                     </ol>
                 </nav>
                 <p class="home-welcome">Search the catalog</p>
-                <h1 class="home-title">Gallery</h1>
+                <h1 class="home-title">Catalog Search</h1>
             </div>
             <div class="gallery-site-notice" role="note">
                 <p>
@@ -34,7 +42,7 @@
             Leave any field at <strong>All</strong> to include every value for that criterion. Set type checkboxes can be combined.
         </p>
         <h2 class="home-section-title">Search criteria</h2>
-        <form class="gallery-search-form" method="GET" action="{{ route('gallery') }}">
+        <form class="gallery-search-form" method="GET" action="{{ route('search') }}">
             <input type="hidden" name="search" value="1">
 
             <div class="gallery-search-grid">
@@ -49,7 +57,7 @@
                 </label>
 
                 <label class="gallery-field">
-                    <span class="gallery-field-label">Jurisdiction</span>
+                    <span class="gallery-field-label">Jurisdiction (state/prov/country)</span>
                     <select name="jurisdiction" class="gallery-select">
                         <option value="">All jurisdictions</option>
                         @foreach ($filterOptions['jurisdictions'] as $jurisdiction)
@@ -96,10 +104,12 @@
 
             <div class="gallery-search-actions">
                 <button type="submit" class="home-primary-btn gallery-search-btn">Search catalog</button>
-                <a class="gallery-clear-link" href="{{ route('gallery') }}">Clear filters</a>
+                <a class="gallery-clear-link" href="{{ route('search') }}">Clear filters</a>
             </div>
         </form>
     </section>
+
+    @include('components.gallery-banner-placeholder')
 
     @if ($hasSearch && $results)
         @php
@@ -198,6 +208,8 @@
                 @if ($results->hasPages())
                     @include('components.gallery-pagination', ['results' => $results])
                 @endif
+
+                @include('components.gallery-banner-placeholder')
             @endif
         </section>
     @endif

@@ -36,22 +36,10 @@
         <div class="gallery-result-details">
             <div class="gallery-result-copy gallery-result-copy--grid">
                 <p class="gallery-result-set">{{ $plate->set_name }}</p>
-
-                @if ($plate->company)
-                    <p class="gallery-result-company">{{ $plate->company }}</p>
-                @endif
-
-                @if ($plate->jurisdiction)
-                    <p class="gallery-result-jurisdiction">{{ strtoupper($plate->jurisdiction) }}</p>
-                @endif
-
-                @if ($size)
-                    <p class="gallery-result-size">size - {{ $size }}</p>
-                @endif
-
-                @if ($plate->variety_notes)
-                    <p class="gallery-result-variety">{{ $plate->variety_notes }}</p>
-                @endif
+                <p class="gallery-result-company">{{ $plate->company ?? '' }}</p>
+                <p class="gallery-result-jurisdiction">{{ $plate->jurisdiction ? strtoupper($plate->jurisdiction) : '' }}</p>
+                <p class="gallery-result-size">{{ $size ? 'size - ' . $size : '' }}</p>
+                <p class="gallery-result-variety">{{ $plate->variety_notes ?? '' }}</p>
             </div>
 
             <div class="gallery-result-panel gallery-result-panel--list">

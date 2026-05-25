@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'About | MiniLicensePlates.com')
+@section('title', 'About Mini License Plate Collecting | MiniLicensePlates.com')
+
+@section('meta_description', 'Learn about MiniLicensePlates.com, a reference project documenting miniature license plate toys from Post, Topps, cereal premiums, and related collectibles. Background on the collector and site mission.')
+
+@section('canonical_url', route('about'))
 
 @section('content')
 <div class="set-width">

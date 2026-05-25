@@ -110,6 +110,12 @@ class Plate extends Model
             11 => '11/16', 12 => '3/4', 13 => '13/16', 14 => '7/8', 15 => '15/16',
         ];
 
-        return trim($whole . ' ' . ($fractions[$sixteenths] ?? ''));
+        $fraction = $fractions[$sixteenths] ?? '';
+
+        if ($whole === 0) {
+            return $fraction;
+        }
+
+        return trim($whole . ' ' . $fraction);
     }
 }

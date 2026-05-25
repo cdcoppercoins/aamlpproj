@@ -36,16 +36,38 @@
                 <ul class="footer-links">
                     <li><a href="#">Terms of Service</a></li>
                     <li><a href="#">Report Plagiarism</a></li>
-                    <li><a href="#">Sign-up for News</a></li>
+                    <li><a href="#footer-newsletter">Sign-up for News</a></li>
                 </ul>
-                <label class="footer-signup">
-                    <span class="footer-signup-sr">Email address for news</span>
-                    <input type="email"
-                           class="footer-signup-input"
-                           placeholder="enter email here"
-                           disabled
-                           aria-disabled="true">
-                </label>
+                <form id="footer-newsletter"
+                      class="footer-newsletter-form"
+                      method="post"
+                      action="{{ route('newsletter.subscribe') }}">
+                    @csrf
+                    <div class="footer-newsletter-honeypot" aria-hidden="true">
+                        <label>
+                            Company
+                            <input type="text" name="company" tabindex="-1" autocomplete="off">
+                        </label>
+                    </div>
+                    <label class="footer-newsletter">
+                        <span class="footer-newsletter-sr">Email address for newsletter and advertising</span>
+                        <input type="email"
+                               name="email"
+                               class="footer-newsletter-input @error('email') is-invalid @enderror"
+                               value="{{ old('email') }}"
+                               placeholder="enter email here"
+                               maxlength="255"
+                               required
+                               autocomplete="email">
+                    </label>
+                    <button type="submit" class="footer-newsletter-btn">Subscribe</button>
+                    @if (session('newsletter_subscribed'))
+                        <p class="footer-newsletter-message is-success" role="status">{{ session('newsletter_subscribed') }}</p>
+                    @endif
+                    @if ($errors->has('email'))
+                        <p class="footer-newsletter-message is-error" role="alert">{{ $errors->first('email') }}</p>
+                    @endif
+                </form>
             </nav>
 
             <p class="footer-copyright">

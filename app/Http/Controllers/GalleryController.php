@@ -2,125 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Plate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class GalleryController extends Controller
 {
-    private const SET_TYPE_OPTIONS = [
-        'm' => 'metal plates',
-        'c' => 'plate cards',
-        's' => 'plate stickers',
-        'x' => 'other',
-    ];
-
-    private const SET_TYPE_CODES = ['m', 'c', 's', 'x'];
-
-    public function index(Request $request)
+    public function index()
     {
-        $filterOptions = [
-            'years' => DB::table('plates')
-                ->whereNotNull('year')
-                ->distinct()
-                ->orderBy('year')
-                ->pluck('year'),
-            'jurisdictions' => DB::table('plates')
-                ->whereNotNull('jurisdiction')
-                ->where('jurisdiction', '!=', '')
-                ->distinct()
-                ->orderBy('jurisdiction')
-                ->pluck('jurisdiction'),
-            'setNames' => DB::table('plates')
-                ->distinct()
-                ->orderBy('set_name')
-                ->pluck('set_name'),
-            'companies' => DB::table('plates')
-                ->whereNotNull('company')
-                ->where('company', '!=', '')
-                ->distinct()
-                ->orderBy('company')
-                ->pluck('company'),
-        ];
+        $placeholder = asset('plate_missing.png');
 
-        $totalCount = DB::table('plates')->count();
-        $hasSearch = $request->boolean('search');
-        $results = null;
+        $sets = DB::table('plates')
+            ->select(
+                'set_code',
+                DB::raw('MAX(set_name) as set_name'),
+                DB::raw('MAX(company) as company'),
+                DB::raw('MAX(cat_ref) as cat_ref'),
+                DB::raw('MIN(year) as year')
+            )
+            ->groupBy('set_code')
+            ->orderByRaw('MIN(year) IS NULL, MIN(year) ASC')
+            ->orderBy('set_code')
+            ->get()
+            ->map(function ($set) use ($placeholder) {
+                $set->sample_image_url = $this->randomSetFrontImageUrl($set->set_code) ?? $placeholder;
 
-        if ($hasSearch) {
-            $query = Plate::query();
+                return $set;
+            });
 
-            if ($request->filled('year')) {
-                $query->where('year', $request->integer('year'));
-            }
-
-            if ($request->filled('jurisdiction')) {
-                $query->where('jurisdiction', $request->jurisdiction);
-            }
-
-            if ($request->filled('set_name')) {
-                $query->where('set_name', $request->set_name);
-            }
-
-            if ($request->filled('company')) {
-                $query->where('company', $request->company);
-            }
-
-            $setTypes = $this->normalizeSetTypes($request->input('set_types', []));
-            if ($setTypes !== []) {
-                $query->where(function ($typeQuery) use ($setTypes) {
-                    foreach ($setTypes as $type) {
-                        if ($type === 'x') {
-                            $typeQuery->orWhereRaw('LOWER(LEFT(set_code, 1)) NOT IN (?, ?, ?)', ['m', 'c', 's']);
-                        } else {
-                            $typeQuery->orWhereRaw('LOWER(LEFT(set_code, 1)) = ?', [$type]);
-                        }
-                    }
-                });
-            }
-
-            $results = $query
-                ->orderBy('set_name')
-                ->orderBy('sort_order')
-                ->orderBy('jurisdiction')
-                ->paginate(12)
-                ->appends($request->query());
-        }
-
-        $setCounts = collect();
-        if ($results && $results->count() > 0) {
-            $setCounts = DB::table('plates')
-                ->select('set_code', DB::raw('COUNT(*) as total'))
-                ->whereIn('set_code', $results->pluck('set_code')->unique())
-                ->groupBy('set_code')
-                ->pluck('total', 'set_code');
-        }
-
-        return view('gallery', [
-            'filterOptions' => $filterOptions,
-            'setTypeOptions' => self::SET_TYPE_OPTIONS,
-            'totalCount' => $totalCount,
-            'hasSearch' => $hasSearch,
-            'results' => $results,
-            'setCounts' => $setCounts,
-            'filters' => array_merge(
-                $request->only(['year', 'jurisdiction', 'set_name', 'company']),
-                ['set_types' => $this->normalizeSetTypes($request->input('set_types', []))]
-            ),
+        return view('gallery.index', [
+            'sets' => $sets,
         ]);
-    }
-
-    /**
-     * @param  mixed  $setTypes
-     * @return list<string>
-     */
-    private function normalizeSetTypes($setTypes): array
-    {
-        if (! is_array($setTypes)) {
-            return [];
-        }
-
-        return array_values(array_intersect($setTypes, self::SET_TYPE_CODES));
     }
 
     public function show(Request $request, $setName)
@@ -131,47 +42,90 @@ class GalleryController extends Controller
             ->where('set_name', $setName)
             ->value('set_code');
 
-        if (!$setCode) {
+        if (! $setCode) {
             return redirect()->route('gallery');
         }
 
-        $dirPath = public_path('plates/' . $setCode);
-        $images = [];
+        $setMeta = DB::table('plates')
+            ->select(
+                DB::raw('MAX(company) as company'),
+                DB::raw('MIN(year) as year'),
+                DB::raw('COUNT(*) as plate_count')
+            )
+            ->where('set_name', $setName)
+            ->where('set_code', $setCode)
+            ->first();
 
-        if (is_dir($dirPath)) {
-            $files = scandir($dirPath);
-            $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
+        $images = $this->collectSetImages($setCode);
+        $sampleImage = $images[0]['a'] ?? asset('home_top_banner.jpg');
 
-            foreach ($files as $file) {
-                if ($file === '.' || $file === '..') {
-                    continue;
-                }
-
-                $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-                $basename = pathinfo($file, PATHINFO_FILENAME);
-
-                if (preg_match('/_a$/i', $basename) && in_array($ext, $allowedExtensions)) {
-                    $baseNoSuffix = preg_replace('/_a$/i', '', $basename);
-                    $aFile = asset('plates/' . $setCode . '/' . $file);
-                    $bPath = $dirPath . '/' . $baseNoSuffix . '_b.' . $ext;
-                    $bFile = file_exists($bPath)
-                        ? asset('plates/' . $setCode . '/' . $baseNoSuffix . '_b.' . $ext)
-                        : null;
-
-                    $images[] = ['a' => $aFile, 'b' => $bFile];
-                }
-            }
+        $metaDescription = 'View miniature license plate images from the ' . $setName . ' set';
+        if (! empty($setMeta?->company)) {
+            $metaDescription .= ' by ' . $setMeta->company;
         }
-
-        $infoPath = resource_path('views/setinfo/' . $setCode . '_info.blade.php');
-        $varPath = resource_path('views/setinfo/' . $setCode . '_varieties.blade.php');
+        if (! empty($setMeta?->year)) {
+            $metaDescription .= ' (' . $setMeta->year . ')';
+        }
+        if (! empty($setMeta?->plate_count)) {
+            $metaDescription .= '. ' . number_format($setMeta->plate_count) . ' plates cataloged';
+        }
+        $metaDescription .= '. Browse front and back photos at MiniLicensePlates.com.';
 
         return view('gallery.show', [
             'selectedSet' => $setName,
             'folder' => $setCode,
             'images' => $images,
-            'hasInfo' => file_exists($infoPath),
-            'hasVarieties' => file_exists($varPath),
+            'setMeta' => $setMeta,
+            'sampleImage' => $sampleImage,
+            'metaDescription' => $metaDescription,
         ]);
+    }
+
+    /**
+     * @return list<array{a: string, b: string|null}>
+     */
+    private function collectSetImages(string $setCode): array
+    {
+        $dirPath = public_path('plates/' . $setCode);
+        $images = [];
+
+        if (! is_dir($dirPath)) {
+            return $images;
+        }
+
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
+
+        foreach (scandir($dirPath) as $file) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+
+            $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+            $basename = pathinfo($file, PATHINFO_FILENAME);
+
+            if (preg_match('/_a$/i', $basename) && in_array($ext, $allowedExtensions, true)) {
+                $baseNoSuffix = preg_replace('/_a$/i', '', $basename);
+                $aFile = asset('plates/' . $setCode . '/' . $file);
+                $bPath = $dirPath . '/' . $baseNoSuffix . '_b.' . $ext;
+                $bFile = file_exists($bPath)
+                    ? asset('plates/' . $setCode . '/' . $baseNoSuffix . '_b.' . $ext)
+                    : null;
+
+                $images[] = ['a' => $aFile, 'b' => $bFile];
+            }
+        }
+
+        return $images;
+    }
+
+    private function randomSetFrontImageUrl(string $setCode): ?string
+    {
+        $images = $this->collectSetImages($setCode);
+
+        if ($images === []) {
+            return null;
+        }
+
+        return $images[array_rand($images)]['a'];
     }
 }

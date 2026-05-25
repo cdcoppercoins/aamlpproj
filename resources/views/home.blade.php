@@ -1,6 +1,27 @@
 @extends('layouts.app')
 
-@section('title', 'MiniLicensePlates.com')
+@section('title', 'Mini License Plates Catalog & Gallery | MiniLicensePlates.com')
+
+@section('meta_description', 'MiniLicensePlates.com is the largest visual guide to miniature license plate premiums from Post, Topps, General Mills, and other issuers. Browse ' . number_format($plateCount) . '+ cataloged plates, search by set and jurisdiction, and view collector values.')
+
+@section('canonical_url', route('home'))
+
+@push('structured_data')
+<script type="application/ld+json">
+{!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'WebSite',
+    'name' => 'MiniLicensePlates.com',
+    'url' => route('home'),
+    'description' => 'Visual reference and pricing catalog for miniature license plates from candy, gum, and cereal premiums.',
+    'potentialAction' => [
+        '@type' => 'SearchAction',
+        'target' => route('search') . '?search=1&jurisdiction={search_term_string}',
+        'query-input' => 'required name=search_term_string',
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
+</script>
+@endpush
 
 @section('content')
 <div class="home-page">
@@ -90,6 +111,7 @@
 
     <section class="home-actions">
         <a class="home-primary-btn" href="{{ route('gallery') }}">Browse the Gallery</a>
+        <a class="home-primary-btn home-primary-btn-secondary" href="{{ route('search') }}">Catalog Search</a>
         <p class="home-secondary-links">
             New here? Read <a href="{{ route('about') }}">About</a> · Explore <a href="{{ route('history') }}">History</a>
             · <a href="{{ route('contribute') }}">Contribute</a>
