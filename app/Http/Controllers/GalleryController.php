@@ -2,90 +2,140 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Plate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GalleryController extends Controller
 {
-    private $folderMap = [
-        '1936 Goudey Cards'     => 'c36g',
-        '1937 Goudey Cards'     => 'c37g',
-        '1938 Goudey Cards'     => 'c38g',
-        '1939 Goudey Cards'     => 'c39g',
-        '1939 Worldwide Gum Cards'     => 'c39w',
-        '1939 Globe Trotters'   => 'm39g',
-        '1949 Topps Cards'      => 'c49t',
-        '1950 Topps Cards'      => 'c50t',
-        '1952 Licade Wrappers'  => 'c52m',
-        '1953 Gen. Mills (Wheaties)'         => 'm53p',
-        '1954 Gen. Mills (Wheaties)'         => 'm54p',
-        '1953-54 Cracker Jack cards'    => 'c53c',
-        '1954 Canada Quaker Cereal'  => 'm54q',
-        '1955 Leader Candy'     => 'm55l',
-        '1959 Bakers Chocolate' => 'm59p',
-        '1960 Post'             => 'm60p',
-        '1961 Topps Stickers'   => 's61t',
-        '1963 General Mills'    => 'm63p',
-        '1963 Canada GM Stickers'   => 's63g',
-        '1966 Canada GM Stickers'   => 's66g',
-        '1968 Maple Leaf'       => 'm68m',
-        '1968 Quaker Cereal'    => 'm68q',
-        '1968 Post Cereal Plates'             => 'm68p',
-        '1970 Post Cereal Plates'             => 'm70p',
-        '1975 Post Cereal Plates'             => 'm75p',
-        '1978 Post Cereal Plates'             => 'm78p',
-        '1978 Super Sips candy' => 's78s',
-        '1979 Post Cereal Plates'             => 'm79p',
-        '1980 Post Cereal Plates'             => 'm80p',
-        '1981 Post Cereal Plates'             => 'm81p',
-        '1982 Post Cereal Plates'             => 'm82p',
-        '1983 Post Cereal Plates'             => 'm83p',
-        '1984 Post Cereal Plates'             => 'm84p',
-        '1986 Post Cereal Plates'             => 'm86p',
-        '1987 Post Cereal Plates'             => 'm87p',
-        '1988 Post Cereal Plates'             => 'm88p',
-        '1989 Post Cereal Plates'             => 'm89p',
-        '1990 Post Cereal Plates'             => 'm90p',
+    private const SET_TYPE_OPTIONS = [
+        'm' => 'metal plates',
+        'c' => 'plate cards',
+        's' => 'plate stickers',
+        'x' => 'other',
     ];
 
-    public function index()
+    private const SET_TYPE_CODES = ['m', 'c', 's', 'x'];
+
+    public function index(Request $request)
     {
-        $availableSets = [];
-        $setThumbnails = [];
+        $filterOptions = [
+            'years' => DB::table('plates')
+                ->whereNotNull('year')
+                ->distinct()
+                ->orderBy('year')
+                ->pluck('year'),
+            'jurisdictions' => DB::table('plates')
+                ->whereNotNull('jurisdiction')
+                ->where('jurisdiction', '!=', '')
+                ->distinct()
+                ->orderBy('jurisdiction')
+                ->pluck('jurisdiction'),
+            'setNames' => DB::table('plates')
+                ->distinct()
+                ->orderBy('set_name')
+                ->pluck('set_name'),
+            'companies' => DB::table('plates')
+                ->whereNotNull('company')
+                ->where('company', '!=', '')
+                ->distinct()
+                ->orderBy('company')
+                ->pluck('company'),
+        ];
 
-        foreach ($this->folderMap as $setName => $folder) {
-            $dirPath = public_path('plates/' . $folder);
-            $availableSets[$setName] = false;
-            $setThumbnails[$setName] = null;
+        $totalCount = DB::table('plates')->count();
+        $hasSearch = $request->boolean('search');
+        $results = null;
 
-            if (is_dir($dirPath)) {
-                $files = scandir($dirPath);
-                foreach ($files as $file) {
-                    if (preg_match('/a\.(jpg|jpeg|png|gif|webp|bmp)$/i', $file)) {
-                        $availableSets[$setName] = true;
-                        $setThumbnails[$setName] = asset('plates/' . $folder . '/' . $file);
-                        break;
-                    }
-                }
+        if ($hasSearch) {
+            $query = Plate::query();
+
+            if ($request->filled('year')) {
+                $query->where('year', $request->integer('year'));
             }
+
+            if ($request->filled('jurisdiction')) {
+                $query->where('jurisdiction', $request->jurisdiction);
+            }
+
+            if ($request->filled('set_name')) {
+                $query->where('set_name', $request->set_name);
+            }
+
+            if ($request->filled('company')) {
+                $query->where('company', $request->company);
+            }
+
+            $setTypes = $this->normalizeSetTypes($request->input('set_types', []));
+            if ($setTypes !== []) {
+                $query->where(function ($typeQuery) use ($setTypes) {
+                    foreach ($setTypes as $type) {
+                        if ($type === 'x') {
+                            $typeQuery->orWhereRaw('LOWER(LEFT(set_code, 1)) NOT IN (?, ?, ?)', ['m', 'c', 's']);
+                        } else {
+                            $typeQuery->orWhereRaw('LOWER(LEFT(set_code, 1)) = ?', [$type]);
+                        }
+                    }
+                });
+            }
+
+            $results = $query
+                ->orderBy('set_name')
+                ->orderBy('sort_order')
+                ->orderBy('jurisdiction')
+                ->paginate(12)
+                ->appends($request->query());
+        }
+
+        $setCounts = collect();
+        if ($results && $results->count() > 0) {
+            $setCounts = DB::table('plates')
+                ->select('set_code', DB::raw('COUNT(*) as total'))
+                ->whereIn('set_code', $results->pluck('set_code')->unique())
+                ->groupBy('set_code')
+                ->pluck('total', 'set_code');
         }
 
         return view('gallery', [
-            'folderMap' => $this->folderMap,
-            'availableSets' => $availableSets,
-            'setThumbnails' => $setThumbnails,
+            'filterOptions' => $filterOptions,
+            'setTypeOptions' => self::SET_TYPE_OPTIONS,
+            'totalCount' => $totalCount,
+            'hasSearch' => $hasSearch,
+            'results' => $results,
+            'setCounts' => $setCounts,
+            'filters' => array_merge(
+                $request->only(['year', 'jurisdiction', 'set_name', 'company']),
+                ['set_types' => $this->normalizeSetTypes($request->input('set_types', []))]
+            ),
         ]);
+    }
+
+    /**
+     * @param  mixed  $setTypes
+     * @return list<string>
+     */
+    private function normalizeSetTypes($setTypes): array
+    {
+        if (! is_array($setTypes)) {
+            return [];
+        }
+
+        return array_values(array_intersect($setTypes, self::SET_TYPE_CODES));
     }
 
     public function show(Request $request, $setName)
     {
         $setName = urldecode($setName);
-        
-        if (!isset($this->folderMap[$setName])) {
+
+        $setCode = DB::table('plates')
+            ->where('set_name', $setName)
+            ->value('set_code');
+
+        if (!$setCode) {
             return redirect()->route('gallery');
         }
 
-        $folder = $this->folderMap[$setName];
-        $dirPath = public_path('plates/' . $folder);
+        $dirPath = public_path('plates/' . $setCode);
         $images = [];
 
         if (is_dir($dirPath)) {
@@ -93,32 +143,32 @@ class GalleryController extends Controller
             $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'];
 
             foreach ($files as $file) {
-                if ($file === '.' || $file === '..') continue;
+                if ($file === '.' || $file === '..') {
+                    continue;
+                }
 
                 $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
                 $basename = pathinfo($file, PATHINFO_FILENAME);
 
                 if (preg_match('/_a$/i', $basename) && in_array($ext, $allowedExtensions)) {
-                    $baseNoLetter = substr($basename, 0, -1);
-                    $aFile = asset('plates/' . $folder . '/' . $file);
-                    $bFile = asset('plates/' . $folder . '/' . $baseNoLetter . 'b.' . $ext);
+                    $baseNoSuffix = preg_replace('/_a$/i', '', $basename);
+                    $aFile = asset('plates/' . $setCode . '/' . $file);
+                    $bPath = $dirPath . '/' . $baseNoSuffix . '_b.' . $ext;
+                    $bFile = file_exists($bPath)
+                        ? asset('plates/' . $setCode . '/' . $baseNoSuffix . '_b.' . $ext)
+                        : null;
 
-                    if (file_exists($dirPath . '/' . $baseNoLetter . 'b.' . $ext)) {
-                        $images[] = ['a' => $aFile, 'b' => $bFile];
-                    } else {
-                        $images[] = ['a' => $aFile, 'b' => null];
-                    }
+                    $images[] = ['a' => $aFile, 'b' => $bFile];
                 }
             }
         }
 
-        // Check for setinfo files
-        $infoPath = resource_path('views/setinfo/' . $folder . '_info.blade.php');
-        $varPath = resource_path('views/setinfo/' . $folder . '_varieties.blade.php');
+        $infoPath = resource_path('views/setinfo/' . $setCode . '_info.blade.php');
+        $varPath = resource_path('views/setinfo/' . $setCode . '_varieties.blade.php');
 
         return view('gallery.show', [
             'selectedSet' => $setName,
-            'folder' => $folder,
+            'folder' => $setCode,
             'images' => $images,
             'hasInfo' => file_exists($infoPath),
             'hasVarieties' => file_exists($varPath),

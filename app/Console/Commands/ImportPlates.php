@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class ImportPlates extends Command
 {
-    protected $signature = 'plates:import 
-                            {file=docs/Mini Plate Checklist - all_plates.csv : Path to CSV file}
+    protected $signature = 'plates:import
+                            {file=Mini Plate Checklist - all_plates.csv : Path to CSV file}
                             {--truncate : Truncate plates table before import}';
 
     protected $description = 'Import plates from CSV into the plates table';
