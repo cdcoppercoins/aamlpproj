@@ -1,9 +1,12 @@
 <header class="site-header">
   <div class="header-frame">
-    <div class="header-inner">
-      <img src="{{ asset('header_banner.png') }}"
-           alt="Header Banner"
-           class="site-banner">
+    <div class="header-inner banner-split">
+      <img src="{{ asset('header_banner_left.png') }}"
+           alt="Mini License Plates"
+           class="site-banner site-banner-left">
+      <img src="{{ asset('header_banner_right.png') }}"
+           alt="Mini License Plates"
+           class="site-banner site-banner-right">
     </div>
   </div>
 

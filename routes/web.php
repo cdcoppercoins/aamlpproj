@@ -5,7 +5,10 @@ use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\ContributeController;
 
 Route::get('/', function () {
-    return view('home');
+    $rawCount = \Illuminate\Support\Facades\DB::table('plates')->count();
+    $plateCount = intdiv($rawCount, 50) * 50;
+
+    return view('home', ['plateCount' => $plateCount]);
 })->name('home');
 
 Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');

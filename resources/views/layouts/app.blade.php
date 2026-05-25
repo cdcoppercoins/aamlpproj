@@ -10,7 +10,7 @@
 @include('components.header')
 <div class="content-wrapper">
 @yield('content')
-</div>
 @include('components.footer')
+</div>
 </body>
 </html>
