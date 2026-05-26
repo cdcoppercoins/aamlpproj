@@ -92,6 +92,8 @@
                         <a class="gallery-result-btn" href="#">Learn to Grade</a>
                         <a class="gallery-result-btn" href="{{ route('gallery.show', $plate->set_name) }}">View this Set</a>
                     </div>
+
+                    @include('components.collection-add-form', ['plate' => $plate, 'collectionEntry' => $collectionEntry ?? null])
                 </div>
             </div>
 
@@ -119,6 +121,8 @@
                     <a class="gallery-result-btn" href="#">Learn to Grade</a>
                     <a class="gallery-result-btn" href="{{ route('gallery.show', $plate->set_name) }}">View this Set</a>
                 </div>
+
+                @include('components.collection-add-form', ['plate' => $plate, 'collectionEntry' => $collectionEntry ?? null])
             </div>
         </div>
     </div>

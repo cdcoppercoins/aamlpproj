@@ -96,6 +96,15 @@ class SearchController extends Controller
                 ->pluck('total', 'set_code');
         }
 
+        $collectionEntries = collect();
+        if ($results && $results->count() > 0 && auth()->check()) {
+            $collectionEntries = auth()->user()
+                ->collectionItems()
+                ->whereIn('plate_id', $results->pluck('id'))
+                ->get()
+                ->keyBy('plate_id');
+        }
+
         return view('search', [
             'filterOptions' => $filterOptions,
             'setTypeOptions' => self::SET_TYPE_OPTIONS,
@@ -103,6 +112,7 @@ class SearchController extends Controller
             'hasSearch' => $hasSearch,
             'results' => $results,
             'setCounts' => $setCounts,
+            'collectionEntries' => $collectionEntries,
             'filters' => array_merge(
                 $request->only(['year', 'jurisdiction', 'set_name', 'company']),
                 ['set_types' => $this->normalizeSetTypes($request->input('set_types', []))]

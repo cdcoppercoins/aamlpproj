@@ -10,6 +10,7 @@
 <body>
 @include('components.header')
 <div class="content-wrapper">
+@include('components.flash-messages')
 @yield('content')
 @include('components.footer')
 </div>

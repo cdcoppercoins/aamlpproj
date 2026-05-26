@@ -21,6 +21,11 @@
         <li><a href="{{ route('about') }}">ABOUT</a></li>
         <li><a href="{{ route('history') }}">HISTORY</a></li>
         <li><a href="{{ route('contribute') }}">CONTRIBUTE</a></li>
+        @auth
+        <li><a href="{{ route('collection.index') }}">MY COLLECTION</a></li>
+        @else
+        <li><a href="{{ route('login') }}">SIGN IN</a></li>
+        @endauth
         <li><a href="https://www.ebay.com/str/minilicenseplates" target="new">SHOP</a></li>
       </ul>
     </nav>

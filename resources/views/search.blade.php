@@ -195,6 +195,7 @@
                         @include('components.gallery-result-card', [
                             'plate' => $plate,
                             'setCounts' => $setCounts,
+                            'collectionEntry' => $collectionEntries[$plate->id] ?? null,
                         ])
                     @endforeach
                     @php

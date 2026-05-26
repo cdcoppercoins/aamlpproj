@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Mini License Plates Catalog & Gallery | MiniLicensePlates.com')
+@section('title', 'Mini License Plate Catalog & Price Guide | MiniLicensePlates.com')
 
-@section('meta_description', 'MiniLicensePlates.com is the largest visual guide to miniature license plate premiums from Post, Topps, General Mills, and other issuers. Browse ' . number_format($plateCount) . '+ cataloged plates, search by set and jurisdiction, and view collector values.')
+@section('meta_description', 'Identify and value miniature license plates from Post, Topps, General Mills, Goudey, and other cereal and gum premiums. ' . number_format($plateCount) . '+ subjects cataloged — browse sets, search by state and year, print checklists.')
 
 @section('canonical_url', route('home'))
 
@@ -13,7 +13,7 @@
     '@type' => 'WebSite',
     'name' => 'MiniLicensePlates.com',
     'url' => route('home'),
-    'description' => 'Visual reference and pricing catalog for miniature license plates from candy, gum, and cereal premiums.',
+    'description' => 'Catalog and price guide for miniature license plate premiums from Post, Topps, General Mills, and other issuers.',
     'potentialAction' => [
         '@type' => 'SearchAction',
         'target' => route('search') . '?search=1&jurisdiction={search_term_string}',
@@ -25,81 +25,82 @@
 
 @section('content')
 <div class="home-page">
-    <section class="home-top-banner" aria-label="Featured mini license plates">
+    <section class="home-top-banner" aria-label="Featured miniature license plates">
         <img src="{{ asset('home_top_banner.jpg') }}"
-             alt="A selection of miniature license plate premiums from various sets"
+             alt="Miniature license plates from Post, Topps, and cereal premium sets"
              class="home-top-banner-img">
     </section>
 
     <section class="home-hero">
-        <p class="home-welcome">Welcome to the reference</p>
-        <h1 class="home-title">MiniLicensePlates.com</h1>
+        <p class="home-welcome">MiniLicensePlates.com</p>
+        <h1 class="home-title">Mini license plate catalog and collector&rsquo;s guide</h1>
         <p class="home-lead">
-            This is the largest and most complete visual guide to the miniature license plates packaged with candy, gum,
-            cereal, and other products. Manufacturers created these premiums to reach license plate enthusiasts—encouraging
-            customers to buy the product and collect every plate in the set.
+            A visual reference to the small plate toys packaged with candy, gum, and cereal from the 1930s through today.
+            Issuers such as Post, Topps, General Mills, and Goudey used these premiums to reach collectors building complete state and
+            topical sets.
         </p>
     </section>
 
     <section class="home-stat" aria-label="Collection size">
         <p class="home-stat-number">{{ number_format($plateCount) }}+</p>
-        <p class="home-stat-label">mini license plate subjects cataloged</p>
+        <p class="home-stat-label">subjects in the catalog</p>
     </section>
 
     <section class="home-mission">
         <div class="home-mission-content">
             <div class="home-mission-text">
-                <h2 class="home-section-title">Project statement</h2>
+                <h2 class="home-section-title">What this site offers</h2>
                 <p>
-                    This site documents more than <strong>{{ number_format($plateCount) }} distinct subjects</strong> in our database —
-                    each representing a plate type, variety, or listing in the collector’s guide. Our goal is to provide the most
-                    complete method available to <strong>search, browse, and list</strong> these items by set, jurisdiction, issuer,
-                    year, and other catalog criteria.
+                    The database lists more than <strong>{{ number_format($plateCount) }} distinct subjects</strong> — individual plates,
+                    varieties, and catalog entries from dozens of issued sets. Use the
+                    <a href="{{ route('gallery') }}">Gallery</a> to browse set images, or
+                    <a href="{{ route('search') }}">Catalog Search</a> to filter by year, jurisdiction, issuer, and set type.
                 </p>
                 <p>
-                    Collectors can use search results to build a focused view of what they own or still need, then
-                    <strong>create and print personal checklists</strong> from those results for use at shows, in trade, or at home.
+                    Each listing includes catalog values by grade so you can research what a plate is worth before you buy, sell, or trade.
+                    Search results can be turned into a <strong>printable checklist</strong> for shows, want lists, or inventory at home.
                 </p>
                 <p>
-                    The site also includes a dedicated section on the <strong>history of miniature license plate premiums</strong>
-                    — how they were designed, manufactured, and packaged with candy, gum, cereal, and other products as promotions
-                    for collectors and consumers.
+                    We are also building a section on the <strong>history of these premiums</strong> — how they were designed, manufactured,
+                    and inserted into product packaging — with more on that in our <a href="{{ route('history') }}">History</a> pages.
                 </p>
                 <p>
-                    We are also working toward offering many of the listed miniature license plates in an
-                    <strong>upcoming store right here on the website</strong>, so collectors can find reference information and
-                    available pieces in one place.
+                    An <strong>on-site store</strong> is planned so collectors can connect reference information with plates offered for sale
+                    in one place.
                 </p>
             </div>
             <figure class="home-mission-image">
                 <img src="{{ asset('blue_back_composite_img_sm.jpg') }}"
-                     alt="Grid of miniature license plates from the 1953 Wheaties cereal set"
+                     alt="1953 Wheaties cereal set — grid of miniature state license plates"
                      class="home-mission-img">
             </figure>
         </div>
     </section>
 
-    <section class="home-features" aria-label="What this site offers">
+    <section class="home-features" aria-labelledby="home-features-title">
+        <h2 id="home-features-title" class="home-section-title home-features-title">Tools for collectors</h2>
+        <div class="home-features-grid">
         <div class="home-feature">
-            <h3>Comprehensive catalog</h3>
+            <h3>Set gallery</h3>
             <p>
-                Thousands of documented subjects with set, jurisdiction, and variety data — the foundation for serious
-                collecting and research.
+                View plate photos organized by issued set — a quick way to identify which product a plate came from and
+                what the complete run looks like.
             </p>
         </div>
         <div class="home-feature">
-            <h3>Search &amp; list</h3>
+            <h3>Catalog search</h3>
             <p>
-                Find plates by the criteria that matter to you, then review results in a clear, catalog-style listing
-                built for collectors.
+                Filter thousands of listings by state, province, year, company, or set type, then review results with
+                pricing in a collector-friendly layout.
             </p>
         </div>
         <div class="home-feature">
             <h3>Printable checklists</h3>
             <p>
-                Turn any search into a checklist you can print and take with you — a practical tool for building and
-                completing your collection.
+                Build a focused list of what you own or still need, then print it for your next show, trade meet, or
+                mail-order search.
             </p>
+        </div>
         </div>
     </section>
 

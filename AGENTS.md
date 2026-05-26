@@ -9,6 +9,7 @@ Use **PROJECT_REFERENCE.md** as the primary source of truth for project setup, c
 | **PROJECT_REFERENCE.md** | Current state, config, what not to do, how to run |
 | **GALLERY_CATALOG_SPEC.md** | Planned catalog: schema, routes, CMS, implementation |
 | **docs/PLATE_CSV_COLUMNS_REFERENCE.html** | CSV column definitions for plate import |
+| **docs/AWS_IMAGES_SETUP.md** | AWS S3/CloudFront image hosting — in progress; read when user returns from AWS support |
 
 ## Catalog Quick Reference
 
