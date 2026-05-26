@@ -23,13 +23,16 @@
 </script>
 @endpush
 
+@push('scripts')
+<script src="{{ asset('js/home-hero.js') }}" defer></script>
+@endpush
+
 @section('content')
-<div class="home-page">
-    <section class="home-top-banner" aria-label="Featured miniature license plates">
-        <img src="{{ asset('home_top_banner.jpg') }}"
-             alt="Miniature license plates from Post, Topps, and cereal premium sets"
-             class="home-top-banner-img">
-    </section>
+<div class="home-page home-page--flush-hero">
+    @include('components.home-hero-rotator', [
+        'heroSlides' => $heroSlides,
+        'heroIntervalMs' => $heroIntervalMs,
+    ])
 
     <section class="home-hero">
         <p class="home-welcome">MiniLicensePlates.com</p>
@@ -81,25 +84,59 @@
         <h2 id="home-features-title" class="home-section-title home-features-title">Tools for collectors</h2>
         <div class="home-features-grid">
         <div class="home-feature">
-            <h3>Set gallery</h3>
-            <p>
-                View plate photos organized by issued set — a quick way to identify which product a plate came from and
-                what the complete run looks like.
-            </p>
+            <h3>
+                <span class="home-feature-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 5a2 2 0 0 1 2-2h3v4H6v11H4V5zm7-2h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7V3zm2 2v14h5V5h-5zM6 7h1v2H6V7zm0 4h1v2H6v-2zm0 4h1v2H6v-2z"/></svg>
+                </span>
+                Set gallery
+            </h3>
+            <div class="home-feature-copy">
+                <p>
+                    View plate photos organized by issued set — a quick way to identify which product a plate came from and
+                    what the complete run looks like.
+                </p>
+            </div>
+            <div class="home-feature-action">
+                <a class="home-primary-btn home-feature-btn" href="{{ route('gallery') }}">Browse the Gallery</a>
+            </div>
         </div>
         <div class="home-feature">
-            <h3>Catalog search</h3>
-            <p>
-                Filter thousands of listings by state, province, year, company, or set type, then review results with
-                pricing in a collector-friendly layout.
-            </p>
+            <h3>
+                <span class="home-feature-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M10.5 3a7.5 7.5 0 1 1 0 15 7.42 7.42 0 0 1-3.36-.8L4 19l1.8-3.14A7.47 7.47 0 0 1 3 10.5 7.5 7.5 0 0 1 10.5 3zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11zm8.5 13.5a1 1 0 0 1 1 1v1.5H22v2h-1.5V22h-2v-1.5H17v-2h1.5V18a1 1 0 0 1 1-1z"/></svg>
+                </span>
+                Catalog search
+            </h3>
+            <div class="home-feature-copy">
+                <p>
+                    Filter thousands of listings by state, province, year, company, or set type, then review results with
+                    pricing in a collector-friendly layout.
+                </p>
+            </div>
+            <div class="home-feature-action">
+                <a class="home-primary-btn home-feature-btn" href="{{ route('search') }}">Catalog Search</a>
+            </div>
         </div>
         <div class="home-feature">
-            <h3>Printable checklists</h3>
-            <p>
-                Build a focused list of what you own or still need, then print it for your next show, trade meet, or
-                mail-order search.
-            </p>
+            <h3>
+                <span class="home-feature-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 3h10a2 2 0 0 1 2 2v1h2v2h-1v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8H3V6h2V5a2 2 0 0 1 2-2zm10 5H7v11h10V8zM9 10h2v2H9v-2zm4 0h2v2h-2v-2zm-4 4h2v2H9v-2zm4 0h2v2h-2v-2z"/></svg>
+                </span>
+                Printable checklists
+            </h3>
+            <div class="home-feature-copy">
+                <p>
+                    Build a focused list of what you own or still need, then print it for your next show, trade meet, or
+                    mail-order search.
+                </p>
+            </div>
+            <div class="home-feature-action">
+                @auth
+                    <a class="home-primary-btn home-feature-btn" href="{{ route('collection.index') }}">My Collection</a>
+                @else
+                    <a class="home-primary-btn home-feature-btn" href="{{ route('login') }}">My Collection</a>
+                @endauth
+            </div>
         </div>
         </div>
     </section>
@@ -111,8 +148,6 @@
     </section>
 
     <section class="home-actions">
-        <a class="home-primary-btn" href="{{ route('gallery') }}">Browse the Gallery</a>
-        <a class="home-primary-btn home-primary-btn-secondary" href="{{ route('search') }}">Catalog Search</a>
         <p class="home-secondary-links">
             New here? Read <a href="{{ route('about') }}">About</a> · Explore <a href="{{ route('history') }}">History</a>
             · <a href="{{ route('contribute') }}">Contribute</a>

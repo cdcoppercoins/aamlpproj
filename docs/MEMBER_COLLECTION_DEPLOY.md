@@ -92,12 +92,15 @@ php artisan view:clear
 
 Delete stale files in `bootstrap/cache/` if config errors appear (except `.gitignore`).
 
-### 5. Smoke test on live site
+### 5. Test live
 
 1. Open `https://minilicenseplates.com/register` — create account
 2. Sign in at `/login`
-3. Catalog Search → run a search → **Add to collection** on a result
-4. **MY COLLECTION** in nav → verify entry, edit quantity/condition, remove
+3. **Profile** — add phone, address, optional photo
+4. Catalog Search → run a search → **Add to collection** on a result
+5. **MY COLLECTION** in nav → verify entry, edit quantity/condition, remove
+
+**Profile photos:** run `php artisan storage:link` on the server once if not already done (links `public/storage` → `storage/app/public`). Uploaded photos live under `storage/app/public/profile-images/`.
 
 ---
 

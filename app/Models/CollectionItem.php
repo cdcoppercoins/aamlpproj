@@ -56,4 +56,70 @@ class CollectionItem extends Model
 
         return self::CONDITIONS[$this->condition] ?? $this->condition;
     }
+
+    public function ownedLineValue(): ?float
+    {
+        if ($this->is_wanted || $this->quantity <= 0 || ! $this->relationLoaded('plate')) {
+            return null;
+        }
+
+        $unit = $this->plate->numericCatalogValueForCondition($this->condition);
+        if ($unit === null) {
+            return null;
+        }
+
+        return $unit * $this->quantity;
+    }
+
+    public function formattedCatalogValueAtCondition(): string
+    {
+        if ($this->is_wanted || $this->quantity <= 0 || ! $this->relationLoaded('plate')) {
+            return '--';
+        }
+
+        if ($this->condition === null || $this->condition === '') {
+            return '--';
+        }
+
+        return $this->plate->displayCatalogValueForCondition($this->condition);
+    }
+
+    public function formattedOwnedLineValue(): string
+    {
+        $line = $this->ownedLineValue();
+        if ($line === null) {
+            return '--';
+        }
+
+        if ($this->quantity <= 1) {
+            return Plate::formatCatalogTotal($line);
+        }
+
+        return Plate::formatCatalogTotal($line) . ' (' . $this->quantity . ' × ' . $this->formattedCatalogValueAtCondition() . ')';
+    }
+
+    /**
+     * @param  iterable<int, self>  $items
+     */
+    public static function sumOwnedLineValues(iterable $items): ?float
+    {
+        $total = 0.0;
+        $hasValue = false;
+
+        foreach ($items as $item) {
+            if (! $item->relationLoaded('plate')) {
+                $item->load('plate');
+            }
+
+            $line = $item->ownedLineValue();
+            if ($line === null) {
+                continue;
+            }
+
+            $total += $line;
+            $hasValue = true;
+        }
+
+        return $hasValue ? $total : null;
+    }
 }

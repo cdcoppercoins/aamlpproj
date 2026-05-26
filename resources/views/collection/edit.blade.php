@@ -26,6 +26,13 @@
         @endif
     </p>
 
+    @php $item->setRelation('plate', $plate); @endphp
+    @if (! $item->is_wanted && $item->condition)
+        <p class="collection-edit-catalog-value">
+            Catalog value at {{ $item->condition }} (private): <strong>{{ $item->formattedOwnedLineValue() }}</strong>
+        </p>
+    @endif
+
     <form class="auth-form collection-edit-form" method="post" action="{{ route('collection.update', $item) }}">
         @csrf
         @method('PUT')

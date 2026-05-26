@@ -1,0 +1,18 @@
+Handoff (MiniLicensePlates):
+
+Repo: cdcoppercoins/mlp_code
+
+Images: /plates/<set>/ (*_a.* + optional *_b.*)
+
+Central set info: /setinfo/<set>_info.php + optional /setinfo/<set>_img.jpg
+
+Central varieties: /setinfo/<set>_varieties.php
+
+gallery.php updated to use /plates/ and /setinfo/ includes
+
+Layout fixed by removing any empty <img src=""> tags
+
+
+
+
+If you see anything here that does not seem right, please contact me before paying this invoice. I would rather edit an invoice than issue a refund. Thank you!

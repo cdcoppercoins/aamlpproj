@@ -42,6 +42,12 @@
         </form>
     </section>
 
+    @include('components.collection-quick-fill', [
+        'setNames' => $setNames,
+        'selectedSet' => null,
+        'conditions' => $conditions,
+    ])
+
     @if ($selectedSet && $plates)
         <section class="collection-manage-set-header">
             <h2 class="collection-manage-set-title">{{ $setMeta->set_name }}</h2>
@@ -51,9 +57,24 @@
                 Set code {{ $setMeta->set_code }} · {{ number_format($setMeta->plate_count) }} catalog entries
             </p>
             <p class="collection-manage-pdf-note">
-                Save your changes before downloading a PDF. The file reflects what is stored in your collection, ready to print on letter paper or attach to email.
+                Save your changes before downloading a PDF. Catalog values are from the pricing guide at your chosen grade — shown only to you, not on public member views.
             </p>
+            @if ($setCatalogTotal !== null)
+                <p class="collection-set-catalog-total">
+                    Set catalog value (private): <strong id="collection-set-total">{{ \App\Models\Plate::formatCatalogTotal($setCatalogTotal) }}</strong>
+                </p>
+            @else
+                <p class="collection-set-catalog-total">
+                    Set catalog value (private): <strong id="collection-set-total">--</strong>
+                </p>
+            @endif
         </section>
+
+        @include('components.collection-quick-fill', [
+            'setNames' => $setNames,
+            'selectedSet' => $selectedSet,
+            'conditions' => $conditions,
+        ])
 
         <form class="collection-manage-table-form" method="post" action="{{ route('collection.manage.update') }}">
             @csrf
@@ -69,6 +90,7 @@
                             <th scope="col" class="col-variety">Variety</th>
                             <th scope="col" class="col-qty">Qty</th>
                             <th scope="col" class="col-condition">Condition</th>
+                            <th scope="col" class="col-value">Catalog value</th>
                             <th scope="col" class="col-want">Want</th>
                             <th scope="col" class="col-location">Location</th>
                             <th scope="col" class="col-notes">Notes</th>
@@ -81,7 +103,10 @@
                                 $entry = $collectionByPlateId[$plate->id] ?? null;
                                 $frontUrl = $plate->frontImageUrl();
                             @endphp
-                            <tr class="@if($entry) collection-manage-row-has-entry @endif">
+                            <tr class="collection-manage-row @if($entry) collection-manage-row-has-entry @endif"
+                                data-collection-row
+                                data-display-values='@json($plate->catalogDisplayValuesByCondition())'
+                                data-numeric-values='@json($plate->catalogNumericValuesByCondition())'>
                                 <td class="col-thumb">
                                     <img src="{{ $frontUrl ?? $placeholder }}"
                                          alt=""
@@ -116,6 +141,16 @@
                                             <option value="{{ $code }}" @selected(old('items.'.$plate->id.'.condition', $entry?->condition) === $code)>{{ $code }}</option>
                                         @endforeach
                                     </select>
+                                </td>
+                                <td class="col-value">
+                                    <span class="collection-row-value">
+                                        @if ($entry && ! $entry->is_wanted)
+                                            @php $entry->setRelation('plate', $plate); @endphp
+                                            {{ $entry->formattedOwnedLineValue() }}
+                                        @else
+                                            --
+                                        @endif
+                                    </span>
                                 </td>
                                 <td class="col-want">
                                     <input type="hidden" name="items[{{ $plate->id }}][is_wanted]" value="0">
@@ -168,4 +203,130 @@
         <p class="collection-empty">No plates found for this set.</p>
     @endif
 </div>
+
+@if ($selectedSet && $plates)
+<script>
+(function () {
+    var applyBtn = document.getElementById('collection-apply-to-form');
+    var modeSelect = document.getElementById('collection-fill-mode');
+    var qtyInput = document.getElementById('collection-default-qty');
+    var condSelect = document.getElementById('collection-default-condition');
+
+    function formatMoney(amount) {
+        return '$' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function rowLineValue(row) {
+        var want = row.querySelector('.collection-manage-want');
+        if (want && want.checked) return null;
+
+        var qtyField = row.querySelector('.collection-manage-qty');
+        var condField = row.querySelector('.collection-manage-condition');
+        var qty = qtyField ? parseInt(qtyField.value, 10) : 0;
+        if (!qtyField || qtyField.value === '' || isNaN(qty) || qty <= 0) return null;
+
+        var cond = condField ? condField.value : '';
+        if (!cond) return null;
+
+        var numericValues = {};
+        try {
+            numericValues = JSON.parse(row.getAttribute('data-numeric-values') || '{}');
+        } catch (e) {}
+
+        var unit = numericValues[cond];
+        if (unit === null || unit === undefined) return null;
+
+        return unit * qty;
+    }
+
+    function rowValueLabel(row, lineValue) {
+        if (lineValue === null) return '--';
+
+        var condField = row.querySelector('.collection-manage-condition');
+        var qtyField = row.querySelector('.collection-manage-qty');
+        var cond = condField ? condField.value : '';
+        var qty = qtyField ? parseInt(qtyField.value, 10) : 1;
+        var displayValues = {};
+        try {
+            displayValues = JSON.parse(row.getAttribute('data-display-values') || '{}');
+        } catch (e) {}
+
+        var unitLabel = displayValues[cond] || formatMoney(lineValue / qty);
+        if (qty > 1) {
+            return formatMoney(lineValue) + ' (' + qty + ' × ' + unitLabel + ')';
+        }
+        return formatMoney(lineValue);
+    }
+
+    function recalculateSetTotal() {
+        var totalEl = document.getElementById('collection-set-total');
+        if (!totalEl) return;
+
+        var total = 0;
+        var hasValue = false;
+        document.querySelectorAll('[data-collection-row]').forEach(function (row) {
+            var valueEl = row.querySelector('.collection-row-value');
+            var line = rowLineValue(row);
+            if (valueEl) {
+                valueEl.textContent = rowValueLabel(row, line);
+            }
+            if (line !== null) {
+                total += line;
+                hasValue = true;
+            }
+        });
+
+        totalEl.textContent = hasValue ? formatMoney(total) : '--';
+    }
+
+    document.querySelectorAll('.collection-manage-qty, .collection-manage-condition, .collection-manage-want').forEach(function (el) {
+        el.addEventListener('change', recalculateSetTotal);
+        el.addEventListener('input', recalculateSetTotal);
+    });
+
+    function rowIsEmpty(row) {
+        var qty = row.querySelector('.collection-manage-qty');
+        var want = row.querySelector('.collection-manage-want');
+        var qtyVal = qty ? parseInt(qty.value, 10) : 0;
+        if (want && want.checked) return false;
+        return !qty || qty.value === '' || isNaN(qtyVal) || qtyVal <= 0;
+    }
+
+    function applyDefaultsToForm() {
+        if (!qtyInput || !condSelect || !modeSelect) return;
+        var qty = qtyInput.value;
+        var cond = condSelect.value;
+        var fillAll = modeSelect.value === 'all';
+        var rows = document.querySelectorAll('[data-collection-row]');
+        var count = 0;
+
+        rows.forEach(function (row) {
+            if (!fillAll && !rowIsEmpty(row)) return;
+
+            var qtyField = row.querySelector('.collection-manage-qty');
+            var condField = row.querySelector('.collection-manage-condition');
+            var wantField = row.querySelector('.collection-manage-want');
+
+            if (qtyField) qtyField.value = qty;
+            if (condField) condField.value = cond;
+            if (wantField) wantField.checked = false;
+            row.classList.add('collection-manage-row-has-entry');
+            count++;
+        });
+
+        recalculateSetTotal();
+
+        if (applyBtn) {
+            var original = applyBtn.textContent;
+            applyBtn.textContent = 'Applied to ' + count + ' rows';
+            setTimeout(function () { applyBtn.textContent = original; }, 2000);
+        }
+    }
+
+    if (applyBtn) {
+        applyBtn.addEventListener('click', applyDefaultsToForm);
+    }
+})();
+</script>
+@endif
 @endsection

@@ -23,6 +23,9 @@ class User extends Authenticatable
         'name',
         'username',
         'email',
+        'phone',
+        'address',
+        'profile_image',
         'password',
     ];
 
@@ -52,5 +55,19 @@ class User extends Authenticatable
     public function collectionItems(): HasMany
     {
         return $this->hasMany(CollectionItem::class);
+    }
+
+    public function collectionSetSettings(): HasMany
+    {
+        return $this->hasMany(CollectionSetSetting::class);
+    }
+
+    public function profileImageUrl(): ?string
+    {
+        if (empty($this->profile_image)) {
+            return null;
+        }
+
+        return asset('storage/' . $this->profile_image);
     }
 }

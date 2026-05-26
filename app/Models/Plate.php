@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Plate extends Model
 {
+    private const CONDITION_CODES = ['MT', 'EX', 'VG', 'G', 'FR', 'PO'];
+
     protected $fillable = [
         'set_code',
         'set_name',
@@ -83,6 +85,101 @@ class Plate extends Model
         }
 
         return $value;
+    }
+
+    public static function conditionValueField(?string $condition): ?string
+    {
+        return match ($condition) {
+            'MT' => 'value_mt',
+            'EX' => 'value_ex',
+            'VG' => 'value_vg',
+            'G' => 'value_g',
+            'FR' => 'value_fr',
+            'PO' => 'value_po',
+            default => null,
+        };
+    }
+
+    public function catalogValueForCondition(?string $condition): ?string
+    {
+        $field = self::conditionValueField($condition);
+        if ($field === null) {
+            return null;
+        }
+
+        $value = trim((string) ($this->{$field} ?? ''));
+
+        return $value !== '' ? $value : null;
+    }
+
+    public function displayCatalogValueForCondition(?string $condition): string
+    {
+        $field = self::conditionValueField($condition);
+        if ($field === null) {
+            return '--';
+        }
+
+        return $this->displayValue($field);
+    }
+
+    public function numericCatalogValueForCondition(?string $condition): ?float
+    {
+        $raw = $this->catalogValueForCondition($condition);
+        if ($raw === null) {
+            return null;
+        }
+
+        if (is_numeric($raw)) {
+            return (float) $raw;
+        }
+
+        if (preg_match('/^([\d.]+)\s*-\s*([\d.]+)/', $raw, $matches)) {
+            return ((float) $matches[1] + (float) $matches[2]) / 2;
+        }
+
+        $cleaned = preg_replace('/[^\d.-]/', '', $raw);
+        if ($cleaned !== '' && is_numeric($cleaned)) {
+            return (float) $cleaned;
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array<string, string|null>
+     */
+    public function catalogDisplayValuesByCondition(): array
+    {
+        $values = [];
+        foreach (self::CONDITION_CODES as $code) {
+            $values[$code] = $this->catalogValueForCondition($code) !== null
+                ? $this->displayCatalogValueForCondition($code)
+                : null;
+        }
+
+        return $values;
+    }
+
+    /**
+     * @return array<string, float|null>
+     */
+    public function catalogNumericValuesByCondition(): array
+    {
+        $values = [];
+        foreach (self::CONDITION_CODES as $code) {
+            $values[$code] = $this->numericCatalogValueForCondition($code);
+        }
+
+        return $values;
+    }
+
+    public static function formatCatalogTotal(?float $total): string
+    {
+        if ($total === null) {
+            return '--';
+        }
+
+        return '$' . number_format($total, 2, '.', ',');
     }
 
     public static function formatInches(mixed $value): ?string

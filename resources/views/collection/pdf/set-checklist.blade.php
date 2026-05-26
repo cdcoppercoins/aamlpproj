@@ -89,9 +89,13 @@
             color: #444;
         }
 
-        .qty, .cond, .want {
+        .qty, .cond, .want, .value {
             width: 6%;
             text-align: center;
+        }
+
+        .value {
+            width: 10%;
         }
 
         .location {
@@ -143,6 +147,9 @@
         @else
             Your collection entries for this set — {{ number_format($plates->count()) }} rows.
         @endif
+        @if ($setCatalogTotal !== null)
+            Catalog value at your recorded grades (private): {{ \App\Models\Plate::formatCatalogTotal($setCatalogTotal) }}.
+        @endif
         Print on letter-size paper or attach this PDF to email.
     </p>
 
@@ -154,6 +161,7 @@
                 <th class="variety">Variety</th>
                 <th class="qty">Qty</th>
                 <th class="cond">Cond</th>
+                <th class="value">Value</th>
                 <th class="want">Want</th>
                 <th class="location">Location</th>
                 <th class="notes">Notes</th>
@@ -178,6 +186,12 @@
                     <td class="variety">{{ $plate->variety_notes ?: '—' }}</td>
                     <td class="qty">{{ $entry && ! $entry->is_wanted ? $entry->quantity : ($entry && $entry->is_wanted ? '—' : '') }}</td>
                     <td class="cond">{{ $entry?->condition ?? '' }}</td>
+                    <td class="value">
+                        @if ($entry && ! $entry->is_wanted)
+                            @php $entry->setRelation('plate', $plate); @endphp
+                            {{ $entry->formattedOwnedLineValue() }}
+                        @endif
+                    </td>
                     <td class="want">{{ $entry?->is_wanted ? 'Yes' : '' }}</td>
                     <td class="location">{{ $entry?->storage_location ?? '' }}</td>
                     <td class="notes">{{ $entry?->notes ?? '' }}</td>
