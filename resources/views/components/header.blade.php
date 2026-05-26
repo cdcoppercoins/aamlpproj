@@ -25,6 +25,9 @@
           @auth
           <li><a href="{{ route('collection.index') }}">MY COLLECTION</a></li>
           <li><a href="{{ route('profile.edit') }}">PROFILE</a></li>
+          @if (auth()->user()->isAdmin())
+          <li><a href="{{ route('admin.dashboard') }}">ADMIN</a></li>
+          @endif
           @else
           <li><a href="{{ route('login') }}">SIGN IN</a></li>
           @endauth
@@ -42,8 +45,13 @@
           @else
             <span class="session-bar-avatar session-bar-avatar-placeholder" aria-hidden="true">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
           @endif
-          <span class="session-bar-text">Logged in as <strong>{{ auth()->user()->username }}</strong></span>
+          <span class="session-bar-text">
+            Logged in as <strong>{{ auth()->user()->username }}</strong>
+          </span>
         </a>
+        @if (auth()->user()->isAdmin())
+          <a href="{{ route('admin.dashboard') }}" class="session-bar-admin-link">admin</a>
+        @endif
         <form method="post" action="{{ route('logout') }}" class="session-bar-logout-form">
           @csrf
           <button type="submit" class="session-bar-logout-btn">Log out</button>

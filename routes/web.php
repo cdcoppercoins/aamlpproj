@@ -1,6 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\CatalogImportController;
+use App\Http\Controllers\Admin\CatalogPlateController;
+use App\Http\Controllers\Admin\CatalogSetController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\NewsletterController as AdminNewsletterController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\SearchController;
@@ -39,7 +45,7 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'not.blocked'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/collection/members/{username}', [CollectionController::class, 'showMember'])->name('collection.members.show');
@@ -53,4 +59,31 @@ Route::middleware('auth')->group(function () {
     Route::get('/collection/{collectionItem}/edit', [CollectionController::class, 'edit'])->name('collection.edit');
     Route::put('/collection/{collectionItem}', [CollectionController::class, 'update'])->name('collection.update');
     Route::delete('/collection/{collectionItem}', [CollectionController::class, 'destroy'])->name('collection.destroy');
+});
+
+Route::middleware(['auth', 'not.blocked', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}', [AdminUserController::class, 'show'])->name('users.show');
+    Route::put('/users/{user}', [AdminUserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+    Route::get('/newsletter', [AdminNewsletterController::class, 'index'])->name('newsletter.index');
+    Route::delete('/newsletter/{subscriber}', [AdminNewsletterController::class, 'destroy'])->name('newsletter.destroy');
+
+    Route::prefix('catalog')->name('catalog.')->group(function () {
+        Route::get('import', [CatalogImportController::class, 'create'])->name('import.create');
+        Route::post('import', [CatalogImportController::class, 'store'])->name('import.store');
+        Route::get('sets', [CatalogSetController::class, 'index'])->name('sets.index');
+        Route::get('sets/create', [CatalogSetController::class, 'create'])->name('sets.create');
+        Route::post('sets', [CatalogSetController::class, 'store'])->name('sets.store');
+        Route::get('plates/{plate}/edit', [CatalogPlateController::class, 'edit'])->name('plates.edit');
+        Route::put('plates/{plate}', [CatalogPlateController::class, 'update'])->name('plates.update');
+        Route::delete('plates/{plate}', [CatalogPlateController::class, 'destroy'])->name('plates.destroy');
+        Route::get('sets/{setCode}/plates/create', [CatalogPlateController::class, 'create'])->name('plates.create');
+        Route::post('sets/{setCode}/plates', [CatalogPlateController::class, 'store'])->name('plates.store');
+        Route::get('sets/{setCode}/edit', [CatalogSetController::class, 'edit'])->name('sets.edit');
+        Route::put('sets/{setCode}', [CatalogSetController::class, 'update'])->name('sets.update');
+        Route::delete('sets/{setCode}', [CatalogSetController::class, 'destroy'])->name('sets.destroy');
+        Route::get('sets/{setCode}', [CatalogSetController::class, 'show'])->name('sets.show');
+    });
 });

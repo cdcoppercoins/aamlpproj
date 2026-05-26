@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniLicensePlates.com — Publish Changes to Production</title>
+    <style>
+        :root {
+            --ink: #1a3344;
+            --muted: #556677;
+            --accent: #4079a5;
+            --gold: #c8862a;
+            --line: #d8e4ec;
+            --paper: #ffffff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 24px 32px 40px;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: var(--ink);
+            background: #eef2f5;
+        }
+
+        .page {
+            max-width: 7.5in;
+            margin: 0 auto;
+            background: var(--paper);
+            padding: 0.65in 0.75in 0.8in;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 20pt;
+            font-weight: 700;
+            margin: 0 0 6px;
+            color: var(--accent);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 11pt;
+            color: var(--muted);
+            margin: 0 0 18px;
+        }
+
+        .notice {
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--accent);
+            padding: 10px 14px;
+            margin: 0 0 22px;
+            font-size: 10pt;
+            background: #f7fafc;
+        }
+
+        h2 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 13pt;
+            font-weight: 700;
+            margin: 24px 0 10px;
+            padding-bottom: 4px;
+            border-bottom: 2px solid var(--accent);
+            page-break-after: avoid;
+        }
+
+        p { margin: 0 0 10px; }
+
+        ol.steps {
+            margin: 0 0 16px;
+            padding-left: 0;
+            list-style: none;
+            counter-reset: step;
+        }
+
+        ol.steps > li {
+            counter-increment: step;
+            margin: 0 0 18px;
+            padding: 12px 14px 12px 48px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: #fafcfd;
+            position: relative;
+            page-break-inside: avoid;
+        }
+
+        ol.steps > li::before {
+            content: counter(step);
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            width: 26px;
+            height: 26px;
+            line-height: 26px;
+            text-align: center;
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-weight: 700;
+            font-size: 11pt;
+            color: #fff;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        ol.steps li strong {
+            font-family: "Segoe UI", Arial, sans-serif;
+            display: block;
+            margin-bottom: 4px;
+            font-size: 11pt;
+        }
+
+        ul { margin: 6px 0 8px; padding-left: 22px; }
+        li { margin: 0 0 5px; }
+
+        code, pre {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9pt;
+        }
+
+        pre {
+            background: #f4f8fb;
+            border: 1px solid var(--line);
+            padding: 10px 12px;
+            overflow-x: auto;
+            margin: 8px 0 10px;
+            white-space: pre-wrap;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 14px;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid var(--line);
+            padding: 7px 9px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f0f6fa;
+            font-weight: 700;
+        }
+
+        .checklist li {
+            list-style: none;
+            position: relative;
+            padding-left: 22px;
+            margin-bottom: 6px;
+        }
+
+        .checklist li::before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        .footer {
+            margin-top: 28px;
+            padding-top: 12px;
+            border-top: 1px solid var(--line);
+            font-size: 9pt;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        @media print {
+            body { background: #fff; padding: 0; }
+            .page { max-width: none; box-shadow: none; padding: 0; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <p class="no-print notice"><strong>Save as PDF:</strong> Press Ctrl+P → choose “Save as PDF” or “Microsoft Print to PDF.” A pre-generated copy may also be at <code>docs/PRODUCTION_UPDATE_DEPLOY.pdf</code>.</p>
+
+    <h1>MiniLicensePlates.com</h1>
+    <p class="subtitle">Routine guide — publish local changes to production (cPanel VPS)</p>
+    <p class="subtitle"><strong>Updated:</strong> May 24, 2026</p>
+
+    <div class="notice">
+        <strong>Use this when:</strong> You have tested changes locally and want to update the live site at <strong>https://minilicenseplates.com</strong>.
+        <br><br>
+        <strong>Your setup (from project docs):</strong> Laravel app on cPanel · GitHub repo <code>cdcoppercoins/aamlpproj</code> · GitHub Desktop for commits · server app root typically <code>/home/minilp/new.minilicenseplates.com/</code> · plate images <strong>not</strong> in Git (<code>public/plates/</code> uploaded separately).
+        <br><br>
+        <strong>Never commit:</strong> <code>.env</code>, <code>vendor/</code>, <code>public/plates/</code>, or <code>mlp_code/</code>.
+    </div>
+
+    <h2>Before you start</h2>
+    <ul class="checklist">
+        <li>Changes work on <code>http://localhost:8000</code></li>
+        <li>You know whether this deploy includes <strong>new database migrations</strong></li>
+        <li>You know whether this deploy includes <strong>new Composer packages</strong> (e.g. DomPDF)</li>
+        <li>You have cPanel login and (if available) SSH or Terminal access</li>
+    </ul>
+
+    <h2>Step-by-step</h2>
+
+    <ol class="steps">
+        <li>
+            <strong>Review what changed locally</strong>
+            Open GitHub Desktop. Confirm the changed files look correct — especially <code>public/main.css</code>, new Blade views, controllers, migrations, and <code>public/js/</code> if you added scripts. Do <strong>not</strong> stage <code>.env</code> or plate images.
+        </li>
+        <li>
+            <strong>Commit on your PC</strong>
+            In GitHub Desktop: write a short commit message describing the update → click <strong>Commit to main</strong> (or your working branch).
+        </li>
+        <li>
+            <strong>Push to GitHub</strong>
+            Click <strong>Push origin</strong> in GitHub Desktop. Wait until it completes with no errors.
+        </li>
+        <li>
+            <strong>Pull on the production server</strong>
+            Log into cPanel → <strong>Terminal</strong> (or use SSH). Run:
+            <pre>cd /home/minilp/new.minilicenseplates.com
+git pull</pre>
+            If you deploy by FileZilla instead of Git: upload only the changed files to the same path on the server, preserving folder structure.
+        </li>
+        <li>
+            <strong>Install Composer packages (if needed)</strong>
+            Run this when <code>composer.json</code> or <code>composer.lock</code> changed (e.g. DomPDF):
+            <pre>cd /home/minilp/new.minilicenseplates.com
+composer install --no-dev --optimize-autoloader</pre>
+            Skip this step if you only changed CSS, views, or PHP that uses existing packages.
+        </li>
+        <li>
+            <strong>Run database migrations (if needed)</strong>
+            Run this when new files exist in <code>database/migrations/</code>:
+            <pre>cd /home/minilp/new.minilicenseplates.com
+php artisan migrate --force</pre>
+            Skip if no new migrations. Never use phpMyAdmin alone for migrations — use Artisan.
+        </li>
+        <li>
+            <strong>Storage link (one-time or if missing)</strong>
+            Profile photos need the public storage symlink. Run once if not already done:
+            <pre>cd /home/minilp/new.minilicenseplates.com
+php artisan storage:link</pre>
+        </li>
+        <li>
+            <strong>Copy CSS to the live web root</strong>
+            Production serves CSS from the document root. After editing <code>public/main.css</code>, copy it:
+            <pre>cp /home/minilp/new.minilicenseplates.com/public/main.css /home/minilp/public_html/main.css</pre>
+            Adjust the <code>public_html</code> path if your live layout differs. Also upload any new files under <code>public/js/</code>, images, or banners if you added them.
+        </li>
+        <li>
+            <strong>Clear Laravel caches</strong>
+            <pre>cd /home/minilp/new.minilicenseplates.com
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear</pre>
+            If you see config errors, delete stale files in <code>bootstrap/cache/</code> (keep <code>.gitignore</code>).
+        </li>
+        <li>
+            <strong>Verify production <code>.env</code> (only when settings changed)</strong>
+            In cPanel File Manager, open the server <code>.env</code> (not in Git). Typical values:
+            <pre>APP_URL=https://minilicenseplates.com
+SESSION_DRIVER=database
+DB_CONNECTION=mysql
+DB_DATABASE=…
+DB_USERNAME=…
+DB_PASSWORD=…</pre>
+            Do not overwrite production <code>.env</code> with your local copy.
+        </li>
+        <li>
+            <strong>Test the live site</strong>
+            Hard-refresh the browser (Ctrl+F5). Check:
+            <ul>
+                <li>Home page and new UI (banner rotator, styles)</li>
+                <li>Sign in / register / log out</li>
+                <li>My Collection and Edit by set</li>
+                <li>Gallery and Catalog Search</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Rollback plan (if something breaks)</strong>
+            <ul>
+                <li>Git: <code>git log</code> then <code>git checkout &lt;previous-commit&gt;</code> or revert the bad commit</li>
+                <li>Migrations: <code>php artisan migrate:rollback --step=1</code> (only if a migration caused the problem)</li>
+                <li>Restore previous <code>main.css</code> from backup if styles broke</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h2>Files often changed in recent updates</h2>
+    <table>
+        <thead>
+            <tr><th>Area</th><th>Paths</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Home page / rotator</td><td><code>config/home_hero.php</code>, <code>app/Http/Controllers/HomeController.php</code>, <code>resources/views/home.blade.php</code>, <code>resources/views/components/home-hero-rotator.blade.php</code>, <code>public/js/home-hero.js</code>, <code>public/main.css</code></td></tr>
+            <tr><td>Header / log out</td><td><code>resources/views/components/header.blade.php</code>, <code>public/main.css</code></td></tr>
+            <tr><td>Collection</td><td><code>app/Http/Controllers/CollectionController.php</code>, <code>resources/views/collection/</code>, migrations under <code>database/migrations/</code></td></tr>
+            <tr><td>Layout scripts</td><td><code>resources/views/layouts/app.blade.php</code></td></tr>
+        </tbody>
+    </table>
+
+    <h2>Local quick test (before deploy)</h2>
+    <pre>cd d:\aamlpproj
+php artisan serve</pre>
+    Open <code>http://localhost:8000</code>. Confirm MySQL is running in XAMPP.
+
+    <div class="footer">
+        MiniLicensePlates.com — docs/PRODUCTION_UPDATE_DEPLOY.html — routine production update checklist
+    </div>
+</div>
+</body>
+</html>

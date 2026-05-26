@@ -33,6 +33,12 @@ class LoginController extends Controller
                 ->withErrors(['login' => 'Username or password is incorrect.']);
         }
 
+        if ($user->isBlocked()) {
+            return back()
+                ->withInput($request->only('login', 'remember'))
+                ->withErrors(['login' => 'This account has been suspended. Contact the site administrator if you believe this is an error.']);
+        }
+
         Auth::login($user, $request->boolean('remember'));
 
         $request->session()->regenerate();

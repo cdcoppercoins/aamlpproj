@@ -27,6 +27,10 @@ class User extends Authenticatable
         'address',
         'profile_image',
         'password',
+        'is_admin',
+        'is_blocked',
+        'blocked_at',
+        'blocked_reason',
     ];
 
     /**
@@ -49,7 +53,20 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
+            'is_blocked' => 'boolean',
+            'blocked_at' => 'datetime',
         ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return (bool) $this->is_admin;
+    }
+
+    public function isBlocked(): bool
+    {
+        return (bool) $this->is_blocked;
     }
 
     public function collectionItems(): HasMany
