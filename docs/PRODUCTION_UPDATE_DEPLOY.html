@@ -3,29 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MiniLicensePlates.com — Publish Changes to Production</title>
+    <title>MiniLicensePlates.com — Deploy Guide</title>
     <style>
         :root {
             --ink: #1a3344;
             --muted: #556677;
             --accent: #4079a5;
-            --gold: #c8862a;
+            --green: #2d6a4f;
             --line: #d8e4ec;
             --paper: #ffffff;
         }
-
         * { box-sizing: border-box; }
-
         body {
             margin: 0;
             padding: 24px 32px 40px;
             font-family: Georgia, "Times New Roman", serif;
             font-size: 11pt;
-            line-height: 1.5;
+            line-height: 1.55;
             color: var(--ink);
             background: #eef2f5;
         }
-
         .page {
             max-width: 7.5in;
             margin: 0 auto;
@@ -33,23 +30,19 @@
             padding: 0.65in 0.75in 0.8in;
             box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
         }
-
         h1 {
             font-family: "Segoe UI", Arial, sans-serif;
             font-size: 20pt;
             font-weight: 700;
             margin: 0 0 6px;
             color: var(--accent);
-            line-height: 1.2;
         }
-
         .subtitle {
             font-family: "Segoe UI", Arial, sans-serif;
             font-size: 11pt;
             color: var(--muted);
             margin: 0 0 18px;
         }
-
         .notice {
             border: 1px solid var(--line);
             border-left: 4px solid var(--accent);
@@ -58,26 +51,36 @@
             font-size: 10pt;
             background: #f7fafc;
         }
-
+        .notice-warn {
+            border-left-color: #c8862a;
+            background: #fffaf0;
+        }
+        .notice-ok {
+            border-left-color: var(--green);
+            background: #f0faf4;
+        }
         h2 {
             font-family: "Segoe UI", Arial, sans-serif;
             font-size: 13pt;
             font-weight: 700;
-            margin: 24px 0 10px;
+            margin: 28px 0 10px;
             padding-bottom: 4px;
             border-bottom: 2px solid var(--accent);
-            page-break-after: avoid;
         }
-
+        h3 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 11pt;
+            font-weight: 700;
+            margin: 16px 0 8px;
+            color: var(--accent);
+        }
         p { margin: 0 0 10px; }
-
         ol.steps {
             margin: 0 0 16px;
             padding-left: 0;
             list-style: none;
             counter-reset: step;
         }
-
         ol.steps > li {
             counter-increment: step;
             margin: 0 0 18px;
@@ -88,7 +91,6 @@
             position: relative;
             page-break-inside: avoid;
         }
-
         ol.steps > li::before {
             content: counter(step);
             position: absolute;
@@ -100,70 +102,71 @@
             text-align: center;
             font-family: "Segoe UI", Arial, sans-serif;
             font-weight: 700;
-            font-size: 11pt;
             color: #fff;
             background: var(--accent);
             border-radius: 50%;
         }
-
         ol.steps li strong {
             font-family: "Segoe UI", Arial, sans-serif;
             display: block;
             margin-bottom: 4px;
-            font-size: 11pt;
         }
-
         ul { margin: 6px 0 8px; padding-left: 22px; }
         li { margin: 0 0 5px; }
-
         code, pre {
             font-family: Consolas, "Courier New", monospace;
             font-size: 9pt;
         }
-
         pre {
             background: #f4f8fb;
             border: 1px solid var(--line);
             padding: 10px 12px;
-            overflow-x: auto;
-            margin: 8px 0 10px;
             white-space: pre-wrap;
+            margin: 8px 0 10px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 10px 0 14px;
             font-size: 10pt;
         }
-
         th, td {
             border: 1px solid var(--line);
             padding: 7px 9px;
             text-align: left;
             vertical-align: top;
         }
-
         th {
             font-family: "Segoe UI", Arial, sans-serif;
             background: #f0f6fa;
-            font-weight: 700;
         }
-
         .checklist li {
             list-style: none;
             position: relative;
             padding-left: 22px;
             margin-bottom: 6px;
         }
-
         .checklist li::before {
             content: "☐";
             position: absolute;
             left: 0;
-            font-family: "Segoe UI", Arial, sans-serif;
         }
-
+        .part-label {
+            display: inline-block;
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 9pt;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #fff;
+            background: var(--green);
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-bottom: 6px;
+        }
+        .part-label-b {
+            background: var(--accent);
+        }
         .footer {
             margin-top: 28px;
             padding-top: 12px;
@@ -172,7 +175,6 @@
             color: var(--muted);
             text-align: center;
         }
-
         @media print {
             body { background: #fff; padding: 0; }
             .page { max-width: none; box-shadow: none; padding: 0; }
@@ -182,135 +184,222 @@
 </head>
 <body>
 <div class="page">
-    <p class="no-print notice"><strong>Save as PDF:</strong> Press Ctrl+P → choose “Save as PDF” or “Microsoft Print to PDF.” A pre-generated copy may also be at <code>docs/PRODUCTION_UPDATE_DEPLOY.pdf</code>.</p>
+    <p class="no-print notice"><strong>Save as PDF:</strong> Press Ctrl+P → “Save as PDF.” Save as <code>docs/PRODUCTION_UPDATE_DEPLOY.pdf</code></p>
 
     <h1>MiniLicensePlates.com</h1>
-    <p class="subtitle">Routine guide — publish local changes to production (cPanel VPS)</p>
-    <p class="subtitle"><strong>Updated:</strong> May 24, 2026</p>
+    <p class="subtitle">Simple deploy guide — FileZilla &amp; cPanel (no SSH, no Terminal)</p>
+    <p class="subtitle"><strong>Updated:</strong> May 26, 2026</p>
 
-    <div class="notice">
-        <strong>Use this when:</strong> You have tested changes locally and want to update the live site at <strong>https://minilicenseplates.com</strong>.
-        <br><br>
-        <strong>Your setup (from project docs):</strong> Laravel app on cPanel · GitHub repo <code>cdcoppercoins/aamlpproj</code> · GitHub Desktop for commits · server app root typically <code>/home/minilp/new.minilicenseplates.com/</code> · plate images <strong>not</strong> in Git (<code>public/plates/</code> uploaded separately).
-        <br><br>
-        <strong>Never commit:</strong> <code>.env</code>, <code>vendor/</code>, <code>public/plates/</code>, or <code>mlp_code/</code>.
+    <div class="notice notice-ok">
+        <strong>Do these in order:</strong>
+        <ol style="margin:8px 0 0; padding-left:20px;">
+            <li><strong>Part 0</strong> — Upload your latest local changes to the live site and test it (while the server still uses two folders).</li>
+            <li><strong>Part A</strong> — Only after the live site is updated and working: back up, then one-time cPanel fix so future uploads go to one folder.</li>
+            <li><strong>Part B</strong> — Every update after Part A (simple single-folder routine).</li>
+        </ol>
     </div>
 
-    <h2>Before you start</h2>
-    <ul class="checklist">
-        <li>Changes work on <code>http://localhost:8000</code></li>
-        <li>You know whether this deploy includes <strong>new database migrations</strong></li>
-        <li>You know whether this deploy includes <strong>new Composer packages</strong> (e.g. DomPDF)</li>
-        <li>You have cPanel login and (if available) SSH or Terminal access</li>
-    </ul>
+    <div class="notice">
+        <strong>Your account (FileZilla)</strong>
+        <table style="margin-top:8px;">
+            <tr><th>Item</th><th>Value</th></tr>
+            <tr><td>Live site</td><td><a href="https://minilicenseplates.com">https://minilicenseplates.com</a></td></tr>
+            <tr><td>FileZilla host</td><td><code>ftp.minilicenseplates.com</code></td></tr>
+            <tr><td>FileZilla username</td><td><code>chuck@minilicenseplates.com</code></td></tr>
+            <tr><td>Your PC project folder</td><td><code>d:\aamlpproj</code></td></tr>
+            <tr><td>Laravel app on server (after Part A)</td><td><code>/new.minilicenseplates.com/</code></td></tr>
+            <tr><td>Web files on server (after Part A)</td><td><code>/new.minilicenseplates.com/public/</code> — CSS, JS, images, plate photos</td></tr>
+        </table>
+    </div>
 
-    <h2>Step-by-step</h2>
+    <h2>Why two folders existed (and why we fix it)</h2>
+    <p>Normal Laravel hosting works like this:</p>
+    <pre>your-app-folder/          ← PHP code, .env (NOT visible on the web)
+  app/
+  resources/
+  public/                   ← ONLY this folder is on the internet
+    main.css
+    index.php
+    plates/</pre>
+    <p>When the new site was built, Laravel was put in <code>new.minilicenseplates.com/</code>, but <strong>minilicenseplates.com</strong> still pointed at the old <code>public_html/</code> folder. That forced you to upload CSS twice. <strong>Part A</strong> points the domain at Laravel’s <code>public</code> folder — the standard, correct setup.</p>
+    <p>The folder name <code>new.minilicenseplates.com</code> is just an old label on the server. It is <strong>not</strong> a website address. Your site stays <strong>minilicenseplates.com</strong>.</p>
 
-    <ol class="steps">
-        <li>
-            <strong>Review what changed locally</strong>
-            Open GitHub Desktop. Confirm the changed files look correct — especially <code>public/main.css</code>, new Blade views, controllers, migrations, and <code>public/js/</code> if you added scripts. Do <strong>not</strong> stage <code>.env</code> or plate images.
-        </li>
-        <li>
-            <strong>Commit on your PC</strong>
-            In GitHub Desktop: write a short commit message describing the update → click <strong>Commit to main</strong> (or your working branch).
-        </li>
-        <li>
-            <strong>Push to GitHub</strong>
-            Click <strong>Push origin</strong> in GitHub Desktop. Wait until it completes with no errors.
-        </li>
-        <li>
-            <strong>Pull on the production server</strong>
-            Log into cPanel → <strong>Terminal</strong> (or use SSH). Run:
-            <pre>cd /home/minilp/new.minilicenseplates.com
-git pull</pre>
-            If you deploy by FileZilla instead of Git: upload only the changed files to the same path on the server, preserving folder structure.
-        </li>
-        <li>
-            <strong>Install Composer packages (if needed)</strong>
-            Run this when <code>composer.json</code> or <code>composer.lock</code> changed (e.g. DomPDF):
-            <pre>cd /home/minilp/new.minilicenseplates.com
-composer install --no-dev --optimize-autoloader</pre>
-            Skip this step if you only changed CSS, views, or PHP that uses existing packages.
-        </li>
-        <li>
-            <strong>Run database migrations (if needed)</strong>
-            Run this when new files exist in <code>database/migrations/</code>:
-            <pre>cd /home/minilp/new.minilicenseplates.com
-php artisan migrate --force</pre>
-            Skip if no new migrations. Never use phpMyAdmin alone for migrations — use Artisan.
-        </li>
-        <li>
-            <strong>Storage link (one-time or if missing)</strong>
-            Profile photos need the public storage symlink. Run once if not already done:
-            <pre>cd /home/minilp/new.minilicenseplates.com
-php artisan storage:link</pre>
-        </li>
-        <li>
-            <strong>Copy CSS to the live web root</strong>
-            Production serves CSS from the document root. After editing <code>public/main.css</code>, copy it:
-            <pre>cp /home/minilp/new.minilicenseplates.com/public/main.css /home/minilp/public_html/main.css</pre>
-            Adjust the <code>public_html</code> path if your live layout differs. Also upload any new files under <code>public/js/</code>, images, or banners if you added them.
-        </li>
-        <li>
-            <strong>Clear Laravel caches</strong>
-            <pre>cd /home/minilp/new.minilicenseplates.com
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear</pre>
-            If you see config errors, delete stale files in <code>bootstrap/cache/</code> (keep <code>.gitignore</code>).
-        </li>
-        <li>
-            <strong>Verify production <code>.env</code> (only when settings changed)</strong>
-            In cPanel File Manager, open the server <code>.env</code> (not in Git). Typical values:
-            <pre>APP_URL=https://minilicenseplates.com
-SESSION_DRIVER=database
-DB_CONNECTION=mysql
-DB_DATABASE=…
-DB_USERNAME=…
-DB_PASSWORD=…</pre>
-            Do not overwrite production <code>.env</code> with your local copy.
-        </li>
-        <li>
-            <strong>Test the live site</strong>
-            Hard-refresh the browser (Ctrl+F5). Check:
-            <ul>
-                <li>Home page and new UI (banner rotator, styles)</li>
-                <li>Sign in / register / log out</li>
-                <li>My Collection and Edit by set</li>
-                <li>Gallery and Catalog Search</li>
-            </ul>
-        </li>
-        <li>
-            <strong>Rollback plan (if something breaks)</strong>
-            <ul>
-                <li>Git: <code>git log</code> then <code>git checkout &lt;previous-commit&gt;</code> or revert the bad commit</li>
-                <li>Migrations: <code>php artisan migrate:rollback --step=1</code> (only if a migration caused the problem)</li>
-                <li>Restore previous <code>main.css</code> from backup if styles broke</li>
-            </ul>
-        </li>
-    </ol>
+    <!-- ========== PART 0 ========== -->
+    <h2><span class="part-label part-label-b">Part 0</span> &nbsp; Update the live site first (do this now)</h2>
+    <p>Part A changes how the server is wired. <strong>Finish deploying your current work before Part A.</strong> Until Part A is done, the live site still uses two folders — upload to both:</p>
 
-    <h2>Files often changed in recent updates</h2>
     <table>
         <thead>
-            <tr><th>Area</th><th>Paths</th></tr>
+            <tr><th>On your PC</th><th>Upload to on server (before Part A)</th></tr>
         </thead>
         <tbody>
-            <tr><td>Home page / rotator</td><td><code>config/home_hero.php</code>, <code>app/Http/Controllers/HomeController.php</code>, <code>resources/views/home.blade.php</code>, <code>resources/views/components/home-hero-rotator.blade.php</code>, <code>public/js/home-hero.js</code>, <code>public/main.css</code></td></tr>
-            <tr><td>Header / log out</td><td><code>resources/views/components/header.blade.php</code>, <code>public/main.css</code></td></tr>
-            <tr><td>Collection</td><td><code>app/Http/Controllers/CollectionController.php</code>, <code>resources/views/collection/</code>, migrations under <code>database/migrations/</code></td></tr>
-            <tr><td>Layout scripts</td><td><code>resources/views/layouts/app.blade.php</code></td></tr>
+            <tr><td><code>app/</code>, <code>config/</code>, <code>resources/</code>, <code>routes/</code>, <code>database/</code></td><td><code>/new.minilicenseplates.com/</code></td></tr>
+            <tr><td><code>public/main.css</code>, <code>public/js/</code>, images</td><td><strong>Also</strong> <code>/public_html/</code> (browser loads CSS from here today)</td></tr>
         </tbody>
     </table>
 
-    <h2>Local quick test (before deploy)</h2>
-    <pre>cd d:\aamlpproj
-php artisan serve</pre>
-    Open <code>http://localhost:8000</code>. Confirm MySQL is running in XAMPP.
+    <ol class="steps">
+        <li>
+            <strong>Test locally</strong> — XAMPP MySQL on, <code>php artisan serve</code>, open <code>http://localhost:8000</code>.
+        </li>
+        <li>
+            <strong>GitHub Desktop</strong> — Commit and push (backup on GitHub).
+        </li>
+        <li>
+            <strong>FileZilla — Laravel code</strong> — Upload changed files to <code>/new.minilicenseplates.com/</code> (same paths as local). Do <strong>not</strong> upload <code>.env</code> or the whole <code>public/plates/</code> folder.
+        </li>
+        <li>
+            <strong>FileZilla — CSS &amp; JS</strong> — Upload <code>public/main.css</code> and <code>public/js/</code> to <code>/public_html/</code> as well (required until Part A is complete).
+        </li>
+        <li>
+            <strong>Test live</strong> — Open <a href="https://minilicenseplates.com">https://minilicenseplates.com</a>, press <strong>Ctrl+F5</strong>. Confirm the site looks and works as you expect.
+        </li>
+    </ol>
+    <p><strong>Only when the live site is updated and tested</strong>, continue to Part A below.</p>
+
+    <!-- ========== PART A ========== -->
+    <h2><span class="part-label">Part A</span> &nbsp; One-time fix (after Part 0 is done)</h2>
+    <p>Allow about 30–45 minutes. <strong>Do not start Part A until Part 0 is finished</strong> — you want the backup to capture the updated site, not the old one.</p>
+
+    <ol class="steps">
+        <li>
+            <strong>Back up both server folders to your PC</strong>
+            Open FileZilla → connect. On the <strong>right (Remote)</strong> side at <code>/</code>, download:
+            <ul>
+                <li><code>public_html</code> → e.g. <code>d:\aamlpproj-backups\public_html-backup</code> (usually quick)</li>
+                <li><code>new.minilicenseplates.com</code> → e.g. <code>d:\aamlpproj-backups\laravel-backup</code> — <strong>skip <code>public/plates/</code></strong> (tens of thousands of photos; already on server and unchanged). In FileZilla you can download folder-by-folder and omit <code>public/plates</code>, or cancel if the queue only contains plate images.</li>
+            </ul>
+            You are backing up a snapshot of the <strong>updated</strong> site before the cPanel change — not downloading plate photos again.
+        </li>
+        <li>
+            <strong>Copy web files from public_html into Laravel’s public folder</strong>
+            Still in FileZilla, open <strong>both</strong> folders side by side:
+            <ul>
+                <li>Remote: <code>/public_html/</code></li>
+                <li>Remote: <code>/new.minilicenseplates.com/public/</code></li>
+            </ul>
+            Copy these from <code>public_html</code> into <code>new.minilicenseplates.com/public/</code> <strong>only if the file is missing or older</strong> in the Laravel folder. When FileZilla asks, choose <strong>Overwrite if newer</strong> or <strong>Overwrite</strong>:
+            <ul>
+                <li><code>main.css</code></li>
+                <li><code>js/</code> folder (entire folder)</li>
+                <li><code>plates/</code> — skip unless gallery photos are missing from <code>new.minilicenseplates.com/public/plates/</code></li>
+                <li>Banner images: <code>home_top_banner.jpg</code>, <code>blue_back_composite_img_sm.jpg</code>, <code>header_banner.png</code>, <code>background_img.jpg</code>, etc.</li>
+                <li><code>setinfo/</code> folder if present</li>
+                <li><code>hero/</code> folder if present</li>
+                <li><code>plate_missing.png</code> if present</li>
+            </ul>
+            <strong>Do not copy</strong> the old <code>public_html/index.php</code> — Laravel has its own <code>index.php</code> in <code>public/</code>. That is correct.
+        </li>
+        <li>
+            <strong>Log in to cPanel</strong>
+            Open your hosting login page (often <code>https://minilicenseplates.com/cpanel</code> or a link from your host’s welcome email). Sign in with your hosting username and password (not your FileZilla password unless they are the same).
+        </li>
+        <li>
+            <strong>Change the document root for minilicenseplates.com</strong>
+            This tells the internet: “serve minilicenseplates.com from Laravel’s <code>public</code> folder.”
+            <h3>Where to click (cPanel varies slightly)</h3>
+            <ul>
+                <li><strong>Domains</strong> (or <strong>Domains → Domains</strong>) → find <strong>minilicenseplates.com</strong> → click <strong>Manage</strong> or the pencil/edit icon</li>
+                <li>Look for <strong>Document Root</strong> or <strong>Root Domain Document Root</strong></li>
+                <li>Change it <strong>from</strong> <code>public_html</code> <strong>to</strong>:</li>
+            </ul>
+            <pre>new.minilicenseplates.com/public</pre>
+            <p>Some cPanel screens show the full path, e.g. <code>/home/chuck/new.minilicenseplates.com/public</code> — that is the same thing. Click <strong>Save</strong> or <strong>Update</strong>.</p>
+            <p><strong>Can’t find Document Root?</strong> Open a support ticket with your host and paste this exact request:</p>
+            <pre>Please change the document root for minilicenseplates.com
+to: new.minilicenseplates.com/public
+(Laravel application — standard setup)</pre>
+        </li>
+        <li>
+            <strong>Set PHP version (while you are in cPanel)</strong>
+            Go to <strong>MultiPHP Manager</strong> (or <strong>Select PHP Version</strong>). Set <strong>minilicenseplates.com</strong> to PHP <strong>8.2</strong> or <strong>8.3</strong>. Save.
+        </li>
+        <li>
+            <strong>Test the live site</strong>
+            Open <a href="https://minilicenseplates.com">https://minilicenseplates.com</a> in a new browser tab. Press <strong>Ctrl+F5</strong> (hard refresh). Check:
+            <ul class="checklist">
+                <li>Home page loads with styling (not plain unstyled HTML)</li>
+                <li><a href="https://minilicenseplates.com/main.css">https://minilicenseplates.com/main.css</a> opens and shows CSS text</li>
+                <li>Gallery opens and plate photos appear</li>
+                <li>Sign-in / register pages work</li>
+            </ul>
+            If all good, Part A is done. You never need to upload to <code>public_html</code> again.
+        </li>
+        <li>
+            <strong>If the site breaks — undo in 30 seconds</strong>
+            Go back to cPanel → Domains → minilicenseplates.com → change Document Root back to <code>public_html</code> → Save. The site returns to the old setup. Then ask your host for help with the document root change.
+        </li>
+        <li>
+            <strong>Optional: rename the old public_html folder (after a few days)</strong>
+            Once you are confident the site works, in FileZilla rename <code>public_html</code> to <code>public_html_OLD_DO_NOT_USE</code> so you are not confused later. Do not delete until you are sure.
+        </li>
+    </ol>
+
+    <!-- ========== PART B ========== -->
+    <h2><span class="part-label part-label-b">Part B</span> &nbsp; Every update after Part A (your normal routine)</h2>
+    <p>After Part A, one rule: <strong>upload changed files to the same path under <code>/new.minilicenseplates.com/</code></strong> on the server.</p>
+
+    <table>
+        <thead>
+            <tr><th>On your PC (<code>d:\aamlpproj\…</code>)</th><th>Upload to on server</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><code>app/</code>, <code>config/</code>, <code>resources/</code>, <code>routes/</code>, <code>database/</code></td><td><code>/new.minilicenseplates.com/</code> (same subfolders)</td></tr>
+            <tr><td><code>public/main.css</code>, <code>public/js/</code>, images</td><td><code>/new.minilicenseplates.com/public/</code></td></tr>
+            <tr><td><code>vendor/</code> (only after <code>composer install</code> on PC)</td><td><code>/new.minilicenseplates.com/vendor/</code></td></tr>
+            <tr><td><code>public/plates/</code></td><td><code>/new.minilicenseplates.com/public/plates/</code> (only new photos)</td></tr>
+            <tr><td><code>.env</code></td><td><strong>Never upload</strong></td></tr>
+        </tbody>
+    </table>
+
+    <ol class="steps">
+        <li>
+            <strong>Test locally first</strong>
+            Start MySQL in XAMPP. In PowerShell: <code>cd d:\aamlpproj</code> then <code>php artisan serve</code>. Open <code>http://localhost:8000</code> and confirm your changes work.
+        </li>
+        <li>
+            <strong>Commit and push in GitHub Desktop</strong>
+            Open GitHub Desktop → review changed files → write a short commit message → <strong>Commit to main</strong> → <strong>Push origin</strong>. This backs up your work on GitHub. The live site is updated in the next step, not by push alone.
+        </li>
+        <li>
+            <strong>Upload with FileZilla</strong>
+            Connect FileZilla. Left pane: <code>d:\aamlpproj</code>. Right pane: <code>/new.minilicenseplates.com/</code>.
+            Drag only the files that changed to the <strong>same folder path</strong> on the server. When asked, choose <strong>Overwrite</strong>.
+            <p style="margin:8px 0 0;"><em>Example:</em> local <code>public/main.css</code> → remote <code>/new.minilicenseplates.com/public/main.css</code></p>
+        </li>
+        <li>
+            <strong>New database changes only (migrations)</strong>
+            If there are new files in <code>database/migrations/</code> on your PC, upload them to <code>/new.minilicenseplates.com/database/migrations/</code>, then ask your host to run this once (or use a one-time cPanel Cron Job):
+            <pre>php /home/chuck/new.minilicenseplates.com/artisan migrate --force</pre>
+            (Your host can confirm the exact path — it may differ slightly.)
+        </li>
+        <li>
+            <strong>New PHP packages only (composer.json changed)</strong>
+            On your PC: <code>composer install --no-dev</code> from <code>d:\aamlpproj</code>. Upload the whole <code>vendor/</code> folder to <code>/new.minilicenseplates.com/vendor/</code>. Skip this if you only changed CSS or views.
+        </li>
+        <li>
+            <strong>Test live</strong>
+            Open <a href="https://minilicenseplates.com">https://minilicenseplates.com</a> → <strong>Ctrl+F5</strong>. Check the pages you changed.
+        </li>
+    </ol>
+
+    <h2>If pages look wrong after an upload</h2>
+    <p>In FileZilla, under <code>/new.minilicenseplates.com/</code>:</p>
+    <ul>
+        <li>Delete <code>.php</code> files inside <code>bootstrap/cache/</code> (keep <code>.gitignore</code>)</li>
+        <li>Delete files inside <code>storage/framework/views/</code></li>
+    </ul>
+    <p>Hard refresh the browser again. No command line needed.</p>
+
+    <h2>Never upload these from your PC</h2>
+    <ul>
+        <li><code>.env</code> — the server has its own (with production database password and <code>APP_URL=https://minilicenseplates.com</code>)</li>
+        <li><code>mlp_code/</code> — old source code, not used</li>
+        <li>Entire <code>public/plates/</code> unless you added new photos locally (already on server)</li>
+    </ul>
 
     <div class="footer">
-        MiniLicensePlates.com — docs/PRODUCTION_UPDATE_DEPLOY.html — routine production update checklist
+        MiniLicensePlates.com — docs/PRODUCTION_UPDATE_DEPLOY.html — Part 0, then Part A once, then Part B every update
     </div>
 </div>
 </body>

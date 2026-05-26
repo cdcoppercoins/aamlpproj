@@ -22,19 +22,19 @@
 
 ---
 
-## Deploy to minilicenseplates.com (cPanel)
+## Deploy to minilicenseplates.com (cPanel + FileZilla)
 
 ### 1. Upload code
 
-Via GitHub Desktop: commit and push, then pull on server **or** upload changed files via FileZilla to `/home/minilp/new.minilicenseplates.com/`.
+Via **GitHub Desktop**: commit and push (backup on GitHub).
 
-**Composer dependency (PDF export):** run on the server from the app root:
+Then upload changed files with **FileZilla** to `/new.minilicenseplates.com/` (same subfolders as local). CSS and JS go to `/new.minilicenseplates.com/public/`.
 
-```bash
-composer install --no-dev --optimize-autoloader
-```
+**One-time setup:** If you still upload CSS to both `public_html` and Laravel, follow **Part A** in `docs/PRODUCTION_UPDATE_DEPLOY.html` first to fix document root in cPanel.
 
-This installs `barryvdh/laravel-dompdf` (added for collection PDF checklists). Upload an updated `vendor/` folder if you cannot run composer on the server.
+**You do not need SSH, Terminal, or `git pull` on the server.**
+
+If `composer.json` changed, run `composer install --no-dev` on your PC and upload the `vendor/` folder via FileZilla.
 
 **Files/folders that must be updated:**
 
@@ -54,22 +54,16 @@ This installs `barryvdh/laravel-dompdf` (added for collection PDF checklists). U
 - `resources/views/components/header.blade.php`
 - `resources/views/layouts/app.blade.php`
 - `resources/views/search.blade.php`
-- `public/main.css`
-
-Also copy `public/main.css` to `public_html/main.css`.
+- `public/main.css` → `/new.minilicenseplates.com/public/main.css`
+- `public/js/` → `/new.minilicenseplates.com/public/js/` (if present)
 
 ### 2. Run migrations on production
 
-SSH (if available) from app root:
+Upload new files from `database/migrations/` to `/new.minilicenseplates.com/database/migrations/` on the server.
 
-```bash
-cd /home/minilp/new.minilicenseplates.com
-php artisan migrate --force
-```
+Without Terminal/SSH, ask your host to run `php artisan migrate --force` once in your app folder, or use a one-time cPanel Cron Job. phpMyAdmin alone is not a substitute for migrations.
 
-If no SSH: use cPanel **Terminal** or phpMyAdmin is **not** enough — migrations must run via artisan.
-
-Expected output: two new migrations (username + collection_items).
+Expected output when run: migrations for username, collection_items, profile fields, admin fields, etc.
 
 ### 3. Verify production `.env`
 
@@ -82,15 +76,9 @@ APP_URL=https://minilicenseplates.com
 
 No new env vars required for collection feature.
 
-### 4. Clear caches (SSH)
+### 4. Clear caches (optional)
 
-```bash
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-```
-
-Delete stale files in `bootstrap/cache/` if config errors appear (except `.gitignore`).
+In cPanel File Manager or FileZilla, under `/new.minilicenseplates.com/`, delete `.php` files in `bootstrap/cache/` (keep `.gitignore`). Delete stale files in `storage/framework/views/` if pages look wrong.
 
 ### 5. Test live
 
@@ -100,7 +88,7 @@ Delete stale files in `bootstrap/cache/` if config errors appear (except `.gitig
 4. Catalog Search → run a search → **Add to collection** on a result
 5. **MY COLLECTION** in nav → verify entry, edit quantity/condition, remove
 
-**Profile photos:** run `php artisan storage:link` on the server once if not already done (links `public/storage` → `storage/app/public`). Uploaded photos live under `storage/app/public/profile-images/`.
+**Profile photos:** ensure `public/storage` on the server points to profile images (your host may have run `php artisan storage:link` once during initial setup). Uploaded photos live under `storage/app/public/profile-images/`.
 
 ---
 
