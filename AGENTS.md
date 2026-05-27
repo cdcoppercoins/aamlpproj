@@ -7,6 +7,9 @@ Use **PROJECT_REFERENCE.md** as the primary source of truth for project setup, c
 | Document | Purpose |
 |----------|---------|
 | **PROJECT_REFERENCE.md** | Current state, config, what not to do, how to run |
+| **docs/DEPLOY_PLAIN_ENGLISH.md** | **Read first** when user asks about deploy/upload — plain steps, one at a time, no jargon |
+| **docs/DEPLOY_EASY.md** | Short technical deploy summary for agents |
+| **docs/ONE_TIME_SERVER_LAYOUT.html** | One-time server rename (`new.minilicenseplates.com` → `laravel`) — likely already done |
 | **GALLERY_CATALOG_SPEC.md** | Planned catalog: schema, routes, CMS, implementation |
 | **docs/PLATE_CSV_COLUMNS_REFERENCE.html** | CSV column definitions for plate import |
 | **docs/AWS_IMAGES_SETUP.md** | AWS S3/CloudFront image hosting — in progress; read when user returns from AWS support |

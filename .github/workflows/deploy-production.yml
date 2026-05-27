@@ -1,0 +1,46 @@
+# Manual production deploy — avoids partial FileZilla uploads.
+# Setup: docs/DEPLOY_GITHUB_FTP.md
+name: Deploy to production
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: Install dependencies (production)
+        run: composer install --no-dev --optimize-autoloader --no-interaction
+
+      - name: Deploy Laravel app to server
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: /laravel/
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/node_modules/**
+            **/tests/**
+            **/mlp_code/**
+            **/deploy/**
+            **/public/plates/**
+            **/.env
+            **/.env.*
+            **/storage/**
+            **/bootstrap/cache/*.php
+            **/*.md
+            **/docs/**
+            **/vendor/**/tests/**

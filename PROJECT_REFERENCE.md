@@ -115,6 +115,16 @@ This file is the single source of truth for what has been done, how the project 
 
 ---
 
+## 7b. Production deploy (use every time)
+
+Server: **`/laravel/`** (app) + **`/public_html/`** (live web). Renamed from `new.minilicenseplates.com` — done.
+
+**User-facing instructions (plain English, one step at a time):** **docs/DEPLOY_PLAIN_ENGLISH.md** — agents must read this when the user asks about deploy, PowerShell, FileZilla, or `Build-DeployRelease.ps1`.
+
+Packager on PC: `cd d:\aamlpproj` then `.\scripts\Build-DeployRelease.ps1 -OpenFolder` (add `-IncludeVendor` if composer changed or 500/class errors). Upload `deploy\out\<timestamp>\laravel\` and `public_html\` via FileZilla. Config: `deploy/deploy.config.json`.
+
+---
+
 ## 8. Optional / Future
 
 - **GALLERY_CATALOG_SPEC.md** – full plan for database-backed catalog. See section 9 and that file for details.

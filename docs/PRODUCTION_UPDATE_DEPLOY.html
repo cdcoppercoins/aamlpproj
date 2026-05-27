@@ -191,12 +191,13 @@
     <p class="subtitle"><strong>Updated:</strong> May 26, 2026</p>
 
     <div class="notice notice-ok">
-        <strong>Do these in order:</strong>
-        <ol style="margin:8px 0 0; padding-left:20px;">
-            <li><strong>Part 0</strong> — Upload your latest local changes to the live site and test it (while the server still uses two folders).</li>
-            <li><strong>Part A</strong> — Only after the live site is updated and working: back up, then one-time cPanel fix so future uploads go to one folder.</li>
-            <li><strong>Part B</strong> — Every update after Part A (simple single-folder routine).</li>
-        </ol>
+        <strong>Current plan (May 2026):</strong>
+        <p style="margin:8px 0 0;">One-time: open <code>docs/ONE_TIME_SERVER_LAYOUT.html</code> — rename <code>new.minilicenseplates.com</code> → <code>laravel</code>, fix <code>public_html/index.php</code>.</p>
+        <p style="margin:8px 0 0;">Every update: <code>.\scripts\Build-DeployRelease.ps1 -OpenFolder</code> → upload <code>laravel/</code> and <code>public_html/</code> (or <code>release.zip</code>). See <code>docs/DEPLOY_EASY.md</code>.</p>
+    </div>
+
+    <div class="notice notice-warn">
+        <strong>Older sections below (Part A document-root change)</strong> are optional. Your host keeps <code>public_html</code> as the web root; use the <code>laravel</code> + <code>public_html</code> layout above instead.
     </div>
 
     <div class="notice">

@@ -1,0 +1,18 @@
+{
+    "projectRoot": "d:\\aamlpproj",
+    "remoteLaravelRoot": "/laravel",
+    "remotePublicHtml": "/public_html",
+    "remoteHome": "/home/minilp",
+    "ftpHost": "ftp.minilicenseplates.com",
+    "ftpUser": "chuck@minilicenseplates.com",
+    "liveUrl": "https://minilicenseplates.com",
+    "publicHtmlAssets": [
+        "main.css",
+        "js",
+        "header_banner.png",
+        "background_img.jpg",
+        "plate_missing.png",
+        "setinfo",
+        "hero"
+    ]
+}

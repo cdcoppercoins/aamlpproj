@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One-time server layout — MiniLicensePlates.com</title>
+    <style>
+        body { font-family: Georgia, serif; max-width: 40em; margin: 24px auto; padding: 0 16px; line-height: 1.5; color: #1a3344; }
+        h1 { font-family: "Segoe UI", sans-serif; color: #4079a5; }
+        h2 { font-family: "Segoe UI", sans-serif; color: #4079a5; border-bottom: 2px solid #d8e4ec; padding-bottom: 4px; }
+        pre, code { font-family: Consolas, monospace; font-size: 10pt; background: #f4f8fb; }
+        pre { padding: 12px; border: 1px solid #d8e4ec; overflow-x: auto; }
+        .ok { background: #f0faf4; border-left: 4px solid #2d6a4f; padding: 10px 14px; margin: 16px 0; }
+        .warn { background: #fffaf0; border-left: 4px solid #c8862a; padding: 10px 14px; margin: 16px 0; }
+        ol.steps li { margin-bottom: 14px; }
+        strong.step { color: #4079a5; }
+    </style>
+</head>
+<body>
+    <h1>One-time server layout</h1>
+    <p><strong>Do this once.</strong> After this, you never use <code>new.minilicenseplates.com</code> again.</p>
+
+    <div class="ok">
+        <strong>Goal:</strong> Visitors use <code>public_html</code> only. PHP code lives in a sibling folder named <code>laravel</code> (not on the web). Future deploys upload to those two folders — no third path.
+    </div>
+
+    <h2>How it will look on the server</h2>
+    <pre>/home/minilp/
+  laravel/           ← app, vendor, .env (NOT public on the web)
+    app/
+    vendor/
+    storage/
+    ...
+  public_html/       ← minilicenseplates.com loads this folder
+    index.php        ← points to ../laravel
+    main.css
+    plates/
+    hero/
+    ...</pre>
+
+    <div class="warn">
+        <strong>Before you start:</strong> The site works now. Download a backup of <code>public_html</code> and <code>new.minilicenseplates.com</code> to your PC with FileZilla (optional but recommended).
+    </div>
+
+    <h2>Steps (cPanel File Manager)</h2>
+    <ol class="steps">
+        <li>
+            <strong class="step">Step 1 — Rename the Laravel folder</strong><br>
+            In File Manager, go to <code>/home/minilp</code>.<br>
+            Right-click <code>new.minilicenseplates.com</code> → <strong>Rename</strong> → type: <code>laravel</code> → Save.
+        </li>
+        <li>
+            <strong class="step">Step 2 — Fix public_html/index.php</strong><br>
+            Open <code>public_html/index.php</code> → Edit.<br>
+            Replace <strong>all</strong> contents with the file on your PC:<br>
+            <code>d:\aamlpproj\deploy\public_html-index.php</code><br>
+            (It uses <code>/laravel</code> instead of <code>/new.minilicenseplates.com</code>.)<br>
+            Save.
+        </li>
+        <li>
+            <strong class="step">Step 3 — Copy any missing web files</strong><br>
+            Open <code>laravel/public/</code> on the server.<br>
+            If something is newer there than in <code>public_html</code> (e.g. <code>main.css</code>, <code>js/</code>, <code>hero/</code>), copy it into <code>public_html</code> (overwrite if newer).<br>
+            <strong>Do not</strong> copy the whole <code>plates/</code> folder unless photos are missing from <code>public_html/plates/</code>.
+        </li>
+        <li>
+            <strong class="step">Step 4 — Test</strong><br>
+            Open <a href="https://minilicenseplates.com">https://minilicenseplates.com</a> → <strong>Ctrl+F5</strong>.<br>
+            Click Gallery and Search once.
+        </li>
+        <li>
+            <strong class="step">Step 5 — Done</strong><br>
+            Folder <code>new.minilicenseplates.com</code> should be gone (renamed to <code>laravel</code>).<br>
+            From now on, use <code>docs/DEPLOY_EASY.md</code> for every update.
+        </li>
+    </ol>
+
+    <h2>Every update after this</h2>
+    <p>On your PC:</p>
+    <pre>cd d:\aamlpproj
+.\scripts\Build-DeployRelease.ps1 -OpenFolder</pre>
+    <p>Upload:</p>
+    <ul>
+        <li><code>laravel\</code> → server <code>/laravel/</code></li>
+        <li><code>public_html\</code> → server <code>/public_html/</code> (includes <code>index.php</code>)</li>
+    </ul>
+    <p>Or upload <code>release.zip</code> to <code>/home/minilp</code> and extract once (both folders).</p>
+
+    <h2>If the site breaks</h2>
+    <p>Rename <code>laravel</code> back to <code>new.minilicenseplates.com</code> and put the old line back in <code>index.php</code> (or restore from backup).</p>
+</body>
+</html>
