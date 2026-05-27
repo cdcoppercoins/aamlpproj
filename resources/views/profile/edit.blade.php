@@ -23,24 +23,26 @@
         @method('PUT')
 
         <div class="profile-avatar-section">
-            @if ($user->profileImageUrl())
-                <img src="{{ $user->profileImageUrl() }}"
-                     alt="Profile photo for {{ $user->name }}"
-                     class="profile-avatar-preview">
-            @else
-                <div class="profile-avatar-placeholder" aria-hidden="true">{{ strtoupper(substr($user->name, 0, 1)) }}</div>
-            @endif
+            <div class="profile-avatar-preview-slot">
+                <img id="profile-avatar-preview-img"
+                     src="{{ $user->profileImageUrl() ?? '' }}"
+                     alt="Profile photo preview for {{ $user->name }}"
+                     class="profile-avatar-preview"
+                     data-initial-src="{{ $user->profileImageUrl() ?? '' }}"
+                     @if (! $user->profileImageUrl()) hidden @endif>
+                <div id="profile-avatar-preview-placeholder"
+                     class="profile-avatar-placeholder"
+                     @if ($user->profileImageUrl()) hidden @endif
+                     aria-hidden="true">{{ strtoupper(substr($user->name, 0, 1)) }}</div>
+            </div>
             <div class="profile-avatar-fields">
-                <label class="auth-field">
-                    <span class="auth-label">Profile photo</span>
-                    <input type="file" name="profile_image" accept="image/jpeg,image/png,image/webp,image/gif">
-                    <span class="auth-hint">Optional. JPG, PNG, WebP, or GIF — max 2 MB.</span>
-                </label>
+                @include('components.profile-photo-field', ['user' => $user])
                 @if ($user->profile_image)
-                    <label class="auth-checkbox">
+                    <label class="auth-checkbox profile-remove-photo">
                         <input type="checkbox" name="remove_profile_image" value="1">
-                        Remove current photo
+                        Delete my profile photo when I save (show my initial instead of a picture)
                     </label>
+                    <span class="auth-hint profile-remove-photo-hint">Leave unchecked if you only want to replace the photo — use Choose photo… above, then Save profile.</span>
                 @endif
             </div>
         </div>
@@ -78,3 +80,73 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+(function () {
+    var input = document.getElementById('profile-image-file');
+    var previewImg = document.getElementById('profile-avatar-preview-img');
+    var placeholder = document.getElementById('profile-avatar-preview-placeholder');
+    var removeCheckbox = document.querySelector('input[name="remove_profile_image"]');
+
+    if (!input || !previewImg) {
+        return;
+    }
+
+    var initialSrc = previewImg.getAttribute('data-initial-src') || '';
+
+    function showPlaceholder() {
+        previewImg.hidden = true;
+        previewImg.removeAttribute('src');
+        if (placeholder) {
+            placeholder.hidden = false;
+        }
+    }
+
+    function showImageSrc(src) {
+        if (!src) {
+            showPlaceholder();
+            return;
+        }
+        previewImg.src = src;
+        previewImg.hidden = false;
+        if (placeholder) {
+            placeholder.hidden = true;
+        }
+    }
+
+    input.addEventListener('change', function () {
+        if (removeCheckbox) {
+            removeCheckbox.checked = false;
+        }
+
+        var file = this.files && this.files[0];
+        if (!file) {
+            showImageSrc(initialSrc);
+            return;
+        }
+
+        if (!file.type || file.type.indexOf('image/') !== 0) {
+            return;
+        }
+
+        var reader = new FileReader();
+        reader.onload = function (event) {
+            showImageSrc(event.target && event.target.result ? event.target.result : initialSrc);
+        };
+        reader.readAsDataURL(file);
+    });
+
+    if (removeCheckbox) {
+        removeCheckbox.addEventListener('change', function () {
+            if (this.checked) {
+                input.value = '';
+                showPlaceholder();
+            } else {
+                showImageSrc(initialSrc);
+            }
+        });
+    }
+})();
+</script>
+@endpush

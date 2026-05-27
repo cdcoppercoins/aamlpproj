@@ -171,6 +171,44 @@ If you see **500 error**: download `laravel/storage/logs/laravel.log` (last 40 l
 
 ---
 
+## Profile photo “Choose file” not working
+
+Usually two things:
+
+1. **Big “Choose photo…” button** — needs newer `profile/edit` view and `main.css` on the server (deploy `laravel` + `public_html` from the packager).
+2. **Storage link missing** — photos save on the server but the site looks for them at `https://minilicenseplates.com/storage/...` which needs a folder link.
+
+**Fix storage (one time):**
+
+1. Upload `deploy/setup-storage-link.php` to **`public_html`**
+2. Open https://minilicenseplates.com/setup-storage-link.php
+3. It should say **SUCCESS** or **already exists**
+4. **Delete** `setup-storage-link.php` from the server
+5. Try profile photo again: pick file → **Save profile**
+
+---
+
+## Sign-in not working on the live site
+
+**First — what do you see after you click Sign in?**
+
+| What you see | Likely cause |
+|--------------|----------------|
+| Red text: **Username or password is incorrect** | No account on the **live** database (only on your PC), or wrong password |
+| Red text: **account has been suspended** | Admin blocked the account |
+| **419** or “Page expired” | Session/cookie problem — tell the assistant |
+| **500** error | Database missing columns — migrations not run on server |
+| Back at login, **no red message** | Session not saving — migrations or server `.env` |
+
+**Most common fix:** Accounts you create on **http://localhost:8000** are **not** on the live site. Open https://minilicenseplates.com/register and **create an account there** (or use the same username/password you want on live).
+
+**Check the server (one-time):** Upload `deploy/login-check.php` to `public_html`, open https://minilicenseplates.com/login-check.php, copy the text, paste to the assistant, then **delete** that file.
+
+**If login-check says username column MISSING:** Ask your host to run once:
+`php /home/minilp/laravel/artisan migrate --force`
+
+---
+
 ## If the live site breaks badly
 
 **Undo index.php (emergency):**  

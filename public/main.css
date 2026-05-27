@@ -3309,6 +3309,34 @@ body {
     border-bottom: 1px solid #d8e4ec;
 }
 
+.profile-avatar-preview-slot {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    flex-shrink: 0;
+}
+
+.profile-avatar-preview-slot .profile-avatar-preview,
+.profile-avatar-preview-slot .profile-avatar-placeholder {
+    margin: 0;
+}
+
+.profile-remove-photo {
+    align-items: flex-start;
+    margin-top: 10px;
+    line-height: 1.45;
+}
+
+.profile-remove-photo input[type="checkbox"] {
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+
+.profile-remove-photo-hint {
+    display: block;
+    margin: 4px 0 0 26px;
+}
+
 .profile-avatar-preview {
     width: 88px;
     height: 88px;
