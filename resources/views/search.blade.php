@@ -13,25 +13,14 @@
 @section('content')
 <div class="home-page gallery-page search-page">
     <section class="home-hero gallery-hero">
-        <div class="gallery-hero-row">
-            <div class="gallery-hero-copy">
-                <nav class="gallery-breadcrumbs" aria-label="Breadcrumb">
-                    <ol class="gallery-breadcrumbs-list">
-                        <li><a href="{{ route('home') }}">Home</a></li>
-                        <li aria-current="page">Catalog Search</li>
-                    </ol>
-                </nav>
-                <p class="home-welcome">Search the catalog</p>
-                <h1 class="home-title">Catalog Search</h1>
-            </div>
-            <div class="gallery-site-notice" role="note">
-                <p>
-                    Please understand that this website is a huge project which requires thousands of images,
-                    many of which are yet to be included. Pardon our incompleteness while we try to provide
-                    what we have accomplished to date. Thank you.
-                </p>
-            </div>
-        </div>
+        <nav class="gallery-breadcrumbs" aria-label="Breadcrumb">
+            <ol class="gallery-breadcrumbs-list">
+                <li><a href="{{ route('home') }}">Home</a></li>
+                <li aria-current="page">Catalog Search</li>
+            </ol>
+        </nav>
+        <p class="home-welcome">Search the catalog</p>
+        <h1 class="home-title">Catalog Search</h1>
     </section>
 
     <section id="gallery-search-panel"
@@ -40,6 +29,12 @@
         <p class="home-lead gallery-search-intro">
             Search {{ number_format(intdiv($totalCount, 50) * 50) }}+ catalog listings by year, jurisdiction, set, company, or set type.
             Leave any field at <strong>All</strong> to include every value for that criterion. Set type checkboxes can be combined.
+        </p>
+        <p class="gallery-search-note" role="note">
+            <strong class="gallery-search-note-label">NOTE:</strong>
+            Please understand that this website is a huge project which requires thousands of images,
+            many of which are yet to be included. Pardon our incompleteness while we try to provide
+            what we have accomplished to date. Thank you.
         </p>
         <h2 class="home-section-title">Search criteria</h2>
         <form class="gallery-search-form" method="GET" action="{{ route('search') }}">

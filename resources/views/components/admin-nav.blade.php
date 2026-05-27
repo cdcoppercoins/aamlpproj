@@ -6,6 +6,11 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('admin.home-hero.index') }}" @class(['is-active' => request()->routeIs('admin.home-hero.*')])>
+                Home banners
+            </a>
+        </li>
+        <li>
             <a href="{{ route('admin.catalog.sets.index') }}" @class(['is-active' => request()->routeIs('admin.catalog.*')])>
                 Catalog
             </a>

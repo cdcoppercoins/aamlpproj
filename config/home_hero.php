@@ -3,8 +3,9 @@
 /**
  * Home page hero rotator slides.
  *
- * Drop custom banner images in public/hero/ (e.g. hero/slide-1.jpg) and update
- * the image paths below. Existing site assets are used as defaults until replaced.
+ * Managed in Admin → Home banners (/admin/home-hero).
+ * This file is the fallback until the database tables exist and
+ * after all slides are removed from the admin panel.
  */
 return [
     'interval_ms' => 7000,

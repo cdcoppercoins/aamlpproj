@@ -9,7 +9,8 @@ class RenamePlateImages extends Command
 {
     protected $signature = 'plates:rename-images
                             {--dry-run : Show planned renames without applying}
-                            {--skip-folders : Do not rename set folders to match set_code}';
+                            {--skip-folders : Do not rename set folders to match set_code}
+                            {--folder= : Only process this subfolder under public/plates}';
 
     protected $description = 'Rename plate image files to {image_base}_a.{ext} using jurisdiction matching';
 
@@ -19,7 +20,6 @@ class RenamePlateImages extends Command
         'vitrginia' => 'virginia',
         'mass' => 'massachusetts',
         'guatemala' => 'guatamala',
-        'britishguiana' => 'britishguyana',
         'pei' => 'princeedwardis',
         'districtcolumbia' => 'distofcolumbia',
         'districtofcolumbia' => 'distofcolumbia',
@@ -67,7 +67,12 @@ class RenamePlateImages extends Command
         $folderNames = array_map('basename', glob($platesRoot . '/*', GLOB_ONLYDIR) ?: []);
         sort($folderNames);
 
+        $folderFilter = $this->option('folder');
+
         foreach ($folderNames as $folderName) {
+            if ($folderFilter !== null && strcasecmp($folderName, $folderFilter) !== 0) {
+                continue;
+            }
             $folderPath = $platesRoot . DIRECTORY_SEPARATOR . $folderName;
             $setCode = $this->resolveSetCode($folderName, $folderPath);
 
@@ -80,7 +85,7 @@ class RenamePlateImages extends Command
                 ->where('set_code', $setCode)
                 ->whereNotNull('image_base')
                 ->where('image_base', '!=', '')
-                ->get(['image_base', 'image_ext', 'jurisdiction', 'variety_key']);
+                ->get(['image_base', 'image_ext', 'jurisdiction', 'variety_key', 'sort_order']);
 
             if ($plates->isEmpty()) {
                 $this->warn("Skipping {$folderName}: no plates in DB for set_code {$setCode}.");
@@ -102,12 +107,17 @@ class RenamePlateImages extends Command
                     continue;
                 }
 
+                if ($this->isAlreadyCatalogNamed($basename, $plates)) {
+                    $folderSkipped++;
+                    continue;
+                }
+
                 if ($this->isAlreadyRenamed($parsed['middle'], $parsed['side'], $plates)) {
                     $folderSkipped++;
                     continue;
                 }
 
-                $plate = $this->matchPlate($parsed['middle'], $plates);
+                $plate = $this->matchPlate($parsed['middle'], $plates, $parsed['variant_num'] ?? null);
 
                 if (!$plate) {
                     $this->warn("  No match: {$basename}");
@@ -117,7 +127,8 @@ class RenamePlateImages extends Command
 
                 $targetBase = $plate->image_base;
                 $targetExt = strtolower($plate->image_ext ?: $parsed['ext']);
-                $targetName = $targetBase . '_' . $parsed['side'] . '.' . $targetExt;
+                $varietySuffix = $this->varietyFilenameSuffix($plate->variety_key ?? 'base');
+                $targetName = $targetBase . $varietySuffix . '_' . $parsed['side'] . '.' . $targetExt;
                 $targetPath = $folderPath . DIRECTORY_SEPARATOR . $targetName;
 
                 if (strcasecmp($basename, $targetName) === 0) {
@@ -263,7 +274,7 @@ class RenamePlateImages extends Command
                 continue;
             }
 
-            if (preg_match('/_[ab]\.[^.]+$/i', $entry)) {
+            if (preg_match('/_[ab]\.[^.]+$/i', $entry) || preg_match('/\d{2}[ab]\.[^.]+$/i', $entry)) {
                 $files[] = $path;
             }
         }
@@ -278,6 +289,18 @@ class RenamePlateImages extends Command
      */
     private function parseImageFilename(string $basename): ?array
     {
+        if (preg_match('/^(\d{4})_(.+)_(\d{2})([ab])\.([^.]+)$/i', $basename, $matches)) {
+            $middle = str_replace('_', '', strtolower($matches[2]));
+            $middle = $this->filenameAliases[$middle] ?? $middle;
+
+            return [
+                'middle' => $middle,
+                'side' => strtolower($matches[4]),
+                'ext' => $matches[5],
+                'variant_num' => (int) $matches[3],
+            ];
+        }
+
         if (!preg_match('/^(.+)_([ab])\.([^.]+)$/i', $basename, $matches)) {
             return null;
         }
@@ -295,10 +318,16 @@ class RenamePlateImages extends Command
         ];
     }
 
-    private function isAlreadyRenamed(string $middle, string $side, $plates): bool
+    private function isAlreadyCatalogNamed(string $basename, $plates): bool
     {
         foreach ($plates as $plate) {
-            if (strcasecmp($this->normalize($plate->image_base), $this->normalize($middle)) === 0) {
+            $ext = strtolower($plate->image_ext ?: pathinfo($basename, PATHINFO_EXTENSION) ?: 'png');
+            $expected = $plate->image_base
+                . $this->varietyFilenameSuffix($plate->variety_key ?? 'base')
+                . '_a.'
+                . $ext;
+
+            if (strcasecmp($basename, $expected) === 0) {
                 return true;
             }
         }
@@ -306,7 +335,30 @@ class RenamePlateImages extends Command
         return false;
     }
 
-    private function matchPlate(string $fileMiddle, $plates): ?object
+    private function isAlreadyRenamed(string $middle, string $side, $plates): bool
+    {
+        foreach ($plates as $plate) {
+            $stem = $this->normalize($plate->image_base) . $this->varietyFilenameSuffix($plate->variety_key ?? 'base');
+            if (strcasecmp($stem, $this->normalize($middle)) === 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function varietyFilenameSuffix(?string $varietyKey): string
+    {
+        $varietyKey = trim((string) $varietyKey);
+
+        if ($varietyKey === '' || $varietyKey === 'base') {
+            return '';
+        }
+
+        return '_' . $varietyKey;
+    }
+
+    private function matchPlate(string $fileMiddle, $plates, ?int $variantNum = null): ?object
     {
         $fileSlug = $this->normalize($fileMiddle);
         $matches = [];
@@ -314,13 +366,7 @@ class RenamePlateImages extends Command
         foreach ($plates as $plate) {
             $jurisdictionSlug = $this->normalize($plate->jurisdiction ?? '');
 
-            if ($jurisdictionSlug === '') {
-                continue;
-            }
-
-            if ($fileSlug === $jurisdictionSlug
-                || str_contains($fileSlug, $jurisdictionSlug)
-                || str_contains($jurisdictionSlug, $fileSlug)) {
+            if ($jurisdictionSlug !== '' && $jurisdictionSlug === $fileSlug) {
                 $matches[] = $plate;
             }
         }
@@ -329,47 +375,29 @@ class RenamePlateImages extends Command
             return null;
         }
 
-        $exact = array_values(array_filter($matches, function ($plate) use ($fileSlug) {
-            return $this->normalize($plate->jurisdiction ?? '') === $fileSlug;
-        }));
+        usort($matches, fn ($a, $b) => ($a->sort_order ?? 0) <=> ($b->sort_order ?? 0));
 
-        if (count($exact) === 1) {
-            return $exact[0];
-        }
+        if ($variantNum !== null) {
+            $typeNum = $variantNum;
 
-        if (count($exact) > 1) {
-            foreach ($exact as $plate) {
-                if (($plate->variety_key ?? 'base') === 'base') {
+            foreach ($matches as $plate) {
+                if (preg_match('/Type\s*' . preg_quote((string) $typeNum, '/') . '\b/i', (string) ($plate->variety_notes ?? ''))) {
                     return $plate;
                 }
             }
 
-            return $exact[0];
+            $index = max(0, min($typeNum - 1, count($matches) - 1));
+
+            return $matches[$index];
         }
 
-        usort($matches, function ($a, $b) {
-            return strlen($this->normalize($b->jurisdiction ?? ''))
-                <=> strlen($this->normalize($a->jurisdiction ?? ''));
-        });
-
-        $best = $matches[0];
-        $bestSlug = $this->normalize($best->jurisdiction ?? '');
-
-        $ties = array_values(array_filter($matches, function ($plate) use ($bestSlug) {
-            return $this->normalize($plate->jurisdiction ?? '') === $bestSlug;
-        }));
-
-        if (count($ties) === 1) {
-            return $best;
-        }
-
-        foreach ($ties as $plate) {
-            if (($plate->variety_key ?? 'base') === 'base') {
+        foreach ($matches as $plate) {
+            if (trim((string) ($plate->variety_key ?? 'base')) === '' || ($plate->variety_key ?? 'base') === 'base') {
                 return $plate;
             }
         }
 
-        return $ties[0] ?? null;
+        return $matches[0];
     }
 
     private function normalize(string $value): string

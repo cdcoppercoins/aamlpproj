@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\HomeHeroController;
 use App\Http\Controllers\Admin\CatalogImportController;
 use App\Http\Controllers\Admin\CatalogPlateController;
 use App\Http\Controllers\Admin\CatalogSetController;
@@ -69,6 +70,14 @@ Route::middleware(['auth', 'not.blocked', 'admin'])->prefix('admin')->name('admi
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
     Route::get('/newsletter', [AdminNewsletterController::class, 'index'])->name('newsletter.index');
     Route::delete('/newsletter/{subscriber}', [AdminNewsletterController::class, 'destroy'])->name('newsletter.destroy');
+
+    Route::get('/home-hero', [HomeHeroController::class, 'index'])->name('home-hero.index');
+    Route::put('/home-hero/settings', [HomeHeroController::class, 'updateSettings'])->name('home-hero.settings.update');
+    Route::get('/home-hero/create', [HomeHeroController::class, 'create'])->name('home-hero.create');
+    Route::post('/home-hero', [HomeHeroController::class, 'store'])->name('home-hero.store');
+    Route::get('/home-hero/{heroSlide}/edit', [HomeHeroController::class, 'edit'])->name('home-hero.edit');
+    Route::match(['put', 'post'], '/home-hero/{heroSlide}', [HomeHeroController::class, 'update'])->name('home-hero.update');
+    Route::delete('/home-hero/{heroSlide}', [HomeHeroController::class, 'destroy'])->name('home-hero.destroy');
 
     Route::prefix('catalog')->name('catalog.')->group(function () {
         Route::get('import', [CatalogImportController::class, 'create'])->name('import.create');

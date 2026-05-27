@@ -103,7 +103,7 @@ id,set_code,set_name,company,cat_ref,imAge_A,image_ext,has_back_image,jurisdicti
 102,c37go,1937 Auto License Cards,"Goudey Gum Co., Boston, Mass.",R19-2,WV,png,1,West Virginia,us_state,1937,200-169,3.25,1.5,20,12,9,5,2,,base,,0,0,,660
 103,c37go,1937 Auto License Cards,"Goudey Gum Co., Boston, Mass.",R19-2,WI,png,1,Wisconsin,us_state,1937,58-661,3.25,1.5,20,12,9,5,2,,base,,0,0,,670
 104,c37go,1937 Auto License Cards,"Goudey Gum Co., Boston, Mass.",R19-2,WY,png,1,Wyoming,us_state,1937,0-2,3.25,1.5,20,12,9,5,2,,base,,0,0,,680
-105,c37go,1937 Auto License Cards,"Goudey Gum Co., Boston, Mass.",R19-3,AL,png,1,Alabama,us_state,1938,107-030,3.25,1.5,20,12,9,5,2,,base,,0,0,,10
+105,c38go,1938 Auto License Cards,"Goudey Gum Co., Boston, Mass.",R19-3,AL,png,1,Alabama,us_state,1938,107-030,3.25,1.5,20,12,9,5,2,,base,,0,0,,10
 106,c38go,1938 Auto License Cards,"Goudey Gum Co., Boston, Mass.",R19-3,AB,png,1,Alberta,canada,1938,49-605,3.25,1.5,20,12,9,5,2,,base,,0,0,,20
 107,c38go,1938 Auto License Cards,"Goudey Gum Co., Boston, Mass.",R19-3,AZ,png,1,Arizona,us_state,1938,A 5610,3.25,1.5,20,12,9,5,2,,base,,0,0,,30
 108,c38go,1938 Auto License Cards,"Goudey Gum Co., Boston, Mass.",R19-3,AR,png,1,Arkansas,us_state,1938,118-510,3.25,1.5,20,12,9,5,2,,base,,0,0,,40
@@ -556,22 +556,22 @@ id,set_code,set_name,company,cat_ref,imAge_A,image_ext,has_back_image,jurisdicti
 555,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,IT,png,1,Italy,territories,1953,HAFSE,3.875,2.25,4,3,2,1,,,base,"Type 4 - rolled edge, two round holes.",1,0,,1380
 556,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,IT,png,1,Italy,territories,1953,HAFSE,3.875,2.25,4,3,2,1,,,a,"Type 4 - rolled edge, four round holes.",1,0,,1390
 557,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,KS,png,1,Kansas,us_state,1953,TS 4263,4.9375,2.3125,5,4,3,1,,,base,Type 2 - round holes copper back,1,0,Only issue in the set to have two differently shaped plates. One variety with the top right corner matching the shape of the state and the other with a square top right corner. Only known with a copper back.,310
-558,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,KS,png,1,Kansas,us_state,1953,TS 4263,4.9375,2.3125,5,4,3,1,,,a,Type 3 - round holes silver back,1,0,,320
-559,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,KS,png,1,Kansas,us_state,1953,TS 4263,4.9375,2.3125,10,8,6,4,1,,b ,Type 2 - round holes copper back with square top right corner,1,0,,330
+558,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,KS,png,1,Kansas,us_state,1953,TS 4263,4.9375,2.3125,5,4,3,1,,,a,Type 3 - round holes silver back,1,0,,330
+559,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,KS,png,1,Kansas,us_state,1953,TS 4263,4.9375,2.3125,10,8,6,4,1,,b ,Type 2 - round holes copper back with square top right corner,1,0,,320
 560,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,KY,png,1,Kentucky,us_state,1953,886 101,3.9375,2.3125,5,4,3,1,,,base,Type 2 - round holes copper back,1,0,,340
 561,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,KY,png,1,Kentucky,us_state,1953,886 101,3.9375,2.3125,10,8,6,4,1,,a,Type 3 - round holes silver back,1,0,,350
 562,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,LA,png,1,Louisiana,us_state,1953,3B 957,4.9375,2.125,5,4,3,1,,,base,Type 2 - round holes copper back,1,0,,360
 563,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,LA,png,1,Louisiana,us_state,1953,3B 957,4.9375,2.125,10,8,6,4,1,,a,Type 3 - round holes silver back,1,0,,370
 564,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,MJ,png,1,Maharajah,territories,1953,N/A,3.875,2.25,12,9,7,5,3,1,base,Type 4 - rolled edge,1,0,Given free only with orders for all three subsets.,1460
 565,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,ME,png,1,Maine,us_state,1953,404,3.9375,2.3125,5,4,3,1,,,base,Type 1 - oval holes copper back,1,0,,380
-566,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,ME,png,1,Maine,us_state,1953,404,3.9375,2.3125,10,8,6,4,1,,a,Type 2 - round holes copper back with square top right corner,1,0,,390
+566,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,ME,png,1,Maine,us_state,1953,404,3.9375,2.3125,10,8,6,4,1,,a,Type 2 - round holes copper back,1,0,,390
 567,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,ML,png,1,Malta,territories,1953,058,4.875,2,4,3,2,1,,,base,Type 4 - rolled edge,1,0,,1400
 568,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,MB,png,1,Manitoba,canada,1953,6F237,4.875,2,4,3,2,1,,,base,"Type 4 - rolled edge, two round holes.",1,0,,1100
 569,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,MB,png,1,Manitoba,canada,1953,6F237,4.875,2,4,3,2,1,,,a,"Type 4 - rolled edge, four round holes.",1,0,,1110
 570,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,MD,png,1,Maryland,us_state,1953,LG 19 53,4.9375,2.3125,5,4,3,1,,,base,Type 1 - oval holes copper back,1,0,Dated 1954 because the plates are a reflection of how the juristiction issued plates - by expiration.,400
-571,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,MD,png,1,Maryland,us_state,1953,LG 19 53,4.9375,2.3125,10,8,6,4,1,,a,Type 2 - round holes copper back with square top right corner,1,0,,410
+571,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,MD,png,1,Maryland,us_state,1953,LG 19 53,4.9375,2.3125,10,8,6,4,1,,a,Type 2 - round holes copper back,1,0,,410
 572,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,MA,png,1,Massachusetts,us_state,1953,94 368,3.9375,2.3125,5,4,3,1,,,base,Type 1 - oval holes copper back,1,0,,420
-573,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,MA,png,1,Massachusetts,us_state,1953,94 368,3.9375,2.3125,10,8,6,4,1,,a,Type 2 - round holes copper back with square top right corner,1,0,,430
+573,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,MA,png,1,Massachusetts,us_state,1953,94 368,3.9375,2.3125,10,8,6,4,1,,a,Type 2 - round holes copper back,1,0,,430
 574,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,MI,png,1,Michigan,us_state,1953,UT 36 66,4.9375,2.3125,5,4,3,1,,,base,Type 1 - oval holes copper back,1,0,,440
 575,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,MI,png,1,Michigan,us_state,1953,UT 36 66,4.9375,2.3125,5,4,3,1,,,a,Type 2 - round holes copper back,1,0,,450
 576,m53gm,1953 Wheaties License Plates,"General Mills, Inc.",,MI,png,1,Michigan,us_state,1953,UT 36 66,4.9375,2.3125,10,8,6,4,1,,b ,Type 3 - round holes silver back,1,0,,460

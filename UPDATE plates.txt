@@ -1,0 +1,6 @@
+UPDATE plates
+SET variety_notes = 'Type 2 - round holes copper back',
+    updated_at = NOW()
+WHERE set_code = 'm53gm'
+  AND image_base IN ('MA', 'MD', 'ME')
+  AND variety_notes LIKE '%square top right corner%';

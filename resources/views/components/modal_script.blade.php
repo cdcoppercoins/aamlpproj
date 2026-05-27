@@ -4,6 +4,18 @@
     const modalImg = document.getElementById('modalImg');
     const closeBtn = document.querySelector('.modal-close');
 
+    const preloadedBacks = new Set();
+    document.querySelectorAll('.thumb-img[data-hover]').forEach(function (img) {
+        const hoverSrc = img.dataset.hover;
+        if (!hoverSrc || preloadedBacks.has(hoverSrc)) {
+            return;
+        }
+        preloadedBacks.add(hoverSrc);
+        const preload = new Image();
+        preload.decoding = 'async';
+        preload.src = hoverSrc;
+    });
+
     if (!modal || !modalImg || !closeBtn) return;
 
     document.querySelectorAll('.thumb-img').forEach(function (img) {

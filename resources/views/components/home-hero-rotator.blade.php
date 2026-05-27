@@ -7,7 +7,7 @@
          data-slide-count="{{ count($heroSlides) }}">
     <div class="home-hero-rotator-viewport">
         @foreach ($heroSlides as $index => $slide)
-            <article class="home-hero-slide{{ $index === 0 ? ' is-active' : '' }}"
+            <article class="home-hero-slide{{ $index === 0 ? ' is-active' : '' }}{{ ! empty($slide['fill_slide']) ? ' home-hero-slide--fill' : '' }}"
                      id="home-hero-slide-{{ $index }}"
                      aria-roledescription="slide"
                      aria-label="{{ $index + 1 }} of {{ count($heroSlides) }}"
