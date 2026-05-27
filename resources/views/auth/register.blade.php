@@ -7,7 +7,7 @@
 @section('robots', 'noindex, follow')
 
 @section('content')
-<div class="auth-page set-width">
+<div class="home-page auth-page">
     <h1>Create your account</h1>
     <p class="auth-lead">
         Choose a username and password to start tracking plates from our catalog in your own collection.

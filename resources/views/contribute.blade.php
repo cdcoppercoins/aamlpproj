@@ -7,7 +7,7 @@
 @section('canonical_url', route('contribute'))
 
 @section('content')
-<div class="set-width">
+<div class="home-page">
     <h1>Contribute</h1>
 
     <p>

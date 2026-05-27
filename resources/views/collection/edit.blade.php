@@ -5,7 +5,7 @@
 @section('robots', 'noindex, follow')
 
 @section('content')
-<div class="auth-page set-width collection-edit-page">
+<div class="home-page auth-page collection-edit-page">
     @php $plate = $item->plate; @endphp
 
     <nav class="gallery-breadcrumbs" aria-label="Breadcrumb">

@@ -17,6 +17,7 @@ use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HistoryController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -29,9 +30,7 @@ Route::get('/about', function () {
     return view('about');
 })->name('about');
 
-Route::get('/history', function () {
-    return view('history');
-})->name('history');
+Route::get('/history', [HistoryController::class, 'index'])->name('history');
 
 Route::get('/contribute', [ContributeController::class, 'index'])->name('contribute');
 Route::post('/contribute', [ContributeController::class, 'store'])->name('contribute.store');

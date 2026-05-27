@@ -5,7 +5,7 @@
 @section('robots', 'noindex, follow')
 
 @section('content')
-<div class="auth-page set-width profile-page">
+<div class="home-page auth-page profile-page">
     <nav class="gallery-breadcrumbs" aria-label="Breadcrumb">
         <ol class="gallery-breadcrumbs-list">
             <li><a href="{{ route('collection.index') }}">My Collection</a></li>

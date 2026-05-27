@@ -7,7 +7,7 @@
 @section('robots', 'noindex, follow')
 
 @section('content')
-<div class="auth-page set-width">
+<div class="home-page auth-page">
     <h1>Member sign in</h1>
     <p class="auth-lead">
         Sign in to manage your personal collection — record what you own, condition, quantity, and notes.

@@ -1,4 +1,4 @@
-<div class="set-width">
+<div class="home-page">
 
 <div class="info-box">
     <div class="info-box-label">{{ $selectedSet }}</div>

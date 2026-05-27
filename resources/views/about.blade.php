@@ -7,7 +7,7 @@
 @section('canonical_url', route('about'))
 
 @section('content')
-<div class="set-width">
+<div class="home-page">
 
     <h1>About MiniLicensePlates.com</h1>
 
