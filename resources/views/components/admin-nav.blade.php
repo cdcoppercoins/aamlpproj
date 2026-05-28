@@ -11,6 +11,11 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('admin.history-timeline.index') }}" @class(['is-active' => request()->routeIs('admin.history-timeline.*')])>
+                History timeline
+            </a>
+        </li>
+        <li>
             <a href="{{ route('admin.catalog.sets.index') }}" @class(['is-active' => request()->routeIs('admin.catalog.*')])>
                 Catalog
             </a>

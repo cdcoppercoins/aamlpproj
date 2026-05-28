@@ -4,7 +4,9 @@ The History page (`/history`) shows a timeline. Each button opens a modal with a
 
 ## Where to edit text
 
-Open **`config/history_timeline.php`** on your PC.
+**Preferred:** sign in as admin → **History timeline** in the admin menu (`/admin/history-timeline`).
+
+**Legacy fallback:** `config/history_timeline.php` on your PC (used only when the database table is empty).
 
 Copy one block per paragraph from your document. Example:
 

@@ -27,6 +27,8 @@
     <section class="admin-toolbar">
         <a class="home-primary-btn" href="{{ route('admin.catalog.plates.create', $setMeta->set_code) }}">Add plate</a>
         <a class="home-primary-btn home-primary-btn-secondary" href="{{ route('admin.catalog.sets.edit', $setMeta->set_code) }}">Edit set</a>
+        <a class="home-primary-btn home-primary-btn-secondary"
+           href="{{ route('admin.catalog.import.create', ['set_code' => $setMeta->set_code, 'set_name' => $setMeta->set_name, 'company' => $setMeta->company, 'year' => $setMeta->year]) }}">Add plates (CSV)</a>
         <a class="home-primary-btn home-primary-btn-secondary" href="{{ route('gallery.show', urlencode($setMeta->set_name)) }}" target="_blank" rel="noopener">View in gallery</a>
     </section>
 

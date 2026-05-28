@@ -16,7 +16,7 @@
 
     <section class="admin-toolbar">
         <a class="home-primary-btn" href="{{ route('admin.catalog.sets.create') }}">Add set</a>
-        <a class="home-primary-btn home-primary-btn-secondary" href="{{ route('admin.catalog.import.create') }}">Import CSV</a>
+        <a class="home-primary-btn home-primary-btn-secondary" href="{{ route('admin.catalog.import.create') }}">Bulk add set (CSV)</a>
     </section>
 
     <section class="admin-panel">
@@ -32,7 +32,7 @@
         </form>
 
         <div class="admin-table-wrap">
-            <table class="admin-table">
+            <table class="admin-table admin-table-catalog-sets">
                 <thead>
                     <tr>
                         <th scope="col">Set code</th>

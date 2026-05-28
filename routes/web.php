@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\HistoryTimelineController;
 use App\Http\Controllers\Admin\HomeHeroController;
 use App\Http\Controllers\Admin\CatalogImportController;
 use App\Http\Controllers\Admin\CatalogPlateController;
@@ -90,8 +91,16 @@ Route::middleware(['auth', 'not.blocked', 'admin'])->prefix('admin')->name('admi
     Route::match(['put', 'post'], '/home-hero/{heroSlide}', [HomeHeroController::class, 'update'])->name('home-hero.update');
     Route::delete('/home-hero/{heroSlide}', [HomeHeroController::class, 'destroy'])->name('home-hero.destroy');
 
+    Route::get('/history-timeline', [HistoryTimelineController::class, 'index'])->name('history-timeline.index');
+    Route::get('/history-timeline/create', [HistoryTimelineController::class, 'create'])->name('history-timeline.create');
+    Route::post('/history-timeline', [HistoryTimelineController::class, 'store'])->name('history-timeline.store');
+    Route::get('/history-timeline/{historyTimeline}/edit', [HistoryTimelineController::class, 'edit'])->name('history-timeline.edit');
+    Route::match(['put', 'post'], '/history-timeline/{historyTimeline}', [HistoryTimelineController::class, 'update'])->name('history-timeline.update');
+    Route::delete('/history-timeline/{historyTimeline}', [HistoryTimelineController::class, 'destroy'])->name('history-timeline.destroy');
+
     Route::prefix('catalog')->name('catalog.')->group(function () {
         Route::get('import', [CatalogImportController::class, 'create'])->name('import.create');
+        Route::get('import/template', [CatalogImportController::class, 'downloadTemplate'])->name('import.template');
         Route::post('import', [CatalogImportController::class, 'store'])->name('import.store');
         Route::get('sets', [CatalogSetController::class, 'index'])->name('sets.index');
         Route::get('sets/create', [CatalogSetController::class, 'create'])->name('sets.create');

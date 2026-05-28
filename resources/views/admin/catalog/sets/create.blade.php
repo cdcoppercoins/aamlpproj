@@ -55,6 +55,11 @@
                 <button type="submit" class="home-primary-btn">Create set &amp; add first plate</button>
             </p>
         </form>
+        <p class="admin-note" style="margin-top: 20px;">
+            Adding many plates at once?
+            <a href="{{ route('admin.catalog.import.create') }}">Bulk add set from CSV</a>
+            — download a template, fill it in Excel or Google Sheets, then upload.
+        </p>
     </section>
 </div>
 @endsection

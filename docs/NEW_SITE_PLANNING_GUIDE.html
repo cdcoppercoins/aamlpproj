@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Website — Planning Guide (Written Spec + Mockups)</title>
+    <style>
+        @page { margin: 0.75in; }
+        * { box-sizing: border-box; }
+        body {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 11pt;
+            line-height: 1.45;
+            color: #1a1a1a;
+            max-width: 7in;
+            margin: 0 auto;
+            padding: 24px 20px 40px;
+        }
+        h1 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 18pt;
+            color: #264a62;
+            border-bottom: 2px solid #4079a5;
+            padding-bottom: 6px;
+            margin: 0 0 12px;
+        }
+        h2 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 13pt;
+            color: #4079a5;
+            margin: 22px 0 8px;
+            page-break-after: avoid;
+        }
+        h3 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 11pt;
+            margin: 14px 0 6px;
+            page-break-after: avoid;
+        }
+        p { margin: 0 0 10px; }
+        ul, ol { margin: 0 0 12px; padding-left: 22px; }
+        li { margin-bottom: 4px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0 14px;
+            font-size: 10pt;
+        }
+        th, td {
+            border: 1px solid #999;
+            padding: 6px 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th { background: #eef4f8; font-family: "Segoe UI", Arial, sans-serif; }
+        code, .mono {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9.5pt;
+            background: #f4f4f4;
+        }
+        pre {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 9pt;
+            background: #f4f4f4;
+            border: 1px solid #ccc;
+            padding: 10px 12px;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+            margin: 8px 0 14px;
+        }
+        .note {
+            border-left: 4px solid #4079a5;
+            background: #f4f8fb;
+            padding: 10px 14px;
+            margin: 12px 0;
+        }
+        .cover-meta {
+            font-size: 10pt;
+            color: #444;
+            margin-bottom: 20px;
+        }
+        .footer-note {
+            margin-top: 28px;
+            padding-top: 10px;
+            border-top: 1px solid #ccc;
+            font-size: 9pt;
+            color: #555;
+        }
+        @media print {
+            body { padding: 0; max-width: none; }
+            a { color: #1a1a1a; text-decoration: none; }
+        }
+    </style>
+</head>
+<body>
+
+<h1>New Website — Planning Guide</h1>
+<p class="cover-meta">
+    <strong>Purpose:</strong> How to write a site plan and what to provide (written spec, JPG mockups, phases)
+    when building a <strong>new</strong> database-driven website—similar in <em>approach</em> to a Laravel catalog/member/admin site,
+    but with its own scope, images, and data.<br>
+    <strong>Save as PDF:</strong> Open this file in a browser → Print → Save as PDF (or use the companion
+    <code>NEW_SITE_PLANNING_GUIDE.pdf</code> if already generated).
+</p>
+
+<div class="note">
+    <strong>This guide is not tied to MiniLicensePlates.com.</strong> Use it for any new project folder and database.
+    You may still borrow patterns from an existing site (catalog, search, members, admin CMS, static pages, articles, videos).
+</div>
+
+<h2>1. Two things to prepare</h2>
+<ol>
+    <li><strong>Written site plan</strong> — what the site does, data model, URLs, admin modules, phases.</li>
+    <li><strong>Visual mockups</strong> — flattened JPG files from Photoshop showing key screens (very helpful for CSS and layout).</li>
+</ol>
+<p>Together they reduce guesswork and rework. Either one alone works; both together work best.</p>
+
+<h2>2. Where to put files on your PC</h2>
+<table>
+    <thead>
+        <tr><th>Item</th><th>Suggested location</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Master written plan</td><td><code>docs/SITE_PLAN.md</code> in the <strong>new</strong> project root</td></tr>
+        <tr><td>Mockup JPGs</td><td><code>docs/mockups/</code> (e.g. <code>home-desktop.jpg</code>, <code>search-mobile.jpg</code>)</td></tr>
+        <tr><td>Design notes (optional)</td><td><code>docs/design-notes.txt</code> — hex colors, font names, spacing notes</td></tr>
+        <tr><td>This guide</td><td><code>docs/NEW_SITE_PLANNING_GUIDE.pdf</code></td></tr>
+    </tbody>
+</table>
+
+<h2>3. Written site plan — recommended outline</h2>
+<p>Copy the sections below into <code>docs/SITE_PLAN.md</code> and fill them in. Well-structured text beats a long unstructured brain dump.</p>
+
+<h3>A. Vision (about half a page)</h3>
+<ul>
+    <li>Who the site is for and what “done” looks like (one paragraph).</li>
+    <li><strong>Non-goals</strong> — what you are <em>not</em> building in version 1 (e.g. no shop, no comments).</li>
+</ul>
+
+<h3>B. Stack and constraints (bullet list)</h3>
+<ul>
+    <li>Framework (e.g. Laravel), database (e.g. MySQL), hosting style (app folder + public web root).</li>
+    <li>Commit/deploy rules, folders not in git, email/contact behavior.</li>
+</ul>
+
+<h3>C. User roles</h3>
+<table>
+    <thead><tr><th>Role</th><th>Can do</th></tr></thead>
+    <tbody>
+        <tr><td>Visitor</td><td>…</td></tr>
+        <tr><td>Member</td><td>…</td></tr>
+        <tr><td>Admin</td><td>…</td></tr>
+    </tbody>
+</table>
+
+<h3>D. Site map (every public and admin URL)</h3>
+<table>
+    <thead><tr><th>URL</th><th>Type</th><th>Data source</th><th>Notes</th></tr></thead>
+    <tbody>
+        <tr><td><code>/</code></td><td>Home</td><td>DB / static</td><td>…</td></tr>
+        <tr><td><code>/search</code></td><td>Search results</td><td>catalog table</td><td>…</td></tr>
+        <tr><td><code>/articles</code></td><td>Articles</td><td>new table</td><td>…</td></tr>
+        <tr><td><code>/admin/…</code></td><td>CMS</td><td>auth</td><td>…</td></tr>
+    </tbody>
+</table>
+
+<h3>E. Data model (one subsection per entity)</h3>
+<p>For each entity: table name, columns, relationships, who edits it (admin / member / CSV import). Examples: catalog items, sets/categories, members, articles, videos, site pages.</p>
+
+<h3>F. Admin CMS (one subsection per module)</h3>
+<table>
+    <thead><tr><th>Module</th><th>Screens</th><th>Priority (P0/P1/P2)</th></tr></thead>
+    <tbody>
+        <tr><td>Catalog</td><td>sets, items, CSV import</td><td>P0</td></tr>
+        <tr><td>Articles</td><td>list, add, edit, publish</td><td>P1</td></tr>
+        <tr><td>Videos</td><td>embed vs upload — decide</td><td>P1</td></tr>
+        <tr><td>Members</td><td>accounts, block, roles</td><td>…</td></tr>
+    </tbody>
+</table>
+
+<h3>G. Public UX (short)</h3>
+<ul>
+    <li>Search: which fields, sort order, page size.</li>
+    <li>Member features: public vs private, what appears on profiles.</li>
+    <li>Articles/videos: layout; links to catalog if any.</li>
+</ul>
+
+<h3>H. Media and files</h3>
+<ul>
+    <li>Image folders under <code>public/</code>, naming rules, max upload size.</li>
+    <li>Video: YouTube/Vimeo embed only, or files on server.</li>
+    <li>Article body: plain HTML from CMS vs Markdown.</li>
+</ul>
+
+<h3>I. Phases (build in order)</h3>
+<table>
+    <thead><tr><th>Phase</th><th>Scope</th><th>Done when</th></tr></thead>
+    <tbody>
+        <tr><td>1</td><td>Core catalog + search + one admin module</td><td>…</td></tr>
+        <tr><td>2</td><td>Members + collections</td><td>…</td></tr>
+        <tr><td>3</td><td>Articles, videos, extra CMS</td><td>…</td></tr>
+    </tbody>
+</table>
+<p>Ask to implement <strong>one phase at a time</strong>, not the entire plan in one step.</p>
+
+<h3>J. Open questions</h3>
+<p>List undecided items. Tell your assistant whether to ask you or use judgment only if you explicitly allow it.</p>
+
+<h2>4. How long a written plan can be</h2>
+<table>
+    <thead><tr><th>Size</th><th>Typical use</th></tr></thead>
+    <tbody>
+        <tr><td>2–4 pages, structured</td><td>Easy to plan in one conversation; build phase by phase</td></tr>
+        <tr><td>8–15 pages in <code>docs/SITE_PLAN.md</code></td><td>Good for work across many sessions</td></tr>
+        <tr><td>Very long unstructured text</td><td>Split into sections or phases; harder to follow</td></tr>
+    </tbody>
+</table>
+
+<h3>Tips so builders and AI assistants read it correctly</h3>
+<ul>
+    <li>Mark priority: <strong>P0</strong> (must have), <strong>P1</strong>, <strong>P2</strong>.</li>
+    <li>Label each feature <strong>new</strong> vs <strong>extends existing pattern</strong>.</li>
+    <li>One source of truth per topic (avoid repeating the same column list in three places).</li>
+    <li>Say what <strong>not</strong> to change on reference sites.</li>
+</ul>
+
+<h2>5. What to borrow from a “similar” reference site (architecture only)</h2>
+<p>Without copying its data or images, you can reuse these <em>shapes</em>:</p>
+<ul>
+    <li>Laravel + MySQL + Blade views</li>
+    <li>Public site + member login + admin CMS behind auth</li>
+    <li>Catalog stored in DB; images on disk; paths in database</li>
+    <li>Search with filters; admin list / edit / delete per content type</li>
+    <li>Optional CSV bulk import with downloadable template</li>
+    <li>Deploy: application folder + public web root (e.g. <code>laravel</code> + <code>public_html</code>)</li>
+</ul>
+<p>Define <strong>your</strong> tables, labels, and URLs fresh in <code>SITE_PLAN.md</code>.</p>
+
+<h2>6. Photoshop JPG mockups — why they help</h2>
+<p>Flattened JPG exports are excellent for <strong>CSS and page layout</strong> when you want the live site to match your design.</p>
+
+<h3>Mockups help with</h3>
+<table>
+    <thead><tr><th>Detail</th><th>Use in build</th></tr></thead>
+    <tbody>
+        <tr><td>Layout</td><td>Widths, header, grids, sidebars</td></tr>
+        <tr><td>Spacing</td><td>Padding, gaps, button size</td></tr>
+        <tr><td>Typography</td><td>Relative sizes for titles vs body</td></tr>
+        <tr><td>Colors</td><td>Backgrounds, borders, buttons (list hex codes in design-notes)</td></tr>
+        <tr><td>Components</td><td>Cards, tables, forms, navigation</td></tr>
+        <tr><td>Mobile vs desktop</td><td>Separate JPGs per breakpoint if possible</td></tr>
+    </tbody>
+</table>
+
+<h3>Mockups do not replace</h3>
+<ul>
+    <li><strong>Real text in HTML</strong> — body copy should not live only inside JPGs on the live site.</li>
+    <li><strong>Behavior</strong> — hover, errors, empty states, login; add notes or extra mockups.</li>
+    <li><strong>Long real data</strong> — labels that fit in Photoshop may wrap differently with live content; CSS should flex.</li>
+    <li><strong>Font files</strong> — name the font family in design-notes; JPG does not install fonts.</li>
+</ul>
+
+<h3>How to organize mockup files</h3>
+<ol>
+    <li>One JPG per screen (e.g. home, search results, item detail, member page, admin list).</li>
+    <li>Clear file names: <code>home-desktop.jpg</code>, <code>search-results-mobile.jpg</code>.</li>
+    <li>Short caption per image: “Home, logged out” / “Admin — edit article.”</li>
+    <li>Optional <code>design-notes.txt</code>: hex colors, font names, “content max width 900px.”</li>
+    <li>Artboards at realistic width (e.g. 1200px content) so proportions stay true.</li>
+</ol>
+<p>You do not need to hand off <code>.psd</code> files for CSS work unless someone is slicing assets; JPG + exported logos/icons is usually enough.</p>
+
+<h2>7. Sample message to an AI coding assistant</h2>
+<p>When you start building, use a short message like this (adjust paths and phase):</p>
+<pre>Read docs/SITE_PLAN.md in [project folder].
+Read mockups in docs/mockups/ for layout.
+
+Implement Phase 1 only: [title].
+
+Match the JPGs for CSS on Phase 1 screens.
+Stack: Laravel, MySQL, Blade.
+Do not commit. Do not deploy unless I ask.</pre>
+
+<h2>8. Minimal “concept brief” before the full plan</h2>
+<p>If the full plan is not ready, start with one page answering:</p>
+<ul>
+    <li>Site topic and audience (one paragraph)</li>
+    <li>What one main “record” is (catalog item, article, etc.)</li>
+    <li>Why members sign up</li>
+    <li>Top five admin CMS areas you need</li>
+    <li>How articles and videos relate to the catalog (or stand alone)</li>
+    <li>How this site differs from your reference site in one sentence</li>
+</ul>
+<p>From that, you or an assistant can draft the full <code>SITE_PLAN.md</code> skeleton.</p>
+
+<h2>9. Checklist before asking for implementation</h2>
+<ul>
+    <li><code>docs/SITE_PLAN.md</code> filled in (at least Phase 1)</li>
+    <li>Mockup JPGs for Phase 1 screens in <code>docs/mockups/</code></li>
+    <li>Priorities marked P0 / P1 / P2</li>
+    <li>New project folder named; not mixed with another live site’s database</li>
+    <li>Decisions noted: video embed vs upload; static Blade pages vs CMS pages</li>
+</ul>
+
+<p class="footer-note">
+    Document: NEW_SITE_PLANNING_GUIDE — created for project planning on D: drive.<br>
+    HTML source: <code>docs/NEW_SITE_PLANNING_GUIDE.html</code> — print to PDF anytime from your browser (Ctrl+P → Save as PDF).
+</p>
+
+</body>
+</html>

@@ -11,81 +11,51 @@
     <h1>History of miniature license plate premiums</h1>
     <p class="history-intro">
         Miniature license plates were packaged with candy, gum, cereal, tobacco, and countless other products for decades.
-        Use the timeline below to explore key periods — each marker opens a short story and photograph.
+        Use the timeline below to explore key periods — tap or click a row to expand its story and photograph.
     </p>
     <p class="history-hint">
-        Click a label on the timeline to open its story and photo.
-        Close with the <strong>×</strong> button in the corner or press <kbd>Esc</kbd>.
+        Expand a period below to read the full story. Only one section stays open at a time.
     </p>
 
     @if (count($timelineEntries) === 0)
         <p class="history-empty">Timeline content is being prepared.</p>
     @else
         <div class="history-interactive" id="historyInteractive">
-        <div class="history-timeline-wrap" id="history-timeline">
-            <div class="history-timeline-track" role="list" aria-label="History timeline">
-                @foreach ($timelineEntries as $index => $entry)
-                    <div class="history-timeline-item" role="listitem">
-                        <button type="button"
-                                class="history-timeline-marker"
-                                id="history-marker-{{ $entry['id'] }}"
-                                data-history-id="{{ $entry['id'] }}"
-                                data-history-title="{{ e($entry['title']) }}"
-                                data-history-image="{{ $entry['image_url'] ?? '' }}"
-                                data-history-alt="{{ e($entry['alt']) }}"
-                                aria-expanded="false"
-                                aria-controls="historyModal"
-                                @if ($index === 0) aria-current="false" @endif>
-                            <span class="history-timeline-dot" aria-hidden="true"></span>
-                            <span class="history-timeline-label">{{ $entry['label'] }}</span>
-                        </button>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-
-        <p class="history-preview-placeholder" id="historyPreviewPlaceholder">
-            Click a label in the timeline list to read that story and see its photo.
-        </p>
-
-        <div id="historyModal"
-             class="history-modal"
-             role="dialog"
-             aria-modal="true"
-             aria-labelledby="historyModalTitle"
-             aria-describedby="historyModalBody"
-             hidden>
-            <div class="history-modal-backdrop" aria-hidden="true"></div>
-            <div class="history-modal-panel">
-                <div class="history-modal-header">
-                    <h2 class="history-modal-title" id="historyModalTitle"></h2>
-                    <button type="button" class="history-modal-close" data-history-close aria-label="Close">&times;</button>
-                </div>
-                <div class="history-modal-scroll">
-                    <div class="history-modal-layout" id="historyModalLayout">
-                        <aside class="history-modal-media" id="historyModalMedia" hidden aria-label="Illustration">
-                            <img id="historyModalImg" src="" alt="">
-                            <p class="image-caption" id="historyModalCaption" hidden></p>
-                        </aside>
-                        <div class="history-modal-body" id="historyModalBody"></div>
-                    </div>
+            <div class="history-timeline-wrap" id="history-timeline">
+                <div class="history-timeline-track" aria-label="History timeline">
+                    @foreach ($timelineEntries as $entry)
+                        <details class="history-accordion-item" name="history-timeline">
+                            <summary class="history-timeline-marker" id="history-marker-{{ $entry['id'] }}">
+                                <span class="history-timeline-thumb{{ empty($entry['image_url']) ? ' history-timeline-thumb--empty' : '' }}" aria-hidden="true">
+                                    @if (! empty($entry['image_url']))
+                                        <img src="{{ $entry['image_url'] }}" alt="" width="60" height="60" loading="lazy" decoding="async">
+                                    @endif
+                                </span>
+                                <span class="history-timeline-label">{{ $entry['label'] }}</span>
+                            </summary>
+                            <div class="history-accordion-panel" id="history-panel-{{ $entry['id'] }}">
+                                <h2 class="history-accordion-title">{{ $entry['title'] }}</h2>
+                                <div class="history-accordion-layout{{ empty($entry['image_url']) && empty($entry['caption']) ? '' : ' has-media' }}">
+                                    @if (! empty($entry['image_url']) || ! empty($entry['caption']))
+                                        <figure class="history-accordion-media" aria-label="Illustration">
+                                            @if (! empty($entry['image_url']))
+                                                <img src="{{ $entry['image_url'] }}" alt="{{ $entry['alt'] }}">
+                                            @endif
+                                            @if (! empty($entry['caption']))
+                                                <figcaption class="image-caption">{{ $entry['caption'] }}</figcaption>
+                                            @endif
+                                        </figure>
+                                    @endif
+                                    <div class="history-accordion-body" lang="en">
+                                        {!! $entry['body'] !!}
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+                    @endforeach
                 </div>
             </div>
         </div>
-        </div>
-
-        @foreach ($timelineEntries as $entry)
-            <div id="history-content-{{ $entry['id'] }}" class="history-entry-source" hidden>
-                {!! $entry['body'] !!}
-            </div>
-            @if (! empty($entry['caption']))
-                <div id="history-caption-{{ $entry['id'] }}" class="history-caption-source" hidden>{{ $entry['caption'] }}</div>
-            @endif
-        @endforeach
     @endif
 </div>
 @endsection
-
-@push('scripts')
-@include('components.history-timeline-script')
-@endpush

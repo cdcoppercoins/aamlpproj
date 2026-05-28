@@ -89,6 +89,17 @@ plate images on the front.</p>',
         'caption' => 'Although they have very similar designs both front and back, the 1949 Topps License Plate Card set is far smaller in size than their 1950 counterpart.',
     ],
     [
+        'id' => '51-charms',
+        'label' => 'Gumball License Plate Charms - 1951',
+        'title' => '"Mirror Plate" Gumball Charms',
+        'body' => '<p>These small plastic license plate charms are a 1951-era penny vending machine issue, sold one at a time through the same type of bulk machines that dispensed gumballs, rings, and small toy prizes. They were most likely made by Samuel Eppy & Co. / Eppy, the largest gumball charm producer of the era. The original display card advertised “License Plates — 1¢ Each” and encouraged children to “Collect All 48 States,” a phrase that places the concept firmly before Alaska and Hawaii became states in 1959. Each charm was molded in plastic with a small hanging loop at the top, allowing it to be worn, linked, or saved as part of a collection.</p>
+
+<p>These were not cereal premiums in the usual sense, nor were they full-sized bicycle plates or mail-order giveaways. They were inexpensive novelty charms meant to attract repeat purchases from children at drug stores, five-and-dimes, grocery stores, arcades, and similar locations. The buyer likely did not choose a specific state, which made the collecting challenge part of the appeal. While the exact maker is not confirmed from the display card alone, the format fits the mid-century gumball charm industry, where companies produced large runs of small plastic novelties for penny vending machines. Today, surviving examples are desirable not only as miniature license plate collectibles, but also as artifacts of postwar American vending culture.</p>',
+        'image' => 'history-media/51-mirrors.jpg',
+        'alt' => '1951 ghumball charms',
+        'caption' => 'This display card is very rare and shows a number of gumball charms showing license plates. The charms themselves are quite scarce.',
+    ],
+    [
         'id' => '52-licade',
         'label' => 'Licade License plate cards - 1952',
         'title' => 'Licade by Merley and their Cards',
@@ -130,6 +141,8 @@ manufactured in the millions by J. L. Clark Manufacturing Company of Rockford, I
 shifts and changed tooling in the factory just to accommodate the huge order of little license plates by the
 cereal giant.</p>
 
+<p>The design on each plate closely mirrored the passenger issue for each state (except Illinois, which was a truck plate number). The plates were flat-edged, but were embossed like the real plates and printed in up to 5 colors. The plates for Maryland, Missouri, Wisconsin and Washington D.C. were dated 1954 because those states had early expiration dates and cars displayed the next year (by expiration) for most of the current year. MANY people selling the 1953 (and 1954) Wheaties license plates often couple the 1954 dated plates with their 1954 plates, but actually belong in the 1953 set.</p>
+
 <p>The plates were first affixed with glue to the outside front panel of the cereal box. This practice was
 abandoned before midyear because a large number of these boxes were vandalized by kids tearing the
 plates off the boxes in stores, leaving the boxes to sit unpurchased. The boxes were changed to include a
@@ -145,8 +158,8 @@ plate inside by the end of May. Kids could also acquire the plates by sending bo
         'title' => 'Wheaties Adds it On.',
         'body' => '<p>Midyear in 1953, Wheaties had foreign-jurisdiction mini license plates created as an expansion of the
 48-state license plate set. These plates came in three subsets of 10 plates each, including plates of Islands
-and Territories, the Provinces of Canada, and the "Old World," mostly European countries. These plates
-came on separate boxes from the U.S. state plates and were considered more of a second set to collect.
+and Territories, the Provinces of Canada, and the "Old World" - mostly European countries. These plates
+came in separate boxes from the U.S. state plates and were considered more of a second set to collect. A safety feature - crimp rolled edges on the license plates helped avoid cuts from sharp edges - likely a voiced complaint of parents.
 These subsets were available for a quarter as well, and both the 48-state set and the foreign plate set
 came with a bonus plate if all were ordered together.</p>',
         'image' => 'history-media/53foreign.jpg',
@@ -154,39 +167,124 @@ came with a bonus plate if all were ordered together.</p>',
         'caption' => 'Advertisement found on the back of comic books advertising the charm of foreign license plates found in Wheaties boxes.',
     ],
     [
+        'id' => 'cracker-jack',
+        'label' => 'Cracker Jack License Plate Cards - 1953 and 1954',
+        'title' => 'To Call These Rare is an Understatement...',
+        'body' => '<p>Cracker Jack, as prizes in their boxes of caramel popcorn, created a set of cards (measuring 3" x 1 1/2") featuring all 48 states in 1953. The designs on these cards are highly similar to the Wheaties license plates for 1953 featuring, in some cases, the exact same serial number - a direct copy, possibly because the states had given unusable serial numbers to General Mills to use for their plates, Cracker Jack may have acquired the same permission with the same serial numbers. This set of plate cards was repeated in 1954 with new plates and serial numbers. The set for 1953 is very rare, with only a few examples known of most of the cards. The 1954 set is even more rare - nearly half of the states are unknown in any collection today, although it is believed that all 48 states were originally represented.</p>
+
+',
+        'image' => 'history-media/crackerjack.jpg',
+        'alt' => 'cracker jack cards - a rarity',
+        'caption' => 'Cracker Jack cards are quite simple in design but are a nightmare to collect. This exceedingly rare subject rarely shows up for sale.',
+    ],
+    [
+        'id' => '54-wheaties',
+        'label' => 'Wheaties License Plates - 1954',
+        'title' => 'Return of the Plate Master.',
+        'body' => '<p>General Mills returned in 1954 with a second set of steel license plates that mirrored its effort with the USA set in 1953. All 48 states were available (with rolled edges), and kids could get a plate showing the District of Columbia if they ordered the complete 48-
+plate set at once for a dollar. The difference this year was that there were no additional plates designed.
+The 1953 foreign plate set was carried over into 1954 with no changes. It is believed that General Mills
+ordered so many of these foreign plates, all after the middle of the year in 1953, that there were plenty of
+leftovers to last all of 1954.</p>',
+        'image' => 'history-media/54statesgm.jpg',
+        'alt' => '1954 Wheaties License Plates by General Mills.',
+        'caption' => 'Wheaties license plates for 1954 are very much like the 1953 set. The designs were "current year," which includes 1955 dated plates of Maryland, Missouri, Wisconsin and Washington D.C.',
+    ],
+    [
+        'id' => '54-canada',
+        'label' => 'Quaker Cereal Canada License Plates - 1954',
+        'title' => 'First Canada Only Issue',
+        'body' => '<p>Because there were no 1954 Canadian plates issued by General Mills, another brand, Quaker, made
+and issued a 10-plate metal set in Canada for its Wheat Puffs cereal.</p><p> These plates were of lower
+quality but gave Canadians what it seemed General Mills would not. They are especially
+distinguishable from Wheaties plates in that they come with pairs of holes at all four corners of the plate. In error the Saskatchewan plate came in both red (the correct color) and green. It
+is unknown who made these plates for Quaker.</p>',
+        'image' => 'history-media/54canada.jpg',
+        'alt' => '1954 Quaker Cereal mini license plates',
+        'caption' => 'The first-ever set of Canada issued metal mini license plates came in the form of 10 colorful plates representing each of the provinces of Canada.',
+    ],
+    [
+        'id' => '1955-leader',
+        'label' => 'Leader Candy Co. License Plates - 1955',
+        'title' => 'The Aftermath Effect',
+        'body' => '<p>In 1955, General Mills dropped the license plate promotion and went on to other projects. The only
+known set issued that year was by a candy confectioner in Brooklyn, New York, called Leader Novelty and
+Candy Co. Because more than 70 years passed between the manufacture of said plates and the beginning
+of true research into the subject, very little is known about these very elusive mini license plates.</p>
+<p>It is
+believed they were manufactured by J. L. Clark, the same company that had made the General Mills
+Wheaties plates for the past two years. They are steel, of the same gauge as the Wheaties plates. They
+share nearly identical art with the 1954 Wheaties plates except for a rough change of the year date and
+design elements where needed to match 1955 issues, and they were hole-punched for use on bicycles - sometimes only two at the top of the plate, and sometimes a hole at each corner.</p>
+<p>Notable differences between the Leader plates and Wheaties plates are that the Leader plates are all
+the same size, they are not embossed except for faint border embossing on some issues, and they are all
+printed in only two colors, versus the up to five colors of the Wheaties plates. Assumably, all of this
+was a cost-cutting measure to make the order for said plates less expensive for Leader.</p>
+<p>Very little is known
+about their distribution except what the boxes say; which alone is a mystery. The art on the boxes say there are 60
+plates in a set, and appear to have a plate for Hawaii and another for "USA." So far neither of those are
+known to have ever existed. It is assumed because of the aforementioned facts that the Leader set contains the
+exact same number of plates as the 1954 General Mills set: 49. All of the Leader plates are rare, with a few
+seeming not to exist because of a lack of any knowledge of a collector having one. Fewer than a dozen of
+most of the plates are known to exist today.</p>
+',
+        'image' => 'history-media/55leader.jpg',
+        'alt' => '1955 mini license plates by Leader Candy',
+        'caption' => 'The Leader mini license plates of 1955 are quite scarce and difficult to locate. The only two different boxes known (assumably for different flavors) are shown in the center of this image.',
+    ],
+
+    [
         'id' => 'sample-today',
         'label' => 'Today',
         'title' => 'Collecting and research',
         'body' => 'Replace with your closing paragraph on modern collecting, catalogs, and how enthusiasts document varieties, conditions, and history.',
-        'image' => null,
-        'alt' => null,
-        'caption' => null,
+        'image' => '   ',
+        'alt' => '   ',
+        'caption' => '   ',
     ],
     [
         'id' => 'sample-today',
         'label' => 'Today',
         'title' => 'Collecting and research',
         'body' => 'Replace with your closing paragraph on modern collecting, catalogs, and how enthusiasts document varieties, conditions, and history.',
-        'image' => null,
-        'alt' => null,
-        'caption' => null,
+        'image' => '   ',
+        'alt' => '   ',
+        'caption' => '   ',
     ],
     [
         'id' => 'sample-today',
         'label' => 'Today',
         'title' => 'Collecting and research',
         'body' => 'Replace with your closing paragraph on modern collecting, catalogs, and how enthusiasts document varieties, conditions, and history.',
-        'image' => null,
-        'alt' => null,
-        'caption' => null,
+        'image' => '   ',
+        'alt' => '   ',
+        'caption' => '   ',
     ],
     [
         'id' => 'sample-today',
         'label' => 'Today',
         'title' => 'Collecting and research',
         'body' => 'Replace with your closing paragraph on modern collecting, catalogs, and how enthusiasts document varieties, conditions, and history.',
-        'image' => null,
-        'alt' => null,
-        'caption' => null,
+        'image' => '   ',
+        'alt' => '   ',
+        'caption' => '   ',
+    ],
+    [
+        'id' => 'sample-today',
+        'label' => 'Today',
+        'title' => 'Collecting and research',
+        'body' => 'Replace with your closing paragraph on modern collecting, catalogs, and how enthusiasts document varieties, conditions, and history.',
+        'image' => '   ',
+        'alt' => '   ',
+        'caption' => '   ',
+    ],
+    [
+        'id' => 'sample-today',
+        'label' => 'Today',
+        'title' => 'Collecting and research',
+        'body' => 'Replace with your closing paragraph on modern collecting, catalogs, and how enthusiasts document varieties, conditions, and history.',
+        'image' => '   ',
+        'alt' => '   ',
+        'caption' => '   ',
     ],
 ];

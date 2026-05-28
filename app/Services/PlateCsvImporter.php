@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Support\PlateCsvColumns;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class PlateCsvImporter
 {
@@ -14,24 +16,24 @@ class PlateCsvImporter
     ];
 
     /**
-     * @return array{imported: int, skipped: int, errors: list<string>}
+     * @return array{imported: int, skipped: int, errors: list<string>, set_codes: list<string>}
      */
-    public function importFromPath(string $path): array
+    public function importFromPath(string $path, ?string $expectedSetCode = null): array
     {
         if (! file_exists($path)) {
-            return ['imported' => 0, 'skipped' => 0, 'errors' => ["File not found: {$path}"]];
+            return $this->result(0, 0, ["File not found: {$path}"]);
         }
 
         $handle = fopen($path, 'r');
         if (! $handle) {
-            return ['imported' => 0, 'skipped' => 0, 'errors' => ["Could not open file: {$path}"]];
+            return $this->result(0, 0, ["Could not open file: {$path}"]);
         }
 
         $headers = fgetcsv($handle);
         if (! $headers) {
             fclose($handle);
 
-            return ['imported' => 0, 'skipped' => 0, 'errors' => ['Could not read CSV headers.']];
+            return $this->result(0, 0, ['Could not read CSV headers.']);
         }
 
         $headers = array_map(function ($header) {
@@ -43,7 +45,12 @@ class PlateCsvImporter
         $imported = 0;
         $skipped = 0;
         $errors = [];
+        $setCodes = [];
         $rowNum = 1;
+        $expectedSetCode = $expectedSetCode !== null ? trim($expectedSetCode) : null;
+        if ($expectedSetCode === '') {
+            $expectedSetCode = null;
+        }
 
         while (($row = fgetcsv($handle)) !== false) {
             $rowNum++;
@@ -53,6 +60,15 @@ class PlateCsvImporter
             }
 
             $data = array_combine($headers, array_slice($row, 0, count($headers)));
+            $rowSetCode = trim((string) ($data['set_code'] ?? ''));
+
+            if ($expectedSetCode !== null && $rowSetCode !== '' && strcasecmp($rowSetCode, $expectedSetCode) !== 0) {
+                $errors[] = "Row {$rowNum}: set_code must be {$expectedSetCode} (found {$rowSetCode}).";
+                $skipped++;
+
+                continue;
+            }
+
             $record = $this->mapRow($data, $rowNum);
 
             if ($record === null) {
@@ -62,8 +78,10 @@ class PlateCsvImporter
             }
 
             try {
+                $this->ensureSetDirectory($record['set_code']);
                 $this->insertWithDuplicateHandling($record);
                 $imported++;
+                $setCodes[$record['set_code']] = true;
             } catch (\Throwable $exception) {
                 $errors[] = "Row {$rowNum}: {$exception->getMessage()}";
                 $skipped++;
@@ -72,21 +90,62 @@ class PlateCsvImporter
 
         fclose($handle);
 
-        return compact('imported', 'skipped', 'errors');
+        if ($expectedSetCode !== null && count($setCodes) > 1) {
+            $errors[] = 'CSV must contain only one set_code when a set code is specified on the upload form.';
+        }
+
+        return $this->result($imported, $skipped, $errors, array_keys($setCodes));
     }
 
     /**
-     * @return array{imported: int, skipped: int, errors: list<string>}
+     * @return array{imported: int, skipped: int, errors: list<string>, set_codes: list<string>}
      */
-    public function importFromUploadedFile(UploadedFile $file): array
+    public function importFromUploadedFile(UploadedFile $file, ?string $expectedSetCode = null): array
     {
         $tempPath = $file->getRealPath();
 
         if (! $tempPath) {
-            return ['imported' => 0, 'skipped' => 0, 'errors' => ['Uploaded file could not be read.']];
+            return $this->result(0, 0, ['Uploaded file could not be read.']);
         }
 
-        return $this->importFromPath($tempPath);
+        return $this->importFromPath($tempPath, $expectedSetCode);
+    }
+
+    public function renderTemplateCsv(array $prefill = []): string
+    {
+        $handle = fopen('php://temp', 'r+');
+        fputcsv($handle, PlateCsvColumns::HEADERS);
+        foreach (PlateCsvColumns::exampleRows($prefill) as $row) {
+            fputcsv($handle, $row);
+        }
+        rewind($handle);
+        $csv = stream_get_contents($handle) ?: '';
+        fclose($handle);
+
+        return $csv;
+    }
+
+    private function ensureSetDirectory(string $setCode): void
+    {
+        $directory = public_path('plates/' . $setCode);
+        if (! File::isDirectory($directory)) {
+            File::makeDirectory($directory, 0755, true);
+        }
+    }
+
+    /**
+     * @param  list<string>  $errors
+     * @param  list<string>  $setCodes
+     * @return array{imported: int, skipped: int, errors: list<string>, set_codes: list<string>}
+     */
+    private function result(int $imported, int $skipped, array $errors, array $setCodes = []): array
+    {
+        return [
+            'imported' => $imported,
+            'skipped' => $skipped,
+            'errors' => $errors,
+            'set_codes' => $setCodes,
+        ];
     }
 
     private function mapRow(array $data, int $rowNum): ?array
