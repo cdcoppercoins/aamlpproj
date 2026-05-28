@@ -122,7 +122,7 @@
                             @endif
                             <span class="collection-member-info">
                                 <span class="collection-member-name">{{ $collector->name }}</span>
-                                <span class="collection-member-username">@{{ $collector->username }}</span>
+                                <span class="collection-member-username">{{ $collector->username }}</span>
                                 <span class="collection-member-stats">
                                     {{ number_format($collector->owned_qty) }} {{ Str::plural('plate', $collector->owned_qty) }} owned
                                     · {{ number_format($collector->public_set_count) }} public {{ Str::plural('set', $collector->public_set_count) }}

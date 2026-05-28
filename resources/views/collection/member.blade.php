@@ -24,7 +24,7 @@
             </div>
         </div>
         <p class="home-lead">
-            @{{ $member->username }}
+            {{ $member->username }}
             · {{ number_format($totalOwned) }} {{ Str::plural('plate', $totalOwned) }} owned in public sets
             · {{ number_format($publicSets->count()) }} {{ Str::plural('set', $publicSets->count()) }}
         </p>

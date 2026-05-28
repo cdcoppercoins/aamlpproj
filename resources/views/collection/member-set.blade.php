@@ -17,7 +17,7 @@
 
         <h1 class="home-title">{{ $setMeta->set_name }}</h1>
         <p class="home-lead">
-            {{ $member->name }} (@{{ $member->username }})
+            {{ $member->name }} ({{ $member->username }})
             @if ($setMeta->company) · {{ $setMeta->company }} @endif
             @if ($setMeta->year) · {{ $setMeta->year }} @endif
         </p>
