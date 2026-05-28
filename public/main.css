@@ -121,7 +121,7 @@ body {
     z-index: 10;
 }
 
-.main-nav ul {
+.main-nav > ul {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -155,6 +155,82 @@ body {
 
 .main-nav a:hover {
     background: #5090b8;
+}
+
+.main-nav-more {
+    position: relative;
+}
+
+.main-nav-more-trigger {
+    display: block;
+    padding: 5px clamp(6px, 1.4vw, 16px);
+    color: #fab95b;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 700;
+    font-size: clamp(0.75rem, 1.05vw, 0.95rem);
+    letter-spacing: clamp(0.03em, 0.06vw, 0.1em);
+    cursor: default;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.main-nav-more:hover .main-nav-more-trigger,
+.main-nav-more:focus-within .main-nav-more-trigger {
+    background: #5090b8;
+}
+
+.main-nav-more .main-nav-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 30;
+    min-width: 11rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: #2d6388;
+    border: 1px solid #5090b8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    text-align: left;
+}
+
+.main-nav-more:hover .main-nav-dropdown-menu,
+.main-nav-more:focus-within .main-nav-dropdown-menu {
+    display: block;
+}
+
+.main-nav-dropdown-menu li {
+    margin: 0;
+    padding: 0;
+}
+
+.main-nav-dropdown-menu a {
+    display: block;
+    padding: 8px;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    text-align: left;
+}
+
+.main-nav-dropdown-menu a:hover {
+    background: #4079a5;
+}
+
+.session-bar-side-link {
+    flex: 0 0 auto;
+    padding: 8px 0 8px 14px;
+    font-family: "Open Sans", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #2d6388;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.session-bar-side-link:hover,
+.session-bar-side-link:focus-visible {
+    text-decoration: underline;
 }
 
 .session-bar-row {
@@ -2746,7 +2822,7 @@ body {
     }
 
     .main-nav,
-    .main-nav ul {
+    .main-nav > ul {
         gap: 4px 8px;
     }
 
@@ -2755,6 +2831,16 @@ body {
         font-weight: 700;
         white-space: normal;
         text-align: center;
+    }
+
+    .main-nav-more-trigger {
+        padding: 8px 10px;
+        text-align: center;
+    }
+
+    .main-nav-dropdown-menu {
+        left: 0;
+        transform: none;
     }
 
     .home-page--flush-hero {

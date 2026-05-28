@@ -14,30 +14,30 @@
   <!-- NEW wrapper that is as wide as the content area and filled with white -->
   <div class="nav-outer">
     <div class="site-nav-block">
-      <nav class="main-nav">
+      <nav class="main-nav" aria-label="Main">
         <ul>
           <li><a href="{{ route('home') }}">HOME</a></li>
           <li><a href="{{ route('gallery') }}">GALLERY</a></li>
           <li><a href="{{ route('search') }}">SEARCH</a></li>
-          <li><a href="{{ route('about') }}">ABOUT</a></li>
           <li><a href="{{ route('history') }}">HISTORY</a></li>
           <li><a href="{{ route('articles.index') }}">ARTICLES</a></li>
-          <li><a href="{{ route('contribute') }}">CONTRIBUTE</a></li>
-          @auth
-          <li><a href="{{ route('collection.index') }}">MY COLLECTION</a></li>
-          <li><a href="{{ route('profile.edit') }}">PROFILE</a></li>
-          @if (auth()->user()->isAdmin())
-          <li><a href="{{ route('admin.dashboard') }}">ADMIN</a></li>
-          @endif
-          @else
+          <li class="main-nav-more">
+            <span class="main-nav-more-trigger" tabindex="0">MORE</span>
+            <ul class="main-nav-dropdown-menu">
+              <li><a href="{{ route('about') }}">About</a></li>
+              <li><a href="{{ route('contribute') }}">Contribute</a></li>
+            </ul>
+          </li>
+          @guest
           <li><a href="{{ route('login') }}">SIGN IN</a></li>
-          @endauth
-          <li><a href="https://www.ebay.com/str/minilicenseplates" target="new">SHOP</a></li>
+          @endguest
+          <li><a href="https://www.ebay.com/str/minilicenseplates" target="_blank" rel="noopener noreferrer">SHOP</a></li>
         </ul>
       </nav>
 
       @auth
       <div class="session-bar-row">
+        <a href="{{ route('collection.index') }}" class="session-bar-side-link">My collection</a>
         <a href="{{ route('profile.edit') }}" class="session-bar">
           @if (auth()->user()->profileImageUrl())
             <img src="{{ auth()->user()->profileImageUrl() }}"
