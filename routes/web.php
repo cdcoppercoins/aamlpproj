@@ -19,6 +19,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Support\AdSense;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -44,6 +46,8 @@ Route::get('/about', function () {
 })->name('about');
 
 Route::get('/history', [HistoryController::class, 'index'])->name('history');
+Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+Route::get('/articles/{slug}', [ArticleController::class, 'show'])->name('articles.show');
 
 Route::get('/contribute', [ContributeController::class, 'index'])->name('contribute');
 Route::post('/contribute', [ContributeController::class, 'store'])->name('contribute.store');
@@ -97,6 +101,14 @@ Route::middleware(['auth', 'not.blocked', 'admin'])->prefix('admin')->name('admi
     Route::get('/history-timeline/{historyTimeline}/edit', [HistoryTimelineController::class, 'edit'])->name('history-timeline.edit');
     Route::match(['put', 'post'], '/history-timeline/{historyTimeline}', [HistoryTimelineController::class, 'update'])->name('history-timeline.update');
     Route::delete('/history-timeline/{historyTimeline}', [HistoryTimelineController::class, 'destroy'])->name('history-timeline.destroy');
+
+    Route::get('/articles', [AdminArticleController::class, 'index'])->name('articles.index');
+    Route::get('/articles/create', [AdminArticleController::class, 'create'])->name('articles.create');
+    Route::post('/articles', [AdminArticleController::class, 'store'])->name('articles.store');
+    Route::get('/articles/{article}/edit', [AdminArticleController::class, 'edit'])->name('articles.edit');
+    Route::post('/articles/{article}/publish', [AdminArticleController::class, 'publish'])->name('articles.publish');
+    Route::match(['put', 'post'], '/articles/{article}', [AdminArticleController::class, 'update'])->name('articles.update');
+    Route::delete('/articles/{article}', [AdminArticleController::class, 'destroy'])->name('articles.destroy');
 
     Route::prefix('catalog')->name('catalog.')->group(function () {
         Route::get('import', [CatalogImportController::class, 'create'])->name('import.create');

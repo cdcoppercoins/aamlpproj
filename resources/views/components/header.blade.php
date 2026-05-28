@@ -21,6 +21,7 @@
           <li><a href="{{ route('search') }}">SEARCH</a></li>
           <li><a href="{{ route('about') }}">ABOUT</a></li>
           <li><a href="{{ route('history') }}">HISTORY</a></li>
+          <li><a href="{{ route('articles.index') }}">ARTICLES</a></li>
           <li><a href="{{ route('contribute') }}">CONTRIBUTE</a></li>
           @auth
           <li><a href="{{ route('collection.index') }}">MY COLLECTION</a></li>
