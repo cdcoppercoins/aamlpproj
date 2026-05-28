@@ -18,8 +18,20 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HistoryController;
+use App\Support\AdSense;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/ads.txt', function () {
+    $pubId = AdSense::publisherIdForAdsTxt();
+    if ($pubId === null) {
+        abort(404);
+    }
+
+    $line = 'google.com, pub-'.$pubId.', DIRECT, f08c47fec0942fa0';
+
+    return response($line."\n", 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+})->name('ads.txt');
 
 Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
 Route::get('/gallery/{setName}', [GalleryController::class, 'show'])->name('gallery.show');

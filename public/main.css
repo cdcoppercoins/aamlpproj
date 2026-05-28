@@ -740,6 +740,48 @@ body.history-modal-open {
 }
 
 /* --------------------------------------------------
+   ADSENSE PLACEMENTS
+-------------------------------------------------- */
+
+.ad-slot {
+    margin: 0 auto 20px;
+    padding: 0;
+    text-align: center;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.content-wrapper > .ad-slot--below-header {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.site-footer .ad-slot--above-footer {
+    margin: 0 0 16px;
+}
+
+.ad-slot ins.adsbygoogle {
+    display: block;
+}
+
+.ad-slot-placeholder {
+    margin: 0;
+    padding: 20px 16px;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    color: #556677;
+    font-style: italic;
+    background: #f4f8fb;
+    border: 2px dashed #c5d5e0;
+    border-radius: 6px;
+}
+
+.gallery-results-container .ad-slot--search-mid {
+    grid-column: 1 / -1;
+    margin: 4px 0 12px;
+}
+
+/* --------------------------------------------------
    FOOTER
 -------------------------------------------------- */
 

@@ -1,6 +1,7 @@
 <!-- Footer -->
 <footer class="site-footer">
     <div class="footer-frame">
+        @include('components.adsense-slot', ['placement' => 'above-footer'])
         <div class="footer-main">
             <nav class="footer-col footer-col-left" aria-label="Collector resources">
                 <ul class="footer-links">

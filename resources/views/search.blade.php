@@ -192,6 +192,9 @@
                             'setCounts' => $setCounts,
                             'collectionEntry' => $collectionEntries[$plate->id] ?? null,
                         ])
+                        @if ($loop->iteration === 4 && $results->count() > 4)
+                            @include('components.adsense-slot', ['placement' => 'search-mid'])
+                        @endif
                     @endforeach
                     @php
                         $gridRowPad = (3 - ($results->count() % 3)) % 3;

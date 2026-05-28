@@ -17,6 +17,7 @@
 /public/hot
 /public/storage
 /public/plates
+/public/history
 /storage/*.key
 /storage/pail
 /storage/framework/views/*

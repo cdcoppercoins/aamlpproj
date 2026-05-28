@@ -4,8 +4,7 @@
  * History timeline content — one array entry per milestone.
  *
  * Add your paragraphs and images here (or split into a dedicated file later).
- * Images go in: public/history-media/{image filename}
- * (You may also use public/history/ — project server.php fixes the name clash locally.)
+ * Images go in: public/history-media/{image filename} only (not public/history/).
  *
  * Fields:
  *   id     — unique slug (letters, numbers, hyphens)
