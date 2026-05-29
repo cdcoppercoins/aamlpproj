@@ -18,6 +18,16 @@
 
     <h2>About the collector</h2>
 
+    <div class="about-collector">
+        <figure class="about-collector-photo">
+            <img src="{{ asset('proheadshot.png') }}"
+                 alt="Portrait of C. Daughtrey, miniature license plate collector"
+                 width="220"
+                 height="220"
+                 class="about-collector-img"
+                 loading="lazy">
+        </figure>
+        <div class="about-collector-text">
     <p>
         I have been a mini license plate collector since 1978 when I pulled my first plates out of Honey Comb cereal.
     </p>
@@ -40,6 +50,8 @@
     <p>
         I built this website to help other collectors learn more about mini license plates and to share all I can find about the hobby.
     </p>
+        </div>
+    </div>
 
     <h2>What you'll find on this site</h2>
     <ul>

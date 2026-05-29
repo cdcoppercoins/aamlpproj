@@ -4643,6 +4643,38 @@ body {
     }
 }
 
+/* About page */
+.about-collector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem 1.5rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.about-collector-photo {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.about-collector-img {
+    display: block;
+    width: 220px;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    border: 2px solid #c8d4e0;
+}
+
+.about-collector-text {
+    flex: 1 1 16rem;
+    min-width: 0;
+}
+
+.about-collector-text p {
+    margin-top: 0;
+}
+
 /* Articles (public) */
 .articles-page {
     max-width: 52rem;
@@ -4698,6 +4730,14 @@ body {
     margin: 0 0 1rem;
     font-family: Nunito, sans-serif;
     color: #444;
+}
+
+.articles-search-hit {
+    background: #f5deb3;
+    color: inherit;
+    padding: 0 0.12em;
+    border-radius: 2px;
+    font-weight: inherit;
 }
 
 .articles-empty {

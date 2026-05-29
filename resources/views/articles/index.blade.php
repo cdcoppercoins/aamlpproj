@@ -49,7 +49,7 @@
                 {{ $articles->count() }} {{ $articles->count() === 1 ? 'result' : 'results' }} for <strong>{{ $query }}</strong>
             </p>
         @endif
-        @include('articles._list', ['articles' => $articles])
+        @include('articles._list', ['articles' => $articles, 'query' => $query])
     @endif
 </div>
 @endsection

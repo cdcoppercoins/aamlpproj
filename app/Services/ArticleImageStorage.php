@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\WebPublicPath;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -12,7 +13,7 @@ class ArticleImageStorage
 
     public function store(UploadedFile $file, ?string $preferredBasename = null): string
     {
-        $directory = public_path('articles-media');
+        $directory = WebPublicPath::path('articles-media');
 
         if (! File::isDirectory($directory)) {
             File::makeDirectory($directory, 0755, true);
@@ -26,7 +27,7 @@ class ArticleImageStorage
             $filename = $basename . '.' . $extension;
             $target = $directory . DIRECTORY_SEPARATOR . $filename;
             if (File::isFile($target)) {
-                $filename = $basename . '-' . Str::lower(Str::random(6)) . '.' . $extension;
+                File::delete($target);
             }
         } else {
             $filename = Str::uuid()->toString() . '.' . $extension;
@@ -47,7 +48,7 @@ class ArticleImageStorage
             return;
         }
 
-        $fullPath = public_path($imagePath);
+        $fullPath = WebPublicPath::path($imagePath);
 
         if (File::isFile($fullPath)) {
             File::delete($fullPath);

@@ -10,7 +10,9 @@
 <div class="home-page articles-page articles-show-page">
     <nav class="gallery-breadcrumbs articles-breadcrumbs" aria-label="Breadcrumb">
         <ol class="gallery-breadcrumbs-list">
-            <li><a href="{{ route('articles.index') }}">Articles</a></li>
+            <li>
+                <a href="{{ ($query ?? '') !== '' ? route('articles.index', ['q' => $query]) : route('articles.index') }}">Articles</a>
+            </li>
             <li aria-current="page">{{ $article->title }}</li>
         </ol>
     </nav>
@@ -20,11 +22,29 @@
             @if ($article->displayDate())
                 <p class="articles-article-date">{{ $article->displayDate() }}</p>
             @endif
-            <h1 class="articles-article-title">{{ $article->title }}</h1>
+            <h1 class="articles-article-title">
+                @if (($query ?? '') !== '')
+                    {!! \App\Support\SearchHighlighter::highlight($article->title, $query) !!}
+                @else
+                    {{ $article->title }}
+                @endif
+            </h1>
             @if ($article->subtitle)
-                <p class="articles-article-subtitle">{{ $article->subtitle }}</p>
+                <p class="articles-article-subtitle">
+                    @if (($query ?? '') !== '')
+                        {!! \App\Support\SearchHighlighter::highlight($article->subtitle, $query) !!}
+                    @else
+                        {{ $article->subtitle }}
+                    @endif
+                </p>
             @endif
-            <p class="articles-article-author">By {{ $article->author }}</p>
+            <p class="articles-article-author">By
+                @if (($query ?? '') !== '')
+                    {!! \App\Support\SearchHighlighter::highlight($article->author, $query) !!}
+                @else
+                    {{ $article->author }}
+                @endif
+            </p>
         </header>
 
         @if ($article->heroImageUrl())
@@ -36,7 +56,11 @@
         @endif
 
         <div class="articles-article-body">
-            {!! $article->body !!}
+            @if (($query ?? '') !== '')
+                {!! \App\Support\SearchHighlighter::highlightHtml($article->body, $query) !!}
+            @else
+                {!! $article->body !!}
+            @endif
         </div>
 
         @if ($article->images->isNotEmpty())
@@ -62,7 +86,9 @@
     </article>
 
     <p class="articles-back">
-        <a href="{{ route('articles.index') }}" class="home-secondary-btn">&larr; All articles</a>
+        <a href="{{ ($query ?? '') !== '' ? route('articles.index', ['q' => $query]) : route('articles.index') }}" class="home-secondary-btn">
+            &larr; {{ ($query ?? '') !== '' ? 'Back to search results' : 'All articles' }}
+        </a>
     </p>
 </div>
 @endsection

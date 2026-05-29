@@ -24,7 +24,7 @@ class ArticleController extends Controller
         ]);
     }
 
-    public function show(string $slug): View
+    public function show(Request $request, string $slug): View
     {
         $article = Article::query()
             ->where('slug', $slug)
@@ -34,6 +34,7 @@ class ArticleController extends Controller
 
         return view('articles.show', [
             'article' => $article,
+            'query' => trim((string) $request->input('q', '')),
         ]);
     }
 }
