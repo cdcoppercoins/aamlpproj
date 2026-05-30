@@ -37,13 +37,15 @@ class ContributeController extends Controller
                 senderName: $request->name,
                 senderEmail: $request->email,
                 messageText: $request->message,
-                ip: $request->ip(),
+                ip: $request->ip() ?? 'unknown',
             ));
 
             return redirect()->route('contribute')->with('success', 'Thank you! Your message has been sent.');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            report($e);
+
             return redirect()->route('contribute')
-                ->with('error', 'Mail failed on this server. Please email '.config('contribute.mail_to').' directly.')
+                ->with('error', 'Mail failed on this server. Please email '.config('contribute.mail_to', 'cdcoppercoins@gmail.com').' directly.')
                 ->withInput();
         }
     }

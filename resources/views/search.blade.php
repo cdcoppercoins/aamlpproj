@@ -252,7 +252,7 @@
     if (!buttons.length) return;
 
     const storageKey = 'galleryResultsView';
-    const listViewMinWidth = 800;
+    const listViewMinWidth = 900;
     const listButton = searchPage.querySelector('.gallery-view-btn[data-view="list"]');
 
     let userPreferredView = 'grid';

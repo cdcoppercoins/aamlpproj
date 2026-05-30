@@ -22,8 +22,6 @@
                      data-hover="{{ $backUrl }}"
                      data-original="{{ $frontUrl ?? $placeholder }}"
                      onerror="this.onerror=null;this.src='{{ $placeholder }}';this.dataset.original='{{ $placeholder }}';this.dataset.hover='';"
-                     onmouseover="if(this.dataset.hover){this.src=this.dataset.hover}"
-                     onmouseout="this.src=this.dataset.original"
                      alt="{{ $plate->jurisdiction ?? 'Mini license plate' }}">
             @else
                 <img class="gallery-result-img thumb-img"
@@ -43,56 +41,60 @@
             </div>
 
             <div class="gallery-result-panel gallery-result-panel--list">
-                <div class="gallery-result-header">
-                    <p class="gallery-result-set gallery-result-set--list">
-                        {{ $plate->set_name }}@if($plate->jurisdiction) - {{ strtoupper($plate->jurisdiction) }}@endif
-                    </p>
+                <div class="gallery-result-list-content">
+                    <div class="gallery-result-header">
+                        <p class="gallery-result-set gallery-result-set--list">
+                            {{ $plate->set_name }}@if($plate->jurisdiction) - {{ strtoupper($plate->jurisdiction) }}@endif
+                        </p>
 
-                    <p class="gallery-result-subline gallery-result-subline--list">
-                        @if ($size)
-                            size - {{ $size }}
-                        @endif
-                        @if ($size && ($setCount || $plate->company))
-                            ::
-                        @endif
-                        @if ($setCount)
-                            {{ number_format($setCount) }} plate set
-                        @endif
-                        @if ($plate->company)
-                            by {{ $plate->company }}
-                        @endif
-                    </p>
+                        <p class="gallery-result-subline gallery-result-subline--list">
+                            @if ($size)
+                                size - {{ $size }}
+                            @endif
+                            @if ($size && ($setCount || $plate->company))
+                                ::
+                            @endif
+                            @if ($setCount)
+                                {{ number_format($setCount) }} plate set
+                            @endif
+                            @if ($plate->company)
+                                by {{ $plate->company }}
+                            @endif
+                        </p>
 
-                    @if ($plate->variety_notes)
-                        <p class="gallery-result-variety gallery-result-variety--list">{{ $plate->variety_notes }}</p>
-                    @endif
+                        @if ($plate->variety_notes)
+                            <p class="gallery-result-variety gallery-result-variety--list">{{ $plate->variety_notes }}</p>
+                        @endif
+                    </div>
+
+                    <div class="gallery-result-bottom">
+                        <div class="gallery-result-pricing">
+                            <table class="gallery-result-values" aria-label="Catalog values">
+                                <thead>
+                                    <tr>
+                                        @foreach ($valueFields as $label)
+                                            <th scope="col">{{ $label }}</th>
+                                        @endforeach
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        @foreach ($valueFields as $field => $label)
+                                            <td>{{ $plate->displayValue($field) }}</td>
+                                        @endforeach
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="gallery-result-actions">
+                            <a class="gallery-result-btn" href="#">Learn to Grade</a>
+                            <a class="gallery-result-btn" href="{{ route('gallery.show', $plate->set_name) }}">View this Set</a>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="gallery-result-bottom">
-                    <div class="gallery-result-pricing">
-                        <table class="gallery-result-values" aria-label="Catalog values">
-                            <thead>
-                                <tr>
-                                    @foreach ($valueFields as $label)
-                                        <th scope="col">{{ $label }}</th>
-                                    @endforeach
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    @foreach ($valueFields as $field => $label)
-                                        <td>{{ $plate->displayValue($field) }}</td>
-                                    @endforeach
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="gallery-result-actions">
-                        <a class="gallery-result-btn" href="#">Learn to Grade</a>
-                        <a class="gallery-result-btn" href="{{ route('gallery.show', $plate->set_name) }}">View this Set</a>
-                    </div>
-
+                <div class="gallery-result-list-collection">
                     @include('components.collection-add-form', ['plate' => $plate, 'collectionEntry' => $collectionEntry ?? null])
                 </div>
             </div>

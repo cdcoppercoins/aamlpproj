@@ -22,11 +22,11 @@ class ContributeMessage extends Mailable
 
     public function envelope(): Envelope
     {
+        $fromAddress = config('contribute.mail_from_address') ?: config('mail.from.address', 'cdcoppercoins@gmail.com');
+        $fromName = config('contribute.mail_from_name', 'mlp question');
+
         return new Envelope(
-            from: new Address(
-                config('contribute.mail_from_address'),
-                config('contribute.mail_from_name'),
-            ),
+            from: new Address($fromAddress, $fromName),
             replyTo: [
                 new Address($this->senderEmail, $this->senderName),
             ],

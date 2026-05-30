@@ -59,3 +59,7 @@
     @endif
 </div>
 @endsection
+
+@push('scripts')
+@include('components.history-timeline-script')
+@endpush

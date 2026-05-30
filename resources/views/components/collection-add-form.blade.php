@@ -26,7 +26,8 @@
                         <input type="number" name="quantity" value="1" min="1" max="9999" class="collection-add-qty">
                     </label>
                     <label class="collection-add-field">
-                        <span class="collection-add-label">Cond.</span>
+                        <span class="collection-add-label collection-add-label--grid">Grade</span>
+                        <span class="collection-add-label collection-add-label--list">Cond.</span>
                         <select name="condition" class="collection-add-condition">
                             <option value="">—</option>
                             @foreach (CollectionItem::CONDITIONS as $code => $label)

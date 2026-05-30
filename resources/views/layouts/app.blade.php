@@ -7,6 +7,7 @@
     @include('components.seo-head')
     @include('components.adsense-head')
     <link rel="stylesheet" href="{{ asset('main.css') }}" />
+    @stack('head')
 </head>
 <body>
 @include('components.header')

@@ -10,6 +10,12 @@
 
 @section('og_image', $sampleImage)
 
+@push('head')
+    @include('components.thumb-flip-preload', [
+        'urls' => collect($images)->pluck('b')->filter()->unique()->values()->all(),
+    ])
+@endpush
+
 @section('content')
 <div class="home-page gallery-set-page">
     <div class="gallery-set-toolbar">
@@ -26,8 +32,6 @@
                              src="{{ $pair['a'] }}"
                              data-hover="{{ $pair['b'] }}"
                              data-original="{{ $pair['a'] }}"
-                             onmouseover="if(this.dataset.hover){this.src=this.dataset.hover}"
-                             onmouseout="this.src=this.dataset.original"
                              alt="{{ $pair['jurisdiction'] ?? $selectedSet }} miniature license plate">
                     @else
                         <img class="gallery-set-poster-img thumb-img"
