@@ -5,18 +5,19 @@
     const closeBtn = document.querySelector('.modal-close');
     const useTapFlip = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
-    const preloadedBacks = new Set();
+    const preloadedUrls = new Set();
     let flippedImg = null;
 
     const zoomIcon = '<svg class="thumb-img-zoom-icon" viewBox="0 0 24 24" aria-hidden="true">'
         + '<path d="M9 3H3v6M15 3h6v6M3 15v6h6M21 15v6h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>'
         + '</svg>';
 
-    function preloadBackImage(url) {
-        if (!url || preloadedBacks.has(url)) {
+    function preloadImage(url) {
+        if (!url || preloadedUrls.has(url)) {
             return;
         }
-        preloadedBacks.add(url);
+
+        preloadedUrls.add(url);
         const preload = new Image();
         preload.src = url;
         if (typeof preload.decode === 'function') {
@@ -24,8 +25,10 @@
         }
     }
 
-    document.querySelectorAll('.thumb-img[data-hover]').forEach(function (img) {
-        preloadBackImage(img.dataset.hover);
+    document.querySelectorAll('.thumb-img').forEach(function (img) {
+        preloadImage(img.getAttribute('src'));
+        preloadImage(img.dataset.original);
+        preloadImage(img.dataset.hover);
     });
 
     function frontImageSrc(img) {
@@ -45,6 +48,7 @@
         if (!img.dataset.hover) {
             return;
         }
+
         img.src = img.dataset.hover;
         img.dataset.showingBack = '1';
         flippedImg = img;
@@ -62,7 +66,6 @@
         }
 
         if (img.dataset.showingBack === '1') {
-            flippedImg = img;
             return;
         }
 
@@ -103,9 +106,77 @@
         container.appendChild(btn);
     }
 
+    function setupTouchFlip(img) {
+        let touchStart = null;
+
+        img.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
+
+        img.addEventListener('touchstart', function (e) {
+            if (e.touches.length !== 1) {
+                touchStart = null;
+                return;
+            }
+
+            touchStart = {
+                x: e.touches[0].clientX,
+                y: e.touches[0].clientY,
+                time: Date.now(),
+            };
+        }, { passive: true });
+
+        img.addEventListener('touchmove', function (e) {
+            if (!touchStart || e.touches.length !== 1) {
+                return;
+            }
+
+            const dx = e.touches[0].clientX - touchStart.x;
+            const dy = e.touches[0].clientY - touchStart.y;
+            if (Math.hypot(dx, dy) > 12) {
+                touchStart = null;
+            }
+        }, { passive: true });
+
+        img.addEventListener('touchcancel', function () {
+            touchStart = null;
+        }, { passive: true });
+
+        img.addEventListener('touchend', function (e) {
+            if (!touchStart) {
+                return;
+            }
+
+            const elapsed = Date.now() - touchStart.time;
+            touchStart = null;
+
+            if (elapsed > 450) {
+                return;
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
+            tapShowBack(img);
+        }, { passive: false });
+    }
+
+    function handleOutsideTap(e) {
+        if (!flippedImg) {
+            return;
+        }
+
+        if (e.target.closest('.thumb-img') === flippedImg) {
+            return;
+        }
+
+        resetFlipped();
+    }
+
     document.querySelectorAll('.thumb-img[data-hover]').forEach(function (img) {
         if (useTapFlip) {
             img.dataset.showingBack = '0';
+            img.setAttribute('draggable', 'false');
+            setupTouchFlip(img);
             return;
         }
 
@@ -123,20 +194,16 @@
     if (useTapFlip) {
         document.querySelectorAll('.thumb-img').forEach(addTouchZoomButton);
 
-        document.addEventListener('click', function () {
-            resetFlipped();
-        });
+        document.addEventListener('touchend', handleOutsideTap, { passive: true });
+        document.addEventListener('click', handleOutsideTap);
     }
 
     document.querySelectorAll('.thumb-img').forEach(function (img) {
-        img.addEventListener('click', function (e) {
-            if (useTapFlip && this.dataset.hover) {
-                e.preventDefault();
-                e.stopPropagation();
-                tapShowBack(this);
-                return;
-            }
+        if (useTapFlip && img.dataset.hover) {
+            return;
+        }
 
+        img.addEventListener('click', function () {
             openModalFront(this);
         });
     });
@@ -153,11 +220,15 @@
 
     closeBtn.addEventListener('click', closeModal);
     modal.addEventListener('click', function (e) {
-        if (e.target === modal) closeModal();
+        if (e.target === modal) {
+            closeModal();
+        }
     });
     modalImg.addEventListener('click', closeModal);
     document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+            closeModal();
+        }
     });
 })();
 </script>

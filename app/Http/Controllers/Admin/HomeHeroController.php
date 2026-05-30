@@ -6,24 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\HeroSetting;
 use App\Models\HeroSlide;
 use App\Services\HeroImageStorage;
+use App\Support\HeroLinkOptions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class HomeHeroController extends Controller
 {
-    /** @var list<string> */
-    private const LINK_ROUTES = [
-        'gallery',
-        'search',
-        'collection.index',
-        'about',
-        'history',
-        'contribute',
-        'home',
-    ];
-
     public function __construct(
         private readonly HeroImageStorage $heroImages,
     ) {}
@@ -36,7 +25,6 @@ class HomeHeroController extends Controller
         return view('admin.home-hero.index', [
             'slides' => $slides,
             'settings' => $settings,
-            'linkRoutes' => self::LINK_ROUTES,
         ]);
     }
 
@@ -65,7 +53,7 @@ class HomeHeroController extends Controller
                 'is_active' => true,
                 'bg' => 'linear-gradient(135deg, #2d6388 0%, #4079a5 55%, #5a96bc 100%)',
             ]),
-            'linkRoutes' => self::LINK_ROUTES,
+            'linkOptionGroups' => HeroLinkOptions::optionGroups(),
         ]);
     }
 
@@ -77,7 +65,7 @@ class HomeHeroController extends Controller
             $validated['image'] = $this->heroImages->store($request->file('image_file'));
         }
 
-        unset($validated['image_file']);
+        unset($validated['image_file'], $validated['link_key'], $validated['custom_link_url']);
         HeroSlide::query()->create($validated);
 
         return redirect()
@@ -89,7 +77,7 @@ class HomeHeroController extends Controller
     {
         return view('admin.home-hero.edit', [
             'slide' => $heroSlide,
-            'linkRoutes' => self::LINK_ROUTES,
+            'linkOptionGroups' => HeroLinkOptions::optionGroups(),
         ]);
     }
 
@@ -102,7 +90,7 @@ class HomeHeroController extends Controller
             $validated['image'] = $this->heroImages->store($request->file('image_file'));
         }
 
-        unset($validated['image_file']);
+        unset($validated['image_file'], $validated['link_key'], $validated['custom_link_url']);
         $heroSlide->update($validated);
 
         return redirect()
@@ -125,13 +113,14 @@ class HomeHeroController extends Controller
      */
     private function validateSlide(Request $request, bool $imageRequired): array
     {
-        $rules = [
+        $validated = $request->validate([
             'sort_order' => ['required', 'integer', 'min:1', 'max:999'],
             'alt' => ['required', 'string', 'max:255'],
             'headline' => ['required', 'string', 'max:255'],
             'subline' => ['nullable', 'string', 'max:500'],
             'cta' => ['nullable', 'string', 'max:128'],
-            'route' => ['nullable', 'string', 'max:64', Rule::in(self::LINK_ROUTES)],
+            'link_key' => ['nullable', 'string', 'max:2000'],
+            'custom_link_url' => ['nullable', 'string', 'max:500'],
             'bg' => ['required', 'string', 'max:512'],
             'is_active' => ['sometimes', 'boolean'],
             'fill_slide' => ['sometimes', 'boolean'],
@@ -140,19 +129,33 @@ class HomeHeroController extends Controller
                 'image',
                 'max:5120',
             ],
-        ];
-
-        $validated = $request->validate($rules, [], [
+        ], [
+            'custom_link_url.required' => 'Enter a custom URL path or full link.',
+        ], [
             'sort_order' => 'display order',
             'alt' => 'image description',
             'headline' => 'headline',
             'subline' => 'subline',
             'cta' => 'button text',
-            'route' => 'link destination',
+            'link_key' => 'button link',
+            'custom_link_url' => 'custom URL',
             'bg' => 'background color',
             'image_file' => 'banner image',
         ]);
 
+        if (($validated['link_key'] ?? '_none') === '_custom' && trim((string) ($validated['custom_link_url'] ?? '')) === '') {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'custom_link_url' => 'Enter a custom URL path or full link.',
+            ]);
+        }
+
+        $link = HeroLinkOptions::parseKey(
+            $validated['link_key'] ?? '_none',
+            $validated['custom_link_url'] ?? null
+        );
+
+        $validated['route'] = $link['route'];
+        $validated['route_params'] = $link['route_params'];
         $validated['is_active'] = $request->boolean('is_active');
         $validated['fill_slide'] = $request->boolean('fill_slide');
 

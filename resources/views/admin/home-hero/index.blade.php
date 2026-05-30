@@ -62,7 +62,7 @@
                                         <br><span class="admin-table-muted">{{ $slide->subline }}</span>
                                     @endif
                                 </td>
-                                <td>{{ $slide->route ?: '—' }}</td>
+                                <td>{{ \App\Support\HeroLinkOptions::labelForSlide($slide) }}</td>
                                 <td>
                                     @if ($slide->is_active)
                                         <span class="admin-badge admin-badge-active">Active</span>

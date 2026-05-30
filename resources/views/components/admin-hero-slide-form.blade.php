@@ -70,14 +70,30 @@
     </label>
     <label class="auth-field admin-form-grid-span-2">
         <span class="auth-label">Button link</span>
-        <select name="route">
-            <option value="">No link</option>
-            @foreach ($linkRoutes as $routeName)
-                <option value="{{ $routeName }}" @selected(old('route', $slide->route) === $routeName)>
-                    {{ $routeName }}
-                </option>
+        <select name="link_key" id="hero-link-key">
+            @foreach ($linkOptionGroups as $groupLabel => $options)
+                <optgroup label="{{ $groupLabel }}">
+                    @foreach ($options as $option)
+                        <option value="{{ $option['key'] }}" @selected(old('link_key', \App\Support\HeroLinkOptions::keyFromSlide($slide)) === $option['key'])>
+                            {{ $option['label'] }}
+                        </option>
+                    @endforeach
+                </optgroup>
             @endforeach
         </select>
+        <span class="auth-hint">Pick from the list, or choose <strong>Custom URL…</strong> and paste a copied address-bar link.</span>
+    </label>
+    <label class="auth-field admin-form-grid-span-3"
+           id="hero-custom-link-field"
+           @if(old('link_key', \App\Support\HeroLinkOptions::keyFromSlide($slide)) !== '_custom') hidden @endif>
+        <span class="auth-label">Custom URL</span>
+        <input type="text"
+               name="custom_link_url"
+               id="hero-custom-link-input"
+               value="{{ old('custom_link_url', \App\Support\HeroLinkOptions::customUrlFromSlide($slide)) }}"
+               maxlength="500"
+               placeholder="/search?search=1&amp;jurisdiction=Indiana">
+        <span class="auth-hint">Paste a path like <code>/search?search=1&amp;jurisdiction=Indiana</code>. Empty fields (<code>year=</code>) are ignored.</span>
     </label>
     <label class="auth-field admin-form-grid-span-3">
         <span class="auth-label">Background gradient (CSS)</span>
@@ -85,6 +101,23 @@
         <span class="auth-hint">Example: linear-gradient(135deg, #2d6388 0%, #4079a5 55%, #5a96bc 100%)</span>
     </label>
 </div>
+
+<script>
+(function () {
+    var select = document.getElementById('hero-link-key');
+    var customField = document.getElementById('hero-custom-link-field');
+    if (!select || !customField) {
+        return;
+    }
+
+    function syncCustomField() {
+        customField.hidden = select.value !== '_custom';
+    }
+
+    select.addEventListener('change', syncCustomField);
+    syncCustomField();
+})();
+</script>
 
 @push('scripts')
 <script>
@@ -102,5 +135,5 @@ document.getElementById(@json($inputId))?.addEventListener('change', function ()
         nameBox.hidden = true;
     }
 });
-</script>
+
 @endpush

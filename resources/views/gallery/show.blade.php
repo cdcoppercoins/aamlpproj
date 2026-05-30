@@ -12,7 +12,11 @@
 
 @push('head')
     @include('components.thumb-flip-preload', [
-        'urls' => collect($images)->pluck('b')->filter()->unique()->values()->all(),
+        'urls' => collect($images)
+            ->flatMap(fn ($pair) => array_filter([$pair['a'] ?? null, $pair['b'] ?? null]))
+            ->unique()
+            ->values()
+            ->all(),
     ])
 @endpush
 
@@ -32,11 +36,13 @@
                              src="{{ $pair['a'] }}"
                              data-hover="{{ $pair['b'] }}"
                              data-original="{{ $pair['a'] }}"
+                             draggable="false"
                              alt="{{ $pair['jurisdiction'] ?? $selectedSet }} miniature license plate">
                     @else
                         <img class="gallery-set-poster-img thumb-img"
                              src="{{ $pair['a'] }}"
                              data-original="{{ $pair['a'] }}"
+                             draggable="false"
                              alt="{{ $pair['jurisdiction'] ?? $selectedSet }} miniature license plate">
                     @endif
                     @if (! empty($pair['caption']))

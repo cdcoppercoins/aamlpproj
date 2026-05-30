@@ -1897,6 +1897,17 @@ body {
     box-sizing: border-box;
     cursor: pointer;
     transition: transform 0.15s ease;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.gallery-result-img.thumb-img {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
 }
 
 .gallery-set-jurisdiction {

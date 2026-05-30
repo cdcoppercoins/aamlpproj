@@ -44,7 +44,7 @@ class SearchController extends Controller
         ];
 
         $totalCount = DB::table('plates')->count();
-        $hasSearch = $request->boolean('search');
+        $hasSearch = $request->boolean('search') || $this->requestHasSearchFilters($request);
         $results = null;
 
         if ($hasSearch) {
@@ -131,5 +131,17 @@ class SearchController extends Controller
         }
 
         return array_values(array_intersect($setTypes, self::SET_TYPE_CODES));
+    }
+
+    private function requestHasSearchFilters(Request $request): bool
+    {
+        if ($request->filled('year')
+            || $request->filled('jurisdiction')
+            || $request->filled('set_name')
+            || $request->filled('company')) {
+            return true;
+        }
+
+        return $this->normalizeSetTypes($request->input('set_types', [])) !== [];
     }
 }

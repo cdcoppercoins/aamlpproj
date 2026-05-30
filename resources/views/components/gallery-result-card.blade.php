@@ -21,6 +21,7 @@
                      src="{{ $frontUrl ?? $placeholder }}"
                      data-hover="{{ $backUrl }}"
                      data-original="{{ $frontUrl ?? $placeholder }}"
+                     draggable="false"
                      onerror="this.onerror=null;this.src='{{ $placeholder }}';this.dataset.original='{{ $placeholder }}';this.dataset.hover='';"
                      alt="{{ $plate->jurisdiction ?? 'Mini license plate' }}">
             @else

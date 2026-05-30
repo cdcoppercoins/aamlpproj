@@ -22,9 +22,10 @@
     <section class="admin-panel">
         <form class="admin-form admin-catalog-form" method="post" action="{{ route('admin.home-hero.update', $slide) }}" enctype="multipart/form-data">
             @csrf
+            @method('PUT')
             @include('components.admin-hero-slide-form', [
                 'slide' => $slide,
-                'linkRoutes' => $linkRoutes,
+                'linkOptionGroups' => $linkOptionGroups,
                 'requireImage' => false,
                 'inputId' => 'hero-image-edit',
             ])

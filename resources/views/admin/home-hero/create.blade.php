@@ -23,7 +23,7 @@
             @csrf
             @include('components.admin-hero-slide-form', [
                 'slide' => $slide,
-                'linkRoutes' => $linkRoutes,
+                'linkOptionGroups' => $linkOptionGroups,
                 'requireImage' => true,
                 'inputId' => 'hero-image-create',
             ])

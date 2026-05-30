@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\HeroSetting;
 use App\Models\HeroSlide;
-use Illuminate\Support\Facades\Auth;
+use App\Support\HeroLinkOptions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
@@ -46,12 +46,13 @@ class HomeController extends Controller
         return collect($slides)
             ->map(function ($slide) {
                 $data = is_array($slide) ? $slide : $slide->toRotatorArray();
-                $routeName = $data['route'] ?? null;
-                $data['url'] = $routeName ? route($routeName, $data['route_params'] ?? []) : null;
 
-                if ($routeName === 'collection.index' && ! Auth::check()) {
-                    $data['url'] = route('login');
+                if (($data['route'] ?? null) === 'about') {
+                    $data['route'] = 'pages.show';
+                    $data['route_params'] = ['slug' => 'about'];
                 }
+
+                $data['url'] = HeroLinkOptions::urlFor($data);
 
                 return $data;
             })

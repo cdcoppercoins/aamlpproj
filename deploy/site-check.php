@@ -60,6 +60,13 @@ foreach ($roots as $root) {
             echo "hero_slides table: not present (OK - uses config fallback)\n";
         }
 
+        echo 'pages table: ' . (\Illuminate\Support\Facades\Schema::hasTable('pages') ? 'OK' : 'MISSING (run php artisan migrate)') . "\n";
+        echo 'site_links table: ' . (\Illuminate\Support\Facades\Schema::hasTable('site_links') ? 'OK' : 'MISSING (run php artisan migrate)') . "\n";
+        if (\Illuminate\Support\Facades\Schema::hasTable('site_links')) {
+            $linkCols = \Illuminate\Support\Facades\Schema::getColumnListing('site_links');
+            echo 'site_links url column: ' . (in_array('url', $linkCols, true) ? 'OK' : 'MISSING (run php artisan migrate)') . "\n";
+        }
+
         $request = \Illuminate\Http\Request::create('/', 'GET');
         $response = $app->handle($request);
         echo 'Home page test status: ' . $response->getStatusCode() . "\n";
