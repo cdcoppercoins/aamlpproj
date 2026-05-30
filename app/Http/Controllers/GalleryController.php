@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\WebPublicPath;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -387,7 +388,7 @@ class GalleryController extends Controller
         }
 
         foreach ($candidates as $candidate) {
-            $path = public_path('plates/' . $candidate);
+            $path = WebPublicPath::path('plates/' . $candidate);
             if (is_dir($path)) {
                 return $path;
             }

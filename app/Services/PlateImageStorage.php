@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Support\ImageOptimizer;
+use App\Support\WebPublicPath;
 use App\Models\Plate;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
@@ -15,7 +17,7 @@ class PlateImageStorage
     public function storeFrontImage(Plate $plate, UploadedFile $file, ?string $imageBase = null): array
     {
         $setCode = $plate->set_code;
-        $directory = public_path('plates/' . $setCode);
+        $directory = WebPublicPath::path('plates/' . $setCode);
 
         if (! File::isDirectory($directory)) {
             File::makeDirectory($directory, 0755, true);
@@ -26,7 +28,9 @@ class PlateImageStorage
 
         $base = $this->resolveImageBase($plate, $imageBase, $extension);
 
+        $frontPath = $directory . DIRECTORY_SEPARATOR . $base . '_a.' . $extension;
         $file->move($directory, $base . '_a.' . $extension);
+        ImageOptimizer::optimize($frontPath, 'plate');
 
         return [
             'image_base' => $base,
@@ -41,13 +45,15 @@ class PlateImageStorage
             throw new \InvalidArgumentException('Front image metadata is required before uploading a back image.');
         }
 
-        $directory = public_path('plates/' . $plate->set_code);
+        $directory = WebPublicPath::path('plates/' . $plate->set_code);
 
         if (! File::isDirectory($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
 
+        $backPath = $directory . DIRECTORY_SEPARATOR . $plate->image_base . '_b.' . $plate->image_ext;
         $file->move($directory, $plate->image_base . '_b.' . $plate->image_ext);
+        ImageOptimizer::optimize($backPath, 'plate');
 
         $plate->forceFill(['has_back_image' => 1])->save();
     }
@@ -58,7 +64,7 @@ class PlateImageStorage
             return;
         }
 
-        $directory = public_path('plates/' . $plate->set_code);
+        $directory = WebPublicPath::path('plates/' . $plate->set_code);
 
         if ($front) {
             $frontPath = $directory . '/' . $plate->image_base . '_a.' . $plate->image_ext;

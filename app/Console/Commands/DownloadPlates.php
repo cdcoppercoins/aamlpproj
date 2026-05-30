@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Support\WebPublicPath;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\File;
@@ -27,7 +28,7 @@ class DownloadPlates extends Command
         
         foreach ($sets as $set) {
             $this->info("Checking $set...");
-            $setDir = public_path("plates/$set");
+            $setDir = WebPublicPath::path("plates/$set");
             
             if (!File::exists($setDir)) {
                 File::makeDirectory($setDir, 0755, true);

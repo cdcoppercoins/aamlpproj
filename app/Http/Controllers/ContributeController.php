@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContributeMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -25,21 +26,24 @@ class ContributeController extends Controller
             return redirect()->route('contribute')->with('success', 'Thank you! Your message has been sent.');
         }
 
-        $to = 'cdcoppercoins@gmail.com';
-        $subject = 'MiniLicensePlates.com Contribution';
-        $body = "Name: {$request->name}\nEmail: {$request->email}\n\nMessage:\n{$request->message}\n\nIP: " . $request->ip();
+        if (config('mail.default') === 'log' && app()->environment('production')) {
+            return redirect()->route('contribute')
+                ->with('error', 'Email is not configured on this server. Please email '.config('contribute.mail_to').' directly.')
+                ->withInput();
+        }
 
         try {
-            Mail::raw($body, function ($message) use ($to, $subject, $request) {
-                $message->to($to)
-                        ->subject($subject)
-                        ->replyTo($request->email, $request->name);
-            });
+            Mail::to(config('contribute.mail_to'))->send(new ContributeMessage(
+                senderName: $request->name,
+                senderEmail: $request->email,
+                messageText: $request->message,
+                ip: $request->ip(),
+            ));
 
             return redirect()->route('contribute')->with('success', 'Thank you! Your message has been sent.');
         } catch (\Exception $e) {
             return redirect()->route('contribute')
-                ->with('error', 'Mail failed on this server. Please email cdcoppercoins@gmail.com directly.')
+                ->with('error', 'Mail failed on this server. Please email '.config('contribute.mail_to').' directly.')
                 ->withInput();
         }
     }

@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniLicensePlates.com — Investor Site Plan</title>
+    <style>
+        @page {
+            margin: 0.65in 0.75in;
+            size: letter;
+        }
+
+        :root {
+            --ink: #1a3344;
+            --muted: #556677;
+            --accent: #4079a5;
+            --accent-dark: #264a62;
+            --gold: #c4923a;
+            --line: #d8e4ec;
+            --paper: #ffffff;
+            --callout: #f4f8fb;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: var(--ink);
+            background: #eef2f5;
+        }
+
+        .page {
+            max-width: 7.5in;
+            margin: 0 auto 24px;
+            background: var(--paper);
+            padding: 0.65in 0.75in 0.8in;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .cover {
+            min-height: 9in;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            page-break-after: always;
+            border-top: 6px solid var(--accent);
+            padding-top: 0.4in;
+        }
+
+        .cover-logo {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 28pt;
+            font-weight: 700;
+            color: var(--accent-dark);
+            letter-spacing: -0.5px;
+            margin: 0 0 8px;
+        }
+
+        .cover-tagline {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 13pt;
+            color: var(--muted);
+            margin: 0 0 36px;
+            max-width: 5.5in;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cover-doc-title {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 16pt;
+            font-weight: 600;
+            color: var(--accent);
+            margin: 0 0 48px;
+        }
+
+        .cover-stats {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            flex-wrap: wrap;
+            margin: 0 0 48px;
+        }
+
+        .stat-box {
+            border: 1px solid var(--line);
+            background: var(--callout);
+            padding: 16px 22px;
+            min-width: 140px;
+        }
+
+        .stat-num {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 22pt;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1.1;
+        }
+
+        .stat-label {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 9pt;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .cover-meta {
+            font-size: 10pt;
+            color: var(--muted);
+            margin-top: auto;
+        }
+
+        h1 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 18pt;
+            font-weight: 700;
+            color: var(--accent-dark);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 6px;
+            margin: 0 0 14px;
+            page-break-after: avoid;
+        }
+
+        h2 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 13pt;
+            font-weight: 600;
+            color: var(--accent);
+            margin: 24px 0 10px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 11pt;
+            font-weight: 600;
+            margin: 16px 0 8px;
+            page-break-after: avoid;
+        }
+
+        p { margin: 0 0 10px; }
+
+        ul, ol {
+            margin: 0 0 12px;
+            padding-left: 22px;
+        }
+
+        li { margin-bottom: 5px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 16px;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+
+        th, td {
+            border: 1px solid #b8c8d4;
+            padding: 7px 9px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: var(--callout);
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-weight: 600;
+        }
+
+        .lead {
+            font-size: 12pt;
+            line-height: 1.55;
+            color: var(--ink);
+            margin-bottom: 16px;
+        }
+
+        .callout {
+            border-left: 4px solid var(--accent);
+            background: var(--callout);
+            padding: 12px 16px;
+            margin: 14px 0;
+        }
+
+        .callout strong {
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0 16px;
+        }
+
+        .pill {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 9pt;
+            background: var(--callout);
+            border: 1px solid var(--line);
+            padding: 4px 10px;
+            border-radius: 3px;
+        }
+
+        .status-live {
+            color: #1a6b3c;
+            font-weight: 600;
+        }
+
+        .status-plan {
+            color: #8a6d1a;
+            font-weight: 600;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 12px 0;
+        }
+
+        .section-num {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 9pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .footer-note {
+            margin-top: 28px;
+            padding-top: 12px;
+            border-top: 1px solid var(--line);
+            font-size: 9pt;
+            color: var(--muted);
+        }
+
+        .toc {
+            page-break-after: always;
+        }
+
+        .toc ol {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.8;
+        }
+
+        .appendix pre {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 8pt;
+            background: #f4f4f4;
+            border: 1px solid #ccc;
+            padding: 12px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        @media print {
+            body { background: white; }
+            .page {
+                box-shadow: none;
+                margin: 0;
+                max-width: none;
+                padding: 0;
+            }
+            .cover { min-height: auto; padding-top: 2in; }
+            a { color: var(--ink); text-decoration: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="page cover">
+    <p class="cover-logo">MiniLicensePlates.com</p>
+    <p class="cover-tagline">The most complete visual reference and pricing guide for miniature license plates issued as product premiums.</p>
+    <p class="cover-doc-title">Investor Site Plan &amp; Product Overview</p>
+
+    <div class="cover-stats">
+        <div class="stat-box">
+            <div class="stat-num">3,150+</div>
+            <div class="stat-label">Catalog listings</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-num">Live</div>
+            <div class="stat-label">Production website</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-num">Full stack</div>
+            <div class="stat-label">Catalog · Members · CMS</div>
+        </div>
+    </div>
+
+    <p class="cover-meta">
+        Confidential planning document<br>
+        May 2026 · minilicenseplates.com
+    </p>
+</div>
+
+<!-- TOC -->
+<div class="page toc">
+    <h1>Contents</h1>
+    <ol>
+        <li>Executive Summary</li>
+        <li>Market Opportunity &amp; Audience</li>
+        <li>Product Overview — Public Features</li>
+        <li>Member Platform &amp; Retention</li>
+        <li>Administration &amp; Content Operations</li>
+        <li>Data Asset &amp; Catalog Schema</li>
+        <li>Technology &amp; Operations</li>
+        <li>Monetization &amp; Growth Roadmap</li>
+        <li>Implementation Status</li>
+        <li>Appendix — Technical Build Specification</li>
+    </ol>
+</div>
+
+<!-- SECTION 1 -->
+<div class="page">
+    <p class="section-num">Section 1</p>
+    <h1>Executive Summary</h1>
+
+    <p class="lead">
+        MiniLicensePlates.com is a specialized digital platform for collectors of miniature license plates—
+        the small metal, card, and sticker premiums packaged with cereal, gum, candy, and other consumer products
+        from the 1930s through today. The site combines a searchable catalog of more than <strong>3,150 documented
+        plate types</strong>, high-resolution imagery, condition-based pricing guides, member collection tracking,
+        editorial content, and a documented history of the hobby.
+    </p>
+
+    <div class="callout">
+        <strong>Investment thesis:</strong> Niche collectibles markets reward authoritative reference sites that
+        combine data, community tools, and monetization. This platform owns a structured catalog asset, live
+        member accounts, admin-controlled content, and clear paths to advertising revenue and future e-commerce—
+        built on maintainable open-source technology with low marginal cost per new listing.
+    </div>
+
+    <h2>What exists today</h2>
+    <ul>
+        <li><span class="status-live">Live</span> production site at minilicenseplates.com</li>
+        <li>MySQL database with full plate catalog imported from curated spreadsheet data</li>
+        <li>Gallery (visual set browse), catalog search (grid and list views), history timeline, articles</li>
+        <li>Registered member accounts with personal collection management and printable PDF checklists</li>
+        <li>Password-protected admin CMS for users, catalog, hero banners, history, and articles</li>
+        <li>Google AdSense integration prepared; newsletter signup capturing marketing leads</li>
+    </ul>
+
+    <h2>Strategic goals</h2>
+    <table>
+        <thead>
+            <tr><th>Goal</th><th>How the platform delivers</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Become the default reference</td>
+                <td>Largest structured catalog with search, images, varieties, and pricing by condition (MT through PO)</td>
+            </tr>
+            <tr>
+                <td>Build repeat engagement</td>
+                <td>Member collections, public collector profiles, PDF checklists, articles, and history content</td>
+            </tr>
+            <tr>
+                <td>Monetize traffic</td>
+                <td>Display advertising (AdSense), future on-site store for plate sales</td>
+            </tr>
+            <tr>
+                <td>Scale content efficiently</td>
+                <td>Admin CMS, CSV bulk import for new sets, server-side image optimization</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- SECTION 2 -->
+<div class="page">
+    <p class="section-num">Section 2</p>
+    <h1>Market Opportunity &amp; Audience</h1>
+
+    <h2>Primary audience</h2>
+    <p>
+        Adult collectors of miniature license plate premiums—people who collected as children or discovered the
+        hobby later through cereal promotions, gum packs, regional food brands, and similar products. They need
+        identification, completeness checklists, variety documentation, and fair-market value guidance.
+    </p>
+
+    <h2>User needs the site addresses</h2>
+    <div class="two-col">
+        <ul>
+            <li>Identify unknown plates by jurisdiction, set, or manufacturer</li>
+            <li>See front and back images where available</li>
+            <li>Understand plate varieties (holes, embossing, font differences)</li>
+            <li>Track what they own vs. what they still need</li>
+        </ul>
+        <ul>
+            <li>Print or save checklists for shows and trades</li>
+            <li>Research historical context of premium programs</li>
+            <li>Read articles on specific sets and collecting topics</li>
+            <li>Compare collections with other members (opt-in public profiles)</li>
+        </ul>
+    </div>
+
+    <h2>Competitive positioning</h2>
+    <p>
+        General auction sites and forums fragment information across unstructured listings and threads.
+        MiniLicensePlates.com consolidates catalog data, imagery, pricing, and member tools in one
+        purpose-built platform—with editorial voice and historical depth that generic marketplaces cannot replicate.
+    </p>
+
+    <div class="pill-row">
+        <span class="pill">Authoritative tone</span>
+        <span class="pill">Visual-first catalog</span>
+        <span class="pill">Structured pricing guide</span>
+        <span class="pill">Member retention tools</span>
+        <span class="pill">Admin-controlled growth</span>
+    </div>
+</div>
+
+<!-- SECTION 3 -->
+<div class="page">
+    <p class="section-num">Section 3</p>
+    <h1>Product Overview — Public Features</h1>
+
+    <table>
+        <thead>
+            <tr><th>Feature</th><th>Description</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Home</strong></td>
+                <td>Rotating hero banners, welcome statement, mission copy, feature cards linking to gallery, search, and member tools. SEO-optimized prose.</td>
+                <td class="status-live">Live</td>
+            </tr>
+            <tr>
+                <td><strong>Gallery</strong></td>
+                <td>Browse all sets (sorted by year and set code). Four-across set cards with sample plate, set name, company, catalog reference. Drill into full set poster view with hover flip (front/back).</td>
+                <td class="status-live">Live</td>
+            </tr>
+            <tr>
+                <td><strong>Catalog Search</strong></td>
+                <td>Filter by year, jurisdiction, set name, company, and set type (metal / cards / stickers / other). Grid or list results with pricing tables, pagination, printable-friendly layout.</td>
+                <td class="status-live">Live</td>
+            </tr>
+            <tr>
+                <td><strong>History</strong></td>
+                <td>Vertical accordion timeline of premium-program history. Each entry: label, era, body text, image with caption. Mobile-friendly expand/collapse.</td>
+                <td class="status-live">Live</td>
+            </tr>
+            <tr>
+                <td><strong>Articles</strong></td>
+                <td>Published editorial content with author, title, subtitle, images. Keyword search with highlighted matches in titles and body.</td>
+                <td class="status-live">Live</td>
+            </tr>
+            <tr>
+                <td><strong>About</strong></td>
+                <td>Site mission and owner profile with photograph.</td>
+                <td class="status-live">Live</td>
+            </tr>
+            <tr>
+                <td><strong>Contribute</strong></td>
+                <td>Contact form for corrections, donations, and collaboration (spam-protected).</td>
+                <td class="status-live">Live</td>
+            </tr>
+            <tr>
+                <td><strong>Newsletter</strong></td>
+                <td>Footer email capture; validated addresses stored with signup timestamp for future marketing.</td>
+                <td class="status-live">Live</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Design &amp; user experience</h2>
+    <p>
+        The site uses a distinctive branded layout: tiled background, centered white content column (approximately
+        1,150 pixels maximum width), split header banners, navy navigation bar with gold link text, custom footer
+        with partner logos, and consistent card styling across gallery and search views. Placeholder artwork is
+        used where plate photos are not yet available.
+    </p>
+</div>
+
+<!-- SECTION 4 -->
+<div class="page">
+    <p class="section-num">Section 4</p>
+    <h1>Member Platform &amp; Retention</h1>
+
+    <p class="lead">
+        Free registration unlocks tools that turn casual browsers into returning users—creating account stickiness
+        independent of advertising or future commerce revenue.
+    </p>
+
+    <h2>Member capabilities</h2>
+    <table>
+        <thead>
+            <tr><th>Capability</th><th>Business value</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Personal collection tracker</strong></td>
+                <td>Per-plate quantity and condition (MT, EX, VG, G, FR, PO); reduces friction for serious collectors</td>
+            </tr>
+            <tr>
+                <td><strong>Set management CMS</strong></td>
+                <td>Pick a set, edit all plates in a table; bulk-fill defaults for complete sets</td>
+            </tr>
+            <tr>
+                <td><strong>PDF checklists</strong></td>
+                <td>Downloadable letter-size checklists for shows, email, or print—shareable brand touchpoint</td>
+            </tr>
+            <tr>
+                <td><strong>Collection valuation</strong></td>
+                <td>Private totals based on catalog pricing and member-selected conditions</td>
+            </tr>
+            <tr>
+                <td><strong>Public / private sets</strong></td>
+                <td>Members opt in to share collections; browse other public collectors by username</td>
+            </tr>
+            <tr>
+                <td><strong>Profile</strong></td>
+                <td>Username, optional phone, address, profile photo—supports community identity</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="callout">
+        <strong>Retention loop:</strong> Search catalog → add owned items → track gaps → print checklist →
+        return after acquiring new plates → optionally share collection with community.
+    </div>
+</div>
+
+<!-- SECTION 5 -->
+<div class="page">
+    <p class="section-num">Section 5</p>
+    <h1>Administration &amp; Content Operations</h1>
+
+    <p>
+        A password-protected admin area (<strong>/admin</strong>) allows the site owner to operate without developer
+        intervention for day-to-day content and community management.
+    </p>
+
+    <table>
+        <thead>
+            <tr><th>Admin module</th><th>Functions</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Users</strong></td>
+                <td>List accounts, block users, grant admin access, remove accounts</td>
+            </tr>
+            <tr>
+                <td><strong>Newsletter</strong></td>
+                <td>View and manage email subscribers</td>
+            </tr>
+            <tr>
+                <td><strong>Home hero</strong></td>
+                <td>Upload and order rotating homepage banner slides; optional full-bleed images</td>
+            </tr>
+            <tr>
+                <td><strong>History timeline</strong></td>
+                <td>Create, edit, reorder, delete timeline entries with images and captions</td>
+            </tr>
+            <tr>
+                <td><strong>Articles</strong></td>
+                <td>Draft and publish articles; upload images; control go-live via publish action</td>
+            </tr>
+            <tr>
+                <td><strong>Catalog</strong></td>
+                <td>CRUD for sets and individual plates; per-plate image upload; CSV bulk import with downloadable template</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Operational efficiency</h2>
+    <ul>
+        <li>New sets can be added via CSV template rather than manual one-by-one entry</li>
+        <li>Plate images uploaded through admin or bulk FileZilla to standardized folder structure</li>
+        <li>Server command optimizes plate JPEG/PNG/WebP files in place after bulk uploads</li>
+        <li>Deploy workflow packages application and public web files for upload to production hosting</li>
+    </ul>
+</div>
+
+<!-- SECTION 6 -->
+<div class="page">
+    <p class="section-num">Section 6</p>
+    <h1>Data Asset &amp; Catalog Schema</h1>
+
+    <p>
+        The core intellectual property is the <strong>plates</strong> table: a pricing and identification guide
+        where each row represents one plate type or documented variety—not a single physical object.
+    </p>
+
+    <h2>Scale</h2>
+    <ul>
+        <li>Approximately <strong>3,118 catalog rows</strong> imported from curated master spreadsheet</li>
+        <li>Covers US states, Canadian provinces/territories, foreign countries, and specialty promotional sets</li>
+        <li>Many rows include six condition values (Mint through Poor); many include variety notes and dimensions</li>
+    </ul>
+
+    <h2>Key data fields</h2>
+    <table>
+        <thead>
+            <tr><th>Category</th><th>Examples</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Identification</td>
+                <td>Set code, set name, catalog reference, company/issuer, jurisdiction, year, serial on plate</td>
+            </tr>
+            <tr>
+                <td>Imagery</td>
+                <td>Image filename base, extension, back-image flag; files stored on disk, paths in database</td>
+            </tr>
+            <tr>
+                <td>Variety</td>
+                <td>Variety key and notes (e.g., hole count, embossing, font differences)</td>
+            </tr>
+            <tr>
+                <td>Pricing guide</td>
+                <td>Values for MT, EX, VG, G, FR, PO conditions</td>
+            </tr>
+            <tr>
+                <td>Physical</td>
+                <td>Width and height in inches (fractional precision)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="callout">
+        <strong>Data moat:</strong> Structured, searchable catalog with linked imagery and admin import pipeline.
+        Expanding the database and photo coverage increases defensibility vs. unstructured forum or auction listings.
+    </div>
+</div>
+
+<!-- SECTION 7 -->
+<div class="page">
+    <p class="section-num">Section 7</p>
+    <h1>Technology &amp; Operations</h1>
+
+    <h2>Stack</h2>
+    <table>
+        <thead>
+            <tr><th>Layer</th><th>Choice</th><th>Rationale</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Application</td>
+                <td>Laravel (PHP 8.2+)</td>
+                <td>Mature framework; rapid CMS and auth development; large talent pool</td>
+            </tr>
+            <tr>
+                <td>Database</td>
+                <td>MySQL</td>
+                <td>Relational catalog; sessions and cache on same server</td>
+            </tr>
+            <tr>
+                <td>Views</td>
+                <td>Blade templates + CSS</td>
+                <td>Simple deploy; no complex front-end build pipeline required</td>
+            </tr>
+            <tr>
+                <td>Hosting</td>
+                <td>Shared VPS (cPanel/WHM)</td>
+                <td>Application in <code>/laravel</code>; public web root <code>/public_html</code></td>
+            </tr>
+            <tr>
+                <td>Images</td>
+                <td>On-disk under public web folders</td>
+                <td>Thousands of plate photos; git excludes binary assets from source control</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Production operations</h2>
+    <ul>
+        <li>Code updates: build release package on PC → upload via FileZilla → run database migrations in WHM Terminal</li>
+        <li>Image optimization: <code>php artisan images:optimize plates</code> after bulk plate uploads</li>
+        <li>Dynamic SEO sitemap generated by application</li>
+        <li>Planned: AWS S3 + CloudFront CDN for image delivery at scale (documented, pending AWS account verification)</li>
+    </ul>
+
+    <h2>Security &amp; compliance</h2>
+    <ul>
+        <li>Authenticated admin and member areas; blocked-user middleware</li>
+        <li>CSRF protection on forms; honeypot on public contact form</li>
+        <li>Environment configuration (.env) excluded from version control</li>
+    </ul>
+</div>
+
+<!-- SECTION 8 -->
+<div class="page">
+    <p class="section-num">Section 8</p>
+    <h1>Monetization &amp; Growth Roadmap</h1>
+
+    <h2>Near-term revenue</h2>
+    <table>
+        <thead>
+            <tr><th>Channel</th><th>Status</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Google AdSense</strong></td>
+                <td class="status-plan">In progress</td>
+                <td>Publisher ID configured; site verification and ad unit placement on search results (728×90 slots). Account approval pending Google review.</td>
+            </tr>
+            <tr>
+                <td><strong>Newsletter list</strong></td>
+                <td class="status-live">Live</td>
+                <td>Foundation for future promotions, store launches, and content marketing</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Medium-term opportunities</h2>
+    <ul>
+        <li><strong>On-site store</strong> — sell plates directly; copy on homepage references upcoming store</li>
+        <li><strong>Premium membership</strong> — advanced valuation tools, export formats, ad-free experience (not built)</li>
+        <li><strong>Affiliate / dealer listings</strong> — curated links or classified section for collectors (not built)</li>
+        <li><strong>Video content</strong> — set walkthroughs, collecting guides (planned section)</li>
+    </ul>
+
+    <h2>Content growth levers</h2>
+    <ul>
+        <li>Expand photo coverage for listings currently without images</li>
+        <li>Add articles and history entries to improve SEO and session depth</li>
+        <li>Import additional sets via CSV as research completes</li>
+        <li>Encourage member public collections for community network effects</li>
+    </ul>
+
+    <div class="callout">
+        <strong>Roadmap principle:</strong> Catalog authority and member tools are the foundation.
+        Monetization layers (ads, store, premium) attach to proven traffic and trust—not the other way around.
+    </div>
+</div>
+
+<!-- SECTION 9 -->
+<div class="page">
+    <p class="section-num">Section 9</p>
+    <h1>Implementation Status</h1>
+
+    <table>
+        <thead>
+            <tr><th>Phase</th><th>Scope</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1 — Core catalog</td>
+                <td>Database, import, gallery, search (grid/list), pricing display</td>
+                <td class="status-live">Complete · Live</td>
+            </tr>
+            <tr>
+                <td>2 — Members</td>
+                <td>Registration, collection tracker, PDF checklists, public profiles, valuation</td>
+                <td class="status-live">Complete · Live</td>
+            </tr>
+            <tr>
+                <td>3 — Admin CMS</td>
+                <td>Users, catalog CRUD, CSV import, hero, history, articles</td>
+                <td class="status-live">Complete · Live</td>
+            </tr>
+            <tr>
+                <td>4 — Production deploy</td>
+                <td>Single-folder hosting, deploy scripts, migration workflow</td>
+                <td class="status-live">Complete · Live</td>
+            </tr>
+            <tr>
+                <td>5 — Monetization</td>
+                <td>AdSense integration, ads.txt</td>
+                <td class="status-plan">In progress</td>
+            </tr>
+            <tr>
+                <td>6 — CDN</td>
+                <td>AWS S3 / CloudFront for images</td>
+                <td class="status-plan">Planned</td>
+            </tr>
+            <tr>
+                <td>7 — Commerce</td>
+                <td>On-site store</td>
+                <td class="status-plan">Planned</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>What an investor should know</h2>
+    <ul>
+        <li>The platform is <strong>operational today</strong>—not a mockup or slide-deck concept</li>
+        <li>Catalog data and software are owned assets; plate photography is an ongoing content investment</li>
+        <li>Additional capital accelerates photo coverage, content marketing, AdSense/store launch, and CDN migration</li>
+        <li>Technical debt is manageable: standard Laravel patterns, documented deploy process, admin self-service</li>
+    </ul>
+
+    <p class="footer-note">
+        Document: MiniLicensePlates.com Investor Site Plan · May 2026<br>
+        Live site: https://minilicenseplates.com · Source: docs/MiniLicensePlates_Investor_Site_Plan.html
+    </p>
+</div>
+
+<!-- APPENDIX -->
+<div class="page appendix">
+    <p class="section-num">Appendix</p>
+    <h1>Technical Build Specification</h1>
+    <p>
+        The following summary is provided for technical due diligence. It describes the full application
+        as specified for development or rebuild from scratch.
+    </p>
+
+    <h2>Public routes</h2>
+    <p>
+        / (home) · /gallery · /gallery/{set} · /search · /history · /articles · /articles/{slug} ·
+        /about · /contribute · /login · /register · /sitemap.xml · /ads.txt
+    </p>
+
+    <h2>Member routes (authenticated)</h2>
+    <p>
+        /profile · /collection · /collection/manage · /collection/manage/pdf ·
+        /collection/members/{username} · per-item edit/update/delete
+    </p>
+
+    <h2>Admin routes (authenticated + admin flag)</h2>
+    <p>
+        /admin — dashboard, users, newsletter, home-hero, history-timeline, articles,
+        catalog (sets, plates, CSV import/template)
+    </p>
+
+    <h2>Image file convention</h2>
+    <pre>public/plates/{set_code}/{image_base}_a.{ext}   — front
+public/plates/{set_code}/{image_base}_b.{ext}   — back (optional)
+public/hero/          — homepage rotator
+public/history-media/ — timeline images
+public/articles-media/ — article images
+public/plate_missing.png — placeholder when no photo</pre>
+
+    <h2>Master development prompt (abbreviated)</h2>
+    <pre>Build MiniLicensePlates.com — Laravel + MySQL + Blade collector reference site.
+~3,150 plate catalog rows with search, gallery, pricing tables (MT–PO),
+member collections with PDF export, admin CMS for catalog/history/articles/hero,
+newsletter signup, SEO sitemap, AdSense-ready ad slots.
+Images on disk under public/plates/{set_code}/; CSV import for catalog.
+Production: /laravel app + /public_html web root. MySQL only.</pre>
+
+    <p class="footer-note">
+        Full technical specification available in project documentation:
+        GALLERY_CATALOG_SPEC.md · PROJECT_REFERENCE.md · docs/PLATE_CSV_COLUMNS_REFERENCE.html
+    </p>
+</div>
+
+</body>
+</html>

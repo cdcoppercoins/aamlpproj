@@ -55,7 +55,6 @@ Upload with FileZilla (or the deploy packager):
 - `config/history_timeline.php` → `laravel/config/`
 - `app/Http/Controllers/HistoryController.php` → `laravel/app/Http/Controllers/`
 - `resources/views/history.blade.php` → `laravel/resources/views/`
-- `resources/views/components/history-timeline-script.blade.php` → `laravel/resources/views/components/`
 - `routes/web.php` → `laravel/routes/`
 - `public/main.css` → `public_html/`
 - `public/history-media/` (your images) → `public_html/history-media/`

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Support\PlateCsvColumns;
+use App\Support\WebPublicPath;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -127,7 +128,7 @@ class PlateCsvImporter
 
     private function ensureSetDirectory(string $setCode): void
     {
-        $directory = public_path('plates/' . $setCode);
+        $directory = WebPublicPath::path('plates/' . $setCode);
         if (! File::isDirectory($directory)) {
             File::makeDirectory($directory, 0755, true);
         }

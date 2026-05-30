@@ -12,7 +12,7 @@
 
     <p>
         Have an unlisted plate, a variety, better images, or historical information?
-        Send the details below, or email <a href="mailto:cdcoppercoins@gmail.com">cdcoppercoins@gmail.com</a>.
+        Send the details below, or email <a href="mailto:{{ config('contribute.mail_to') }}">{{ config('contribute.mail_to') }}</a>.
     </p>
 
     @if(session('success'))

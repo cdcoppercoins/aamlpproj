@@ -1,0 +1,774 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MiniLicensePlates.com â€” Master Build Prompt</title>
+    <style>
+        @page { margin: 0.6in 0.7in; size: letter; }
+        :root {
+            --ink: #1a3344;
+            --muted: #556677;
+            --accent: #4079a5;
+            --accent-dark: #264a62;
+            --line: #d8e4ec;
+            --callout: #f4f8fb;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 10.5pt;
+            line-height: 1.45;
+            color: var(--ink);
+        }
+        .cover {
+            page-break-after: always;
+            text-align: center;
+            padding-top: 2.2in;
+            border-top: 6px solid var(--accent);
+        }
+        .cover h1 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 26pt;
+            color: var(--accent-dark);
+            margin: 0 0 10px;
+        }
+        .cover .sub {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 14pt;
+            color: var(--muted);
+            max-width: 5in;
+            margin: 0 auto 40px;
+        }
+        .cover .doc-type {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 15pt;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 60px;
+        }
+        .cover .meta { font-size: 10pt; color: var(--muted); }
+        h1.section {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 16pt;
+            color: var(--accent-dark);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 5px;
+            margin: 0 0 12px;
+            page-break-after: avoid;
+        }
+        h2 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 11.5pt;
+            color: var(--accent);
+            margin: 18px 0 8px;
+            page-break-after: avoid;
+        }
+        h3 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 10.5pt;
+            margin: 12px 0 6px;
+            page-break-after: avoid;
+        }
+        p { margin: 0 0 8px; }
+        ul, ol { margin: 0 0 10px; padding-left: 20px; }
+        li { margin-bottom: 4px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0 12px;
+            font-size: 9.5pt;
+        }
+        th, td {
+            border: 1px solid #b8c8d4;
+            padding: 5px 7px;
+            vertical-align: top;
+            text-align: left;
+        }
+        th {
+            background: var(--callout);
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+        code, .mono {
+            font-family: Consolas, monospace;
+            font-size: 9pt;
+            background: #f0f0f0;
+        }
+        pre.routes {
+            font-family: Consolas, monospace;
+            font-size: 8.5pt;
+            background: #f4f4f4;
+            border: 1px solid #ccc;
+            padding: 10px;
+            line-height: 1.35;
+            white-space: pre-wrap;
+            margin: 8px 0 12px;
+        }
+        .intro-box {
+            border-left: 4px solid var(--accent);
+            background: var(--callout);
+            padding: 12px 14px;
+            margin: 0 0 16px;
+            font-size: 10pt;
+        }
+        .section-block { page-break-inside: avoid; margin-bottom: 8px; }
+        .page-break { page-break-before: always; }
+        .toc { page-break-after: always; }
+        .toc ol { font-family: "Segoe UI", Arial, sans-serif; line-height: 1.7; }
+        .footer {
+            margin-top: 20px;
+            padding-top: 8px;
+            border-top: 1px solid var(--line);
+            font-size: 8.5pt;
+            color: var(--muted);
+        }
+        @media print {
+            a { color: var(--ink); text-decoration: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="cover">
+    <h1>MiniLicensePlates.com</h1>
+    <p class="sub">Complete specification for building the site from scratch</p>
+    <p class="doc-type">Master Build Prompt</p>
+    <p class="meta">Copy Section 0 (opening instruction) plus all sections into an AI coding session.<br>May 2026 Â· Technical reference</p>
+</div>
+
+<div class="toc">
+    <h1 class="section">Contents</h1>
+    <ol>
+        <li>Opening Instruction (paste first)</li>
+        <li>Project Mission</li>
+        <li>Tech Stack &amp; Constraints</li>
+        <li>Visual Design System</li>
+        <li>Routes</li>
+        <li>Database Schema</li>
+        <li>Data Import &amp; Images</li>
+        <li>Member Collection Features</li>
+        <li>Admin CMS</li>
+        <li>SEO &amp; Advertising</li>
+        <li>Layout &amp; Blade Structure</li>
+        <li>Key Business Rules</li>
+        <li>Deploy &amp; Operations</li>
+        <li>Implementation Order</li>
+        <li>Definition of Done</li>
+    </ol>
+</div>
+
+<h1 class="section">0. Opening Instruction</h1>
+<div class="intro-box">
+    <strong>Paste this paragraph first</strong> when starting a new AI session to rebuild the site:
+</div>
+<pre class="routes">Build MiniLicensePlates.com from scratch exactly as specified in this document. This is a Laravel 12 + MySQL + Blade application for collectors of miniature license plate premiums (cereal/gum/candy toys). Implement all features, migrations, routes, views, CSS, admin CMS, member tools, and deploy scaffolding described here. Do not use SQLite, Vite, or React. Do not commit public/plates/ or mlp_code/ to git. Build phase by phase; match the visual design and behavior precisely.</pre>
+
+<h1 class="section page-break">1. Project Mission</h1>
+<p><strong>Site:</strong> MiniLicensePlates.com (minilicenseplates.com)<br>
+<strong>Audience:</strong> Collectors of miniature license plates issued as product premiums.</p>
+<h2>Goals</h2>
+<ul>
+    <li>Authoritative visual reference and pricing guide for 3,150+ catalog listings</li>
+    <li>Searchable database (not filesystem scan) with plate photos on disk</li>
+    <li>Member accounts to track collections and print PDF checklists</li>
+    <li>Admin CMS for catalog, content, users, and homepage hero</li>
+    <li>History timeline and articles for SEO and engagement</li>
+    <li>Newsletter signup; Google AdSense-ready ad slots; future on-site store in copy</li>
+    <li>Tone: warm, authoritative, collector-focused</li>
+</ul>
+<p>Round displayed catalog count to nearest 50 on marketing copy (e.g. 3,118 â†’ 3,150+).</p>
+
+<h1 class="section page-break">2. Tech Stack &amp; Constraints</h1>
+<ul>
+    <li>Laravel 12, PHP 8.2+, <strong>MySQL only</strong> (local DB: minilicenseplates)</li>
+    <li>Blade views ONLY in resources/views/ (no raw .php view files)</li>
+    <li>Single CSS: public/main.css (no Vite/build step)</li>
+    <li>Sessions, cache, queue: database drivers</li>
+    <li>Local: XAMPP MySQL + <code>php artisan serve</code> at http://localhost:8000</li>
+    <li>Git ignore: public/plates/, mlp_code/, .env</li>
+    <li>Commits via GitHub Desktop (document; avoid Cursor git lock issues)</li>
+</ul>
+<h2>Production hosting</h2>
+<ul>
+    <li>App: <code>/home/minilp/laravel/</code></li>
+    <li>Web root: <code>/home/minilp/public_html/</code> (sibling, NOT laravel/public)</li>
+    <li><code>public_html/index.php</code> bootstraps <code>../laravel</code></li>
+    <li><strong>WebPublicPath</strong> helper: use sibling public_html when present; else public_path() locally</li>
+    <li>Deploy: <code>Build-DeployRelease.ps1</code> + FileZilla; docs/DEPLOY_PLAIN_ENGLISH.md</li>
+</ul>
+
+<h1 class="section page-break">3. Visual Design System</h1>
+<p>CSS variable <code>--site-max-width: 1150px</code>. Colors: nav <code>#4079a5</code>, links <code>#fab95b</code>.</p>
+
+<h2>Global layout</h2>
+<ul>
+    <li>Tiled background: background_img.jpg</li>
+    <li>White content column 1150px max, ~4px side/bottom margin</li>
+    <li>Split header banners (175px max height), left/right anchored</li>
+    <li>Footer inside white box: footer_base_img.png, logos, newsletter, copyright bar</li>
+</ul>
+
+<h2>Navigation</h2>
+<p>HOME | GALLERY | SEARCH | HISTORY | ARTICLES | MORE â–¾ | MY COLLECTION or SIGN IN | SHOP (eBay external). MORE hover dropdown: About, Contribute. Session bar: avatar, â€œLogged in as {username}â€, admin link, Log out. No collection link in session bar.</p>
+
+<h2>Home page</h2>
+<ul>
+    <li>Hero rotator (DB slides, home-hero.js, flush to top)</li>
+    <li>Welcome, H1, stat block, mission + composite image</li>
+    <li>Three feature cards with bottom-aligned CTAs â†’ gallery, search, collection</li>
+    <li>brands.jpg on wheat/orange band</li>
+</ul>
+
+<h2>Search (/search)</h2>
+<ul>
+    <li>Filters: year, jurisdiction, set name, company, set types m/c/s/x</li>
+    <li>Grid (3-col) and list toggle; 12 per page; custom pagination &lt;&lt; &gt;&gt;</li>
+    <li>Orange 2px pricing borders; plate_missing.png fallback</li>
+    <li>728Ã—90 ad placeholders above/below results</li>
+    <li>Collapsible search form when results shown</li>
+</ul>
+
+<h2>Gallery</h2>
+<ul>
+    <li>Index: 4-across set cards, random thumb, set name, company, set code, cat ref</li>
+    <li>Show: 4-col grid, hover flip _a/_b, jurisdiction + variety labels, preload backs</li>
+</ul>
+
+<h2>History, Articles, About, Contribute</h2>
+<ul>
+    <li>History: vertical accordion, 60Ã—60 thumbs, wheat labels, justified body text</li>
+    <li>Articles: published only; keyword search with highlight in title and body</li>
+    <li>About: proheadshot.jpg; Contribute: honeypot + email</li>
+</ul>
+
+<h1 class="section page-break">4. Routes</h1>
+<pre class="routes">PUBLIC
+GET  /                    home
+GET  /ads.txt             AdSense verification
+GET  /gallery             gallery.index
+GET  /gallery/{setName}   gallery.show
+GET  /search              search
+GET  /sitemap.xml         sitemap
+GET  /about, /history, /articles, /articles/{slug}
+GET/POST /contribute, POST /newsletter/subscribe
+
+GUEST: /login, /register
+
+AUTH + not.blocked:
+/profile, /collection, /collection/manage, /collection/manage/pdf
+/collection/manage/fill, /collection/{item}/edit|update|destroy
+/collection/sets/{setCode}/visibility
+/collection/members/{username}
+
+AUTH + admin (/admin):
+dashboard, users, newsletter, home-hero, history-timeline, articles, catalog (sets, plates, CSV import)
+
+POST /logout</pre>
+
+<h1 class="section page-break">5. Database Schema</h1>
+
+<h2>plates</h2>
+<p>Catalog pricing guide. Unique (set_code, image_base, variety_key).</p>
+<table>
+    <tr><th>Columns</th><th>Notes</th></tr>
+    <tr><td>set_code, set_name, cat_ref, company</td><td>Identification</td></tr>
+    <tr><td>image_base, image_ext, has_back_image</td><td>Nullable = no photo</td></tr>
+    <tr><td>jurisdiction, jurisdiction_type</td><td>us_state, ca_province, ca_territory, foreign_country</td></tr>
+    <tr><td>year, serial_number, width_inches, height_inches</td><td>Metadata</td></tr>
+    <tr><td>value_mt â€¦ value_po</td><td>Six condition values</td></tr>
+    <tr><td>variety_key, variety_notes, state_embossed, legend_embossed, notes, sort_order</td><td>Variety &amp; display</td></tr>
+</table>
+
+<h2>Other tables</h2>
+<table>
+    <tr><th>Table</th><th>Purpose</th></tr>
+    <tr><td>users</td><td>+ username, phone, address, profile_image, is_admin, is_blocked</td></tr>
+    <tr><td>collection_items</td><td>user_id, plate_id, qty, condition, notes, is_wanted</td></tr>
+    <tr><td>collection_set_settings</td><td>user_id, set_code, is_public</td></tr>
+    <tr><td>newsletter_subscribers</td><td>email, subscribed_at</td></tr>
+    <tr><td>hero_settings, hero_slides</td><td>Rotator config + slides (fill_slide option)</td></tr>
+    <tr><td>history_timeline_entries</td><td>Accordion content + images</td></tr>
+    <tr><td>articles, article_images</td><td>Editorial content, draft/publish</td></tr>
+</table>
+
+<h1 class="section page-break">6. Data Import &amp; Images</h1>
+<h2>CSV import</h2>
+<p><code>php artisan plates:import [csv] [--truncate]</code> â€” default: docs/Mini Plate Checklist - all_plates.csv. Map imAge_A â†’ image_base; jurisdiction_type aliases; duplicate keys get -2, -3 suffix on variety_key.</p>
+
+<h2>File paths (NOT in git)</h2>
+<pre class="routes">{WebPublicPath}/plates/{set_code}/{image_base}_a.{ext}
+{WebPublicPath}/plates/{set_code}/{image_base}_b.{ext}
+Also: hero/, history-media/, articles-media/, plate_missing.png</pre>
+
+<h2>Image optimization</h2>
+<p><code>php artisan images:optimize plates|all [--set=code] [--dry-run]</code> â€” GD profiles for plate, hero, history, article, profile. Optimize on admin upload.</p>
+
+<h1 class="section page-break">7. Member Collection Features</h1>
+<ul>
+    <li><strong>/collection</strong> â€” sets owned, public/private toggle, browse other public collectors</li>
+    <li><strong>/collection/manage</strong> â€” editable set table, fill-set defaults, private valuation total</li>
+    <li><strong>PDF export</strong> â€” letter-size checklist via dompdf</li>
+    <li><strong>/profile</strong> â€” phone, address, photo with live preview</li>
+    <li>Blocked users cannot access member routes</li>
+</ul>
+
+<h1 class="section page-break">8. Admin CMS</h1>
+<table>
+    <tr><th>Module</th><th>Capabilities</th></tr>
+    <tr><td>Users</td><td>Block, admin flag, delete</td></tr>
+    <tr><td>Newsletter</td><td>List, delete subscribers</td></tr>
+    <tr><td>Home hero</td><td>Slides CRUD, interval, fill_slide</td></tr>
+    <tr><td>History</td><td>Timeline CRUD, image upload, delete confirm</td></tr>
+    <tr><td>Articles</td><td>CRUD, publish action, images</td></tr>
+    <tr><td>Catalog</td><td>Sets/plates CRUD, CSV import + template, plate image upload</td></tr>
+</table>
+
+<h1 class="section page-break">9. SEO &amp; Advertising</h1>
+<ul>
+    <li>Per-page title, meta_description, canonical_url</li>
+    <li>JSON-LD WebSite schema on home</li>
+    <li>Dynamic sitemap.xml</li>
+    <li>config/adsense.php + GET /ads.txt</li>
+    <li>728Ã—90 placeholders on search results</li>
+</ul>
+
+<h1 class="section">10. Layout &amp; Blade Structure</h1>
+<p>layouts/app.blade.php (minimal @if usage), components/header, footer, home-hero-rotator, search/*, views for all pages listed in Section 4, admin/*, auth/*, collection/pdf/set-checklist.blade.php.</p>
+
+<h1 class="section">11. Key Business Rules</h1>
+<ul>
+    <li>plates = pricing guide, not physical inventory</li>
+    <li>serial_number = text ON the plate; cat_ref = catalog reference</li>
+    <li>NULL image_base â†’ plate_missing.png</li>
+    <li>Set type filter: first letter of set_code (m/c/s/x)</li>
+    <li>Gallery sort: year, set_code. Search sort: set_name, sort_order, jurisdiction</li>
+</ul>
+
+<h1 class="section page-break">12. Deploy &amp; Operations</h1>
+<p>Create: deploy.config.json, Build-DeployRelease.ps1, public_html-index.php, site-check.php, DEPLOY_PLAIN_ENGLISH.md, PLATE_CSV_COLUMNS_REFERENCE.html, GALLERY_CATALOG_SPEC.md, PROJECT_REFERENCE.md.</p>
+<p>Production DB: minilp_minilp. After deploy: migrate --force, clear view cache. AWS CDN documented but optional.</p>
+
+<h1 class="section">13. Implementation Order</h1>
+<table>
+    <tr><th>Phase</th><th>Scope</th></tr>
+    <tr><td>1</td><td>Layout, CSS, home, about, contribute</td></tr>
+    <tr><td>2</td><td>plates migration + CSV import</td></tr>
+    <tr><td>3</td><td>Gallery + Search</td></tr>
+    <tr><td>4</td><td>Auth, collection, PDF</td></tr>
+    <tr><td>5</td><td>Admin catalog + users</td></tr>
+    <tr><td>6</td><td>Hero, history, articles CMS</td></tr>
+    <tr><td>7</td><td>Newsletter, SEO, AdSense, image optimizer</td></tr>
+    <tr><td>8</td><td>Deploy scripts + docs</td></tr>
+</table>
+
+<h1 class="section">14. Definition of Done</h1>
+<p>A fresh clone with MySQL, migrations, plates:import, and public/plates/ populated produces a site matching minilicenseplates.com in function and layout: same routes, member/admin features, search/gallery behavior, CMS modules, deploy model, and gitignore rules.</p>
+<p>Do not simplify search UI, remove collection PDF/valuation, or commit plate binaries to git.</p>
+
+
+<div class="page-break"></div>
+<h1 class="section">Appendix — Complete Verbatim Prompt</h1>
+<p>Copy everything in the box below into an AI coding session (includes all 14 sections in full detail).</p>
+<pre class="routes" style="font-size:7.5pt;line-height:1.3">Build MiniLicensePlates.com from scratch exactly as specified below. This is a Laravel 12 + MySQL + Blade application for collectors of miniature license plate premiums (cereal/gum/candy toys). Implement all features, migrations, routes, views, CSS, admin CMS, member tools, and deploy scaffolding described here. Do not use SQLite, Vite, or React. Do not commit public/plates/ or mlp_code/ to git.
+
+================================================================================
+1. PROJECT MISSION
+================================================================================
+
+Site: MiniLicensePlates.com (minilicenseplates.com)
+Audience: Collectors of miniature license plates issued as product premiums.
+
+Goals:
+- Authoritative visual reference and pricing guide for 3,150+ catalog listings
+- Searchable database (not filesystem scan) with plate photos on disk
+- Member accounts to track personal collections and print PDF checklists
+- Admin CMS for catalog, content, users, and homepage hero
+- History timeline and articles for SEO and engagement
+- Newsletter signup; Google AdSense-ready ad slots; future on-site store mentioned in copy
+- Tone: warm, authoritative, collector-focused
+
+Round displayed catalog count to nearest 50 on marketing copy (e.g. 3,118 &#226;†’ 3,150+).
+
+================================================================================
+2. TECH STACK &amp; CONSTRAINTS
+================================================================================
+
+- Laravel 12, PHP 8.2+, MySQL only (database name: minilicenseplates locally)
+- Blade views ONLY in resources/views/ (no raw .php view files)
+- Single CSS file: public/main.css (no Vite/build step)
+- Sessions, cache, queue: database drivers
+- Local dev: XAMPP MySQL + php artisan serve at http://localhost:8000
+- .env: DB_USERNAME=root, DB_PASSWORD= empty for local XAMPP
+- Git ignore: public/plates/, mlp_code/, .env
+- Use GitHub Desktop for commits (document this; do not rely on Cursor git)
+
+Production hosting layout:
+- Application: /home/minilp/laravel/
+- Public web root: /home/minilp/public_html/ (sibling folder, NOT laravel/public)
+- public_html/index.php bootstraps ../laravel
+- WebPublicPath helper: if sibling public_html exists with index.php, use it for uploads and image paths; else use public_path() for local dev
+- Deploy: PowerShell script Build-DeployRelease.ps1 packages laravel/ + public_html/ for FileZilla upload; docs/DEPLOY_PLAIN_ENGLISH.md for step-by-step owner instructions
+
+================================================================================
+3. VISUAL DESIGN SYSTEM (public/main.css)
+================================================================================
+
+CSS variable --site-max-width: 1150px for white content column.
+
+Page:
+- Tiled background: public/background_img.jpg (repeat)
+- White content box centered, max-width 1150px, ~4px margin at sides/bottom so background shows
+
+Header:
+- Split banners: public/header_banner_left.png + header_banner_right.png
+- Flex layout, left/right anchored, max-height 175px, object-fit contain
+- Header width matches content column
+
+Navigation:
+- Background #4079a5
+- Link text #fab95b, Open Sans bold (or closest Google Font), ~20% smaller than initial draft so all links fit one line
+- White border around nav block, square corners (no border-radius)
+- Items: HOME | GALLERY | SEARCH | HISTORY | ARTICLES | MORE (dropdown) | MY COLLECTION or SIGN IN | SHOP (external eBay link)
+- MORE dropdown: hover-only (not always visible); About, Contribute; left-aligned links, 8px padding
+- HISTORY and ARTICLES are top-level nav links, NOT inside MORE
+
+Logged-in session bar (below nav, inside nav block):
+- Profile thumbnail + &quot;Logged in as {username}&quot; (links to profile edit only &#226;€” NOT to collection)
+- If is_admin: &quot;admin&quot; text link to /admin
+- &quot;Log out&quot; button to the right
+- Do NOT show &quot;My Collection&quot; link here (nav already has MY COLLECTION)
+
+Footer:
+- Based on footer_base_img.png with alpca_logo.png, avatar.png
+- Placeholder link columns left/right for future pages
+- Copyright bar in light shade matching footer art
+- Newsletter: email input + submit; validate email; store in newsletter_subscribers with subscribed_at timestamp
+- Footer sits inside white content box with small margin matching sides
+
+Home page sections:
+- Hero rotator flush to top (no gap above): admin-managed slides from DB, JS rotator (public/js/home-hero.js), configurable interval
+- Welcome: &quot;MiniLicensePlates.com&quot; semi-bold, 10% larger
+- H1 + lead paragraph about visual reference to mini plates from 1930s&#226;€“today
+- Stat block: &quot;{count}+ subjects in the catalog&quot;
+- Mission section with blue_back_composite_img_sm.jpg on right
+- Copy mentions: history section, printable checklists, upcoming store on this website
+- Three feature cards (Set Gallery, Catalog Search, Printable Checklists) with CTAs bottom-aligned inside each card:
+  - Browse set images &#226;†’ /gallery
+  - Catalog search &#226;†’ /search
+  - My Collection link &#226;†’ /collection (auth) or login
+- brands.jpg on wheat/orange band below feature cards, widened to ~5px from white box edges, no border on orange box
+
+Search page:
+- Breadcrumbs + half-width left column: breadcrumbs, &quot;Search the catalog&quot; title, intro text, red **NOTE:** disclaimer
+- Right half: notice box (when designed)
+- Search form: year, jurisdiction (label: &quot;Jurisdiction (state/prov/country)&quot;), set name, company, set type checkboxes (m/c/s/x)
+- Form hides when results show; &quot;Try another search&quot; toggles visibility; intro text inside show/hide
+- 728&#195;—90 gray (#777) ad placeholder above and below results (white centered text &quot;728x90 banner advertisement&quot;)
+- Grid view: 3 columns, gray card background, black border removed, plate image in same card as info, orange 2px pricing table borders, pricing anchored above two dark blue buttons, empty placeholder cells if row has fewer than 3
+- List view: full-width rows, image left in black-padded box, info + pricing + buttons right; list text 15% larger; 10px margin right of buttons; pricing table same height as buttons; orange 2px borders; centered table text
+- Toggle grid/list; pagination 12 per page; custom pagination with &lt;&lt; (to page 2 when page 1 hidden) and &gt;&gt; (to last page when last hidden)
+- plate_missing.png when no image
+
+Gallery index (/gallery):
+- Title/breadcrumb: &quot;Gallery&quot; / &quot;Browse set images&quot;
+- 4-across set cards, gray background, black border matching search cards
+- Random front image from set folder per card
+- Set name, company (smaller), set code line, cat ref line (&quot;ref: {value}&quot; salmon color, or unknown)
+- Aligned text rows across cards (fixed image div height ~180px)
+
+Gallery show (/gallery/{setName}):
+- setName is URL-encoded set_name from DB
+- Header row: set title left, small &quot;Return to Gallery&quot; button right (same line)
+- 4-column image grid, larger images
+- Each cell: gray background, image in black box with 10px pad, jurisdiction centered below image in small text, variety in parentheses after jurisdiction
+- Hover: flip front (_a) to back (_b); preload back images on page load
+- Match image files to DB via image_base + jurisdiction logic (resolveSetImageDirectory, collectSetImages)
+
+History (/history):
+- Vertical accordion (NOT hover modals) &#226;€” expand/collapse sections
+- Each entry: 60&#195;—60 circular thumb (zoomed crop of image), wheat-colored label row (bold white text on colored background), expandable body
+- Body: justified serif text (readable font), paragraph indent, single blank line between paragraphs
+- Image floated right ~50% modal width with black background + light gray italic caption beneath image
+- Click outside accordion panel does NOT close (accordion behavior only)
+- Data from history_timeline_entries table; seed from config on first migration if empty
+
+Articles (/articles, /articles/{slug}):
+- List published articles only; keyword search with highlighted terms in titles AND body (use mark/highlight class)
+- Fields: author, title, subtitle, slug, body, hero image, multiple article_images with alt/caption/sort_order
+- Draft vs published: is_published + published_at; admin must click Publish to go live
+
+About: owner proheadshot.jpg with site story
+
+Contribute: contact form, honeypot field &quot;company&quot;, email to site owner
+
+================================================================================
+4. ROUTES (routes/web.php)
+================================================================================
+
+Public:
+GET  /                          home
+GET  /ads.txt                   AdSense ads.txt line from config
+GET  /gallery                   gallery.index
+GET  /gallery/{setName}         gallery.show
+GET  /search                    search
+GET  /sitemap.xml               dynamic sitemap
+GET  /about                     about
+GET  /history                   history
+GET  /articles                  articles.index
+GET  /articles/{slug}           articles.show
+GET  /contribute                contribute
+POST /contribute                contribute.store
+POST /newsletter/subscribe      newsletter.subscribe
+
+Guest:
+GET/POST /login, /register
+
+Auth + not.blocked:
+GET  /profile, PUT /profile
+GET  /collection
+POST /collection
+GET  /collection/manage
+PUT  /collection/manage
+POST /collection/manage/fill
+GET  /collection/manage/pdf
+GET  /collection/{item}/edit
+PUT  /collection/{item}
+DELETE /collection/{item}
+PUT  /collection/sets/{setCode}/visibility
+GET  /collection/members/{username}
+
+Auth + not.blocked + admin (/admin):
+- dashboard, users CRUD, newsletter list/delete
+- home-hero: settings, slides CRUD, fill_slide option
+- history-timeline CRUD + delete with confirmation
+- articles CRUD + publish action
+- catalog: sets CRUD, plates CRUD, CSV import + template download
+
+POST /logout (auth)
+
+Middleware:
+- EnsureUserIsAdmin (admin)
+- EnsureUserIsNotBlocked (not.blocked)
+
+================================================================================
+5. DATABASE SCHEMA (migrations)
+================================================================================
+
+plates &#226;€” catalog pricing guide, one row per plate type/variety:
+  id, set_code(64), set_name(255), cat_ref(10)?, company(128)?,
+  image_base(128)?, image_ext(16)?, has_back_image(tinyint)?,
+  jurisdiction(128)?, jurisdiction_type(32)? &#226;€” us_state|ca_province|ca_territory|foreign_country,
+  year(int)?, serial_number(64)?, width_inches/height_inches decimal(10,4)?,
+  value_mt, value_ex, value_vg, value_g, value_fr, value_po (varchar 32)?,
+  variety_key(32)?, variety_notes(text)?, state_embossed/legend_embossed(tinyint)?,
+  notes(text)?, sort_order(int default 0), timestamps
+  UNIQUE(set_code, image_base, variety_key)
+  Indexes on set_code, jurisdiction, year, company, cat_ref, etc.
+
+users &#226;€” Laravel default + username(30 unique), phone, address, profile_image,
+  is_admin, is_blocked, blocked_at, blocked_reason
+  Bootstrap admin: config admin.bootstrap_email promoted on migration
+
+collection_items:
+  user_id, plate_id, quantity, condition(4 chars MT/EX/VG/G/FR/PO),
+  acquired_date, price_paid, storage_location, notes, is_wanted
+  UNIQUE(user_id, plate_id)
+
+collection_set_settings:
+  user_id, set_code, is_public boolean
+
+newsletter_subscribers:
+  email unique, subscribed_at
+
+hero_settings: interval_ms (default 7000)
+hero_slides: sort_order, image, alt, headline, subline, cta, route, route_params(json), bg, is_active, fill_slide
+
+history_timeline_entries:
+  slug, sort_order, label, title, body, image, alt, caption, is_published
+
+articles: slug, author, title, subtitle, body, hero_image, hero_image_alt, sort_order, is_published, published_at
+article_images: article_id, image_path, alt, caption, sort_order
+
+Standard Laravel: sessions, cache, jobs, password_reset_tokens tables.
+
+================================================================================
+6. DATA IMPORT &amp; IMAGES
+================================================================================
+
+Artisan command: php artisan plates:import [csv_path] [--truncate]
+- Default CSV: docs/Mini Plate Checklist - all_plates.csv
+- Map imAge_A typo column &#226;†’ image_base
+- Map jurisdiction_type: canada&#226;†’ca_province, foreign/territory&#226;†’foreign_country
+- Empty image_base &#226;†’ nophoto-{rowNum}; empty variety_key &#226;†’ base
+- Duplicate unique key &#226;†’ append -2, -3 to variety_key
+
+Plate images on disk (NOT in git):
+  {WebPublicPath}/plates/{set_code}/{image_base}_a.{ext}
+  {WebPublicPath}/plates/{set_code}/{image_base}_b.{ext}  (optional back)
+
+Other media folders under WebPublicPath:
+  hero/, history-media/, articles-media/, profile uploads
+  plate_missing.png, header banners, background, footer assets, setinfo/
+
+Display dimensions: if width/height &lt; 1 inch, show without leading zero (.625 not 0.625)
+
+Image optimization (GD):
+- ImageOptimizer class with profiles: plate, hero, history, article, profile
+- Artisan: php artisan images:optimize {plates|articles-media|history-media|hero|all} [--set=code] [--dry-run]
+- Default target: plates; dry-run shows folder path + count only (not file list)
+- Optimize on upload in admin for hero, history, articles, profile, catalog plate uploads
+
+Article images: use stable filenames (e.g. variety-post.jpg) not random hashes in public URL
+
+================================================================================
+7. MEMBER COLLECTION FEATURES
+================================================================================
+
+/collection index:
+- Abbreviated list of sets user has entered data for
+- Link to manage each set
+- Per-set public/private toggle (collection_set_settings)
+- Section: other members&#39; public collections &#226;€” username link, total quantity owned
+
+/collection/manage:
+- Pick set by search/dropdown
+- Full set as editable table: quantity, condition, notes, wanted flag, etc.
+- &quot;Fill set&quot; action: default quantity + condition applied to all plates in set
+- Show catalog value for user&#39;s chosen condition (private total)
+- PDF export: letter-size checklist (full set or user&#39;s owned items only) via dompdf
+
+/collection/members/{username}:
+- View another user&#39;s public set data; display @username correctly in Blade (escape @ as @@)
+
+Profile /profile:
+- Edit name, email, username, phone, address, profile photo upload
+- Live preview on file select before save
+- Clear label for remove-photo checkbox (plain language)
+
+Registration/login: username required, unique; blocked users cannot access member routes
+
+================================================================================
+8. ADMIN CMS
+================================================================================
+
+Dashboard linking to all modules.
+
+Users: list, view, block/unblock with reason, grant is_admin, delete
+
+Newsletter: list subscribers, delete
+
+Home hero: edit rotation interval; CRUD slides with image upload, headline, subline, CTA, route link, background color/gradient, fill_slide checkbox for full-bleed image
+
+History timeline: CRUD, image upload to history-media/, caption, sort order, delete with JS confirm
+
+Articles: CRUD, multiple image uploads, draft/publish button sets is_published + published_at
+
+Catalog:
+- Sets index with compact row height (5px vertical padding on text)
+- Add set form: centered 700px box; row1 set_code (~8 chars wide input) + set_name (~35 chars); row2 year (~5 chars) + company (~45 chars); spacing above submit button
+- Set show: plate list, edit/delete
+- Plate create/edit: all plate columns, image upload to plates/{set_code}/
+- CSV import page: download template matching plates schema, upload CSV for bulk insert into one set
+
+Catalog set form and import follow docs/PLATE_CSV_COLUMNS_REFERENCE.html column definitions.
+
+================================================================================
+9. SEO &amp; ADS
+================================================================================
+
+layouts/app.blade.php:
+- @yield title, meta_description, canonical_url
+- JSON-LD structured data where appropriate (WebSite on home)
+- AdSense script partial when config enabled
+
+SitemapController: include home, gallery, search, history, articles, about, published article URLs
+
+Home page: keyword-rich but readable prose; dynamic plate count in meta
+
+config/adsense.php: publisher ID, enable flag
+GET /ads.txt &#226;†’ google.com, pub-{id}, DIRECT, f08c47fec0942fa0
+
+Search results: 728&#195;—90 placeholder components (real ad units later)
+
+================================================================================
+10. LAYOUT &amp; BLADE STRUCTURE
+================================================================================
+
+resources/views/layouts/app.blade.php &#226;€” minimal head, no complex unclosed @if
+components/header.blade.php, footer.blade.php
+components/home-hero-rotator.blade.php
+components/search/*, components/ads/* as needed
+views: home, about, history, contribute, search, gallery/index, gallery/show
+views: articles/index, articles/show
+views: collection/*, profile/edit
+views: admin/* for all CMS modules
+views: auth/login, register
+PDF view: collection/pdf/set-checklist.blade.php
+
+Keep layout simple to avoid Blade parse errors.
+
+================================================================================
+11. KEY BUSINESS RULES
+================================================================================
+
+- plates table is a PRICING GUIDE (six condition columns), not inventory of physical objects
+- serial_number = characters printed ON the plate, not catalog ID
+- cat_ref = catalog reference number (varchar 10)
+- company = issuer/manufacturer (Post, General Mills, Topps, etc.)
+- Many plates have NULL image_base = no photo; show plate_missing.png
+- has_back_image: 1 = back exists at {base}_b.{ext}, 0 = front only, NULL = unknown
+- Search set types: first letter of set_code &#226;€” m=metal, c=cards, s=stickers, x=anything else (multi-select OR)
+- Gallery sorted by MIN(year), set_code
+- Search results sorted by set_name, sort_order, jurisdiction
+- Contribute emails: cdcoppercoins@gmail.com (configurable)
+- External shop link: https://www.ebay.com/str/minilicenseplates
+
+================================================================================
+12. DEPLOY &amp; OPS ARTIFACTS
+================================================================================
+
+Create:
+- deploy/deploy.config.json
+- scripts/Build-DeployRelease.ps1
+- deploy/public_html-index.php (points to ../laravel)
+- deploy/site-check.php, setup-storage-link.php
+- docs/DEPLOY_PLAIN_ENGLISH.md (one step at a time for non-technical owner)
+- docs/PLATE_CSV_COLUMNS_REFERENCE.html
+- GALLERY_CATALOG_SPEC.md, PROJECT_REFERENCE.md, AGENTS.md
+
+Production .env: APP_ENV=production, DB credentials for minilp_minilp on server
+After deploy: php artisan migrate --force; clear storage/framework/views/*.php
+Promote admin on production via DB or bootstrap email config
+
+Planned but not required for v1 launch: AWS S3/CloudFront (document in docs/AWS_IMAGES_SETUP.md)
+
+================================================================================
+13. IMPLEMENTATION ORDER
+================================================================================
+
+Phase 1: Laravel skeleton, layout/CSS, home, about, contribute, static assets
+Phase 2: plates migration + import command + seed from CSV
+Phase 3: Gallery (DB-driven) + Search (grid/list/pagination)
+Phase 4: Auth, profile, collection tracker, PDF, public member browse
+Phase 5: Admin users + catalog CRUD + CSV import
+Phase 6: Hero rotator admin, history accordion + CMS, articles + CMS
+Phase 7: Newsletter, SEO sitemap, AdSense hooks, image optimizer command
+Phase 8: Deploy scripts + documentation
+
+Build each phase completely before moving on. Match visual design precisely. Test on localhost:8000 with XAMPP MySQL.
+
+================================================================================
+14. DEFINITION OF DONE
+================================================================================
+
+A fresh clone with MySQL running, migrations, plates:import, and public/plates/ folders populated should produce a site indistinguishable in function and layout from minilicenseplates.com as described above: same routes, same member/admin capabilities, same search/gallery behavior, same admin CMS modules, same deploy model, same gitignore rules.
+
+Do not add features not listed unless needed for correctness. Do not simplify the search UI or remove collection valuation/PDF. Do not put plate binary files in git.
+</pre><p class="footer">
+    MiniLicensePlates.com Master Build Prompt Â· May 2026<br>
+    Markdown source: docs/MiniLicensePlates_MASTER_BUILD_PROMPT.md Â· HTML: docs/MiniLicensePlates_MASTER_BUILD_PROMPT.html
+</p>
+
+</body>
+</html>
+

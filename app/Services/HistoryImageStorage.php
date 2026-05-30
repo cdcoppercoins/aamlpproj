@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\ImageOptimizer;
 use App\Support\WebPublicPath;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
@@ -31,7 +32,9 @@ class HistoryImageStorage
             $filename = Str::uuid()->toString() . '.' . $extension;
         }
 
+        $fullPath = $directory . DIRECTORY_SEPARATOR . $filename;
         $file->move($directory, $filename);
+        ImageOptimizer::optimize($fullPath, 'history');
 
         return 'history-media/' . $filename;
     }

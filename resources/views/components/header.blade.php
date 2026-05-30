@@ -28,16 +28,17 @@
               <li><a href="{{ route('contribute') }}">Contribute</a></li>
             </ul>
           </li>
-          @guest
+          @auth
+          <li><a href="{{ route('collection.index') }}">MY COLLECTION</a></li>
+          @else
           <li><a href="{{ route('login') }}">SIGN IN</a></li>
-          @endguest
+          @endauth
           <li><a href="https://www.ebay.com/str/minilicenseplates" target="_blank" rel="noopener noreferrer">SHOP</a></li>
         </ul>
       </nav>
 
       @auth
       <div class="session-bar-row">
-        <a href="{{ route('collection.index') }}" class="session-bar-side-link">My collection</a>
         <a href="{{ route('profile.edit') }}" class="session-bar">
           @if (auth()->user()->profileImageUrl())
             <img src="{{ auth()->user()->profileImageUrl() }}"

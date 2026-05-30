@@ -439,16 +439,19 @@ class CollectionController extends Controller
         $saved = 0;
         $removed = 0;
 
+        $existingByPlateId = CollectionItem::query()
+            ->where('user_id', Auth::id())
+            ->whereIn('plate_id', $validPlateIds)
+            ->get()
+            ->keyBy('plate_id');
+
         foreach ($validPlateIds as $plateId) {
             $row = $items[$plateId] ?? [];
             $quantity = isset($row['quantity']) && $row['quantity'] !== '' ? (int) $row['quantity'] : 0;
             $isWanted = ! empty($row['is_wanted']);
             $shouldKeep = $quantity > 0 || $isWanted;
 
-            $existing = CollectionItem::query()
-                ->where('user_id', Auth::id())
-                ->where('plate_id', $plateId)
-                ->first();
+            $existing = $existingByPlateId->get($plateId);
 
             if (! $shouldKeep) {
                 if ($existing) {

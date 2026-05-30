@@ -244,38 +244,81 @@
     }
 
     const container = document.getElementById('galleryResultsContainer');
-    const buttons = document.querySelectorAll('.gallery-view-btn');
-    if (!container || !buttons.length) return;
+    const searchPage = document.querySelector('.search-page');
+    if (!container || !searchPage) return;
+
+    const buttons = searchPage.querySelectorAll('.gallery-view-btn');
+    const viewToggle = searchPage.querySelector('.gallery-view-toggle');
+    if (!buttons.length) return;
 
     const storageKey = 'galleryResultsView';
+    const listViewMinWidth = 800;
+    const listButton = searchPage.querySelector('.gallery-view-btn[data-view="list"]');
 
-    function setView(view) {
-        const isList = view === 'list';
-        container.classList.toggle('is-list', isList);
-        container.classList.toggle('is-grid', !isList);
+    let userPreferredView = 'grid';
+    try {
+        userPreferredView = localStorage.getItem(storageKey) || 'grid';
+    } catch (e) {}
+
+    function isNarrowViewport() {
+        return window.innerWidth < listViewMinWidth;
+    }
+
+    function setView(view, persist) {
+        const useList = view === 'list' && !isNarrowViewport();
+        const activeView = useList ? 'list' : 'grid';
+
+        container.classList.toggle('is-list', useList);
+        container.classList.toggle('is-grid', !useList);
 
         buttons.forEach(function (btn) {
-            const active = btn.dataset.view === view;
+            const active = btn.dataset.view === activeView;
             btn.classList.toggle('is-active', active);
             btn.setAttribute('aria-pressed', active ? 'true' : 'false');
         });
 
-        try {
-            localStorage.setItem(storageKey, view);
-        } catch (e) {}
+        if (persist) {
+            userPreferredView = view;
+            try {
+                localStorage.setItem(storageKey, view);
+            } catch (e) {}
+        }
     }
 
-    let savedView = 'grid';
-    try {
-        savedView = localStorage.getItem(storageKey) || 'grid';
-    } catch (e) {}
+    function applyViewForViewport() {
+        const narrow = isNarrowViewport();
 
-    setView(savedView === 'list' ? 'list' : 'grid');
+        if (viewToggle) {
+            viewToggle.classList.toggle('gallery-view-toggle--list-unavailable', narrow);
+        }
+
+        if (listButton) {
+            listButton.disabled = narrow;
+            listButton.setAttribute('aria-hidden', narrow ? 'true' : 'false');
+        }
+
+        if (narrow) {
+            setView('grid', false);
+        } else {
+            setView(userPreferredView === 'list' ? 'list' : 'grid', false);
+        }
+    }
+
+    applyViewForViewport();
 
     buttons.forEach(function (btn) {
         btn.addEventListener('click', function () {
-            setView(btn.dataset.view);
+            if (btn.dataset.view === 'list' && isNarrowViewport()) {
+                return;
+            }
+            setView(btn.dataset.view, true);
         });
+    });
+
+    let resizeTimer;
+    window.addEventListener('resize', function () {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(applyViewForViewport, 100);
     });
 })();
 </script>

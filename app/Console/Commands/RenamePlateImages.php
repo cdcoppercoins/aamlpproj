@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Support\WebPublicPath;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -49,7 +50,7 @@ class RenamePlateImages extends Command
     {
         $dryRun = (bool) $this->option('dry-run');
         $skipFolders = (bool) $this->option('skip-folders');
-        $platesRoot = public_path('plates');
+        $platesRoot = WebPublicPath::path('plates');
 
         if (!is_dir($platesRoot)) {
             $this->error("Plates directory not found: {$platesRoot}");

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\ImageOptimizer;
 use App\Support\WebPublicPath;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
@@ -21,7 +22,9 @@ class HeroImageStorage
         $extension = in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true) ? $extension : 'jpg';
 
         $filename = Str::uuid()->toString() . '.' . $extension;
+        $fullPath = $directory . DIRECTORY_SEPARATOR . $filename;
         $file->move($directory, $filename);
+        ImageOptimizer::optimize($fullPath, 'hero');
 
         return 'hero/' . $filename;
     }

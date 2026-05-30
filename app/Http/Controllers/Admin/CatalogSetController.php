@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Plate;
+use App\Support\WebPublicPath;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -62,7 +63,7 @@ class CatalogSetController extends Controller
             'set_name' => 'set name',
         ]);
 
-        $directory = public_path('plates/' . $validated['set_code']);
+        $directory = WebPublicPath::path('plates/' . $validated['set_code']);
         if (! File::isDirectory($directory)) {
             File::makeDirectory($directory, 0755, true);
         }
@@ -164,7 +165,7 @@ class CatalogSetController extends Controller
 
         Plate::query()->where('set_code', $setCode)->delete();
 
-        $directory = public_path('plates/' . $setCode);
+        $directory = WebPublicPath::path('plates/' . $setCode);
         if (File::isDirectory($directory)) {
             File::deleteDirectory($directory);
         }

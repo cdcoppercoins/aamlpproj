@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -50,6 +51,7 @@ class ProfileController extends Controller
             );
 
             $user->profile_image = $path;
+            ImageOptimizer::optimize(Storage::disk('public')->path($path), 'profile');
         }
 
         $user->save();

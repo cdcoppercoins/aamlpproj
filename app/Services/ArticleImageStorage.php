@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Support\ImageOptimizer;
 use App\Support\WebPublicPath;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
@@ -33,7 +34,9 @@ class ArticleImageStorage
             $filename = Str::uuid()->toString() . '.' . $extension;
         }
 
+        $fullPath = $directory . DIRECTORY_SEPARATOR . $filename;
         $file->move($directory, $filename);
+        ImageOptimizer::optimize($fullPath, 'article');
 
         return self::PREFIX . $filename;
     }
