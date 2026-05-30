@@ -24,7 +24,7 @@
             <div class="history-timeline-wrap" id="history-timeline">
                 <div class="history-timeline-track" aria-label="History timeline">
                     @foreach ($timelineEntries as $entry)
-                        <details class="history-accordion-item" name="history-timeline">
+                        <details class="history-accordion-item">
                             <summary class="history-timeline-marker" id="history-marker-{{ $entry['id'] }}">
                                 <span class="history-timeline-thumb{{ empty($entry['image_url']) ? ' history-timeline-thumb--empty' : '' }}" aria-hidden="true">
                                     @if (! empty($entry['image_url']))
