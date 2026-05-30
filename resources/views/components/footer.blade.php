@@ -5,12 +5,13 @@
         <div class="footer-main">
             <nav class="footer-col footer-col-left" aria-label="Collector resources">
                 <ul class="footer-links">
-                    <li><a href="#">Story of My Collecting</a></li>
-                    <li><a href="#">Help Me With This Site</a></li>
-                    <li><a href="#">Storing Your Plates</a></li>
-                    <li><a href="#">Displaying a Collection</a></li>
-                    <li><a href="#">Affiliate Links</a></li>
-                    <li><a href="#">Join ALPCA</a></li>
+                    @foreach ($siteLinks->get('footer_left', collect()) as $link)
+                        @if ($link->href())
+                            <li>
+                                <a href="{{ $link->href() }}"@if ($link->isExternal()) target="_blank" rel="noopener noreferrer"@endif>{{ $link->label }}</a>
+                            </li>
+                        @endif
+                    @endforeach
                 </ul>
             </nav>
 
@@ -35,8 +36,13 @@
 
             <nav class="footer-col footer-col-right" aria-label="Site information">
                 <ul class="footer-links">
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Report Plagiarism</a></li>
+                    @foreach ($siteLinks->get('footer_right', collect()) as $link)
+                        @if ($link->href())
+                            <li>
+                                <a href="{{ $link->href() }}"@if ($link->isExternal()) target="_blank" rel="noopener noreferrer"@endif>{{ $link->label }}</a>
+                            </li>
+                        @endif
+                    @endforeach
                     <li><a href="#footer-newsletter">Sign-up for News</a></li>
                 </ul>
                 <form id="footer-newsletter"

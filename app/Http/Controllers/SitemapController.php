@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Page;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
@@ -13,10 +14,23 @@ class SitemapController extends Controller
             $this->entry(route('home'), '1.0', 'weekly'),
             $this->entry(route('gallery'), '0.9', 'weekly'),
             $this->entry(route('search'), '0.9', 'weekly'),
-            $this->entry(route('about'), '0.6', 'monthly'),
             $this->entry(route('history'), '0.6', 'monthly'),
             $this->entry(route('contribute'), '0.5', 'monthly'),
         ];
+
+        $pages = Page::query()
+            ->where('is_published', true)
+            ->orderBy('sort_order')
+            ->get();
+
+        foreach ($pages as $page) {
+            $urls[] = $this->entry(
+                $page->publicUrl(),
+                '0.6',
+                'monthly',
+                $page->updated_at
+            );
+        }
 
         $sets = DB::table('plates')
             ->select(

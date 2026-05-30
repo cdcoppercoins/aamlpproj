@@ -21,6 +21,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
+use App\Http\Controllers\Admin\PageController as AdminPageController;
+use App\Http\Controllers\Admin\SiteLinkController as AdminSiteLinkController;
+use App\Http\Controllers\PageController;
 use App\Support\AdSense;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -40,10 +43,6 @@ Route::get('/gallery', [GalleryController::class, 'index'])->name('gallery');
 Route::get('/gallery/{setName}', [GalleryController::class, 'show'])->name('gallery.show');
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 Route::get('/sitemap.xml', \App\Http\Controllers\SitemapController::class)->name('sitemap');
-
-Route::get('/about', function () {
-    return view('about');
-})->name('about');
 
 Route::get('/history', [HistoryController::class, 'index'])->name('history');
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
@@ -110,6 +109,21 @@ Route::middleware(['auth', 'not.blocked', 'admin'])->prefix('admin')->name('admi
     Route::match(['put', 'post'], '/articles/{article}', [AdminArticleController::class, 'update'])->name('articles.update');
     Route::delete('/articles/{article}', [AdminArticleController::class, 'destroy'])->name('articles.destroy');
 
+    Route::get('/pages', [AdminPageController::class, 'index'])->name('pages.index');
+    Route::get('/pages/create', [AdminPageController::class, 'create'])->name('pages.create');
+    Route::post('/pages', [AdminPageController::class, 'store'])->name('pages.store');
+    Route::post('/pages/upload-image', [AdminPageController::class, 'uploadImage'])->name('pages.upload-image');
+    Route::get('/pages/{page}/edit', [AdminPageController::class, 'edit'])->name('pages.edit');
+    Route::match(['put', 'post'], '/pages/{page}', [AdminPageController::class, 'update'])->name('pages.update');
+    Route::delete('/pages/{page}', [AdminPageController::class, 'destroy'])->name('pages.destroy');
+
+    Route::get('/site-links', [AdminSiteLinkController::class, 'index'])->name('site-links.index');
+    Route::get('/site-links/create', [AdminSiteLinkController::class, 'create'])->name('site-links.create');
+    Route::post('/site-links', [AdminSiteLinkController::class, 'store'])->name('site-links.store');
+    Route::get('/site-links/{siteLink}/edit', [AdminSiteLinkController::class, 'edit'])->name('site-links.edit');
+    Route::match(['put', 'post'], '/site-links/{siteLink}', [AdminSiteLinkController::class, 'update'])->name('site-links.update');
+    Route::delete('/site-links/{siteLink}', [AdminSiteLinkController::class, 'destroy'])->name('site-links.destroy');
+
     Route::prefix('catalog')->name('catalog.')->group(function () {
         Route::get('import', [CatalogImportController::class, 'create'])->name('import.create');
         Route::get('import/template', [CatalogImportController::class, 'downloadTemplate'])->name('import.template');
@@ -128,3 +142,7 @@ Route::middleware(['auth', 'not.blocked', 'admin'])->prefix('admin')->name('admi
         Route::get('sets/{setCode}', [CatalogSetController::class, 'show'])->name('sets.show');
     });
 });
+
+Route::get('/{slug}', [PageController::class, 'show'])
+    ->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->name('pages.show');

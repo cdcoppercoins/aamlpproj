@@ -8,6 +8,10 @@
     const preloadedBacks = new Set();
     let flippedImg = null;
 
+    const zoomIcon = '<svg class="thumb-img-zoom-icon" viewBox="0 0 24 24" aria-hidden="true">'
+        + '<path d="M9 3H3v6M15 3h6v6M3 15v6h6M21 15v6h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>'
+        + '</svg>';
+
     function preloadBackImage(url) {
         if (!url || preloadedBacks.has(url)) {
             return;
@@ -23,6 +27,11 @@
     document.querySelectorAll('.thumb-img[data-hover]').forEach(function (img) {
         preloadBackImage(img.dataset.hover);
     });
+
+    function frontImageSrc(img) {
+        let src = img.dataset.original || img.src;
+        return src.replace(/(_[ab])(\.[^.]+)$/i, '_a$2').replace(/([ab])(\.[^.]+)$/i, 'a$2');
+    }
 
     function showFront(img) {
         img.src = img.dataset.original || img.src;
@@ -60,6 +69,40 @@
         showBack(img);
     }
 
+    function openModalFront(img) {
+        if (!modal || !modalImg || !closeBtn) {
+            return;
+        }
+
+        resetFlipped();
+        if (img.dataset.original) {
+            showFront(img);
+        }
+
+        modal.style.display = 'flex';
+        modalImg.src = frontImageSrc(img);
+        modalImg.alt = img.alt || '';
+    }
+
+    function addTouchZoomButton(img) {
+        const container = img.closest('.gallery-set-cell, .gallery-result-image-wrap');
+        if (!container || container.querySelector(':scope > .thumb-img-zoom')) {
+            return;
+        }
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'thumb-img-zoom';
+        btn.setAttribute('aria-label', 'View larger image');
+        btn.innerHTML = zoomIcon;
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            openModalFront(img);
+        });
+        container.appendChild(btn);
+    }
+
     document.querySelectorAll('.thumb-img[data-hover]').forEach(function (img) {
         if (useTapFlip) {
             img.dataset.showingBack = '0';
@@ -78,6 +121,8 @@
     });
 
     if (useTapFlip) {
+        document.querySelectorAll('.thumb-img').forEach(addTouchZoomButton);
+
         document.addEventListener('click', function () {
             resetFlipped();
         });
@@ -92,14 +137,7 @@
                 return;
             }
 
-            if (!modal || !modalImg || !closeBtn) {
-                return;
-            }
-
-            modal.style.display = 'flex';
-            let src = this.dataset.original || this.src;
-            src = src.replace(/(_[ab])(\.[^.]+)$/i, '_a$2').replace(/([ab])(\.[^.]+)$/i, 'a$2');
-            modalImg.src = src;
+            openModalFront(this);
         });
     });
 
@@ -110,6 +148,7 @@
     function closeModal() {
         modal.style.display = 'none';
         modalImg.src = '';
+        modalImg.alt = '';
     }
 
     closeBtn.addEventListener('click', closeModal);

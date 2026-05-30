@@ -70,6 +70,7 @@ class ImageOptimizer
             'plate' => ['max_width' => 1000, 'max_height' => 1000, 'jpeg_quality' => 88, 'webp_quality' => 85, 'png_compression' => 7],
             'profile' => ['max_width' => 400, 'max_height' => 400, 'jpeg_quality' => 85, 'webp_quality' => 82, 'png_compression' => 7],
             'article' => ['max_width' => 1200, 'max_height' => 900, 'jpeg_quality' => 82, 'webp_quality' => 80, 'png_compression' => 7],
+            'page' => ['max_width' => 1200, 'max_height' => 900, 'jpeg_quality' => 82, 'webp_quality' => 80, 'png_compression' => 7],
             default => ['max_width' => 1200, 'max_height' => 1200, 'jpeg_quality' => 82, 'webp_quality' => 80, 'png_compression' => 7],
         };
     }

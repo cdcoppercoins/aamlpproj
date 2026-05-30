@@ -481,6 +481,51 @@ body {
     background: #000;
 }
 
+.thumb-img-zoom {
+    display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .gallery-set-cell,
+    .gallery-result-image-wrap {
+        position: relative;
+    }
+
+    .gallery-set-cell > .thumb-img-zoom,
+    .gallery-result-image-wrap > .thumb-img-zoom {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 4px;
+        bottom: 4px;
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        border: none;
+        border-radius: 4px;
+        background: rgba(31, 51, 68, 0.92);
+        color: #ffffff;
+        cursor: pointer;
+        z-index: 2;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .gallery-set-cell > .thumb-img-zoom {
+        bottom: 6px;
+        right: 6px;
+    }
+
+    .thumb-img-zoom:active {
+        background: rgba(21, 37, 50, 0.95);
+    }
+
+    .thumb-img-zoom-icon {
+        width: 16px;
+        height: 16px;
+    }
+}
+
 .modal-close {
     position: absolute;
     top: 20px;
@@ -534,6 +579,12 @@ body {
 
 .history-interactive {
     margin: 0 0 40px;
+}
+
+.history-interactive,
+.history-timeline-wrap,
+.history-timeline-track {
+    overflow-anchor: none;
 }
 
 .history-timeline-wrap {
@@ -603,6 +654,7 @@ body {
     font: inherit;
     color: #264a62;
     text-align: left;
+    scroll-margin-top: 16px;
 }
 
 .history-timeline-marker:hover,
@@ -4229,6 +4281,14 @@ body {
     color: #1a3344;
 }
 
+.admin-subsection-title {
+    margin: 1.25rem 0 0.75rem;
+    font-family: "Open Sans", sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #264a62;
+}
+
 .admin-panel-header .admin-panel-title {
     margin-bottom: 0;
 }
@@ -4582,6 +4642,19 @@ body {
     color: #4079a5;
 }
 
+.auth-radio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px;
+    font-size: 0.95rem;
+    color: #264a62;
+}
+
+.auth-radio input {
+    margin: 0;
+}
+
 .admin-form-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -4590,6 +4663,10 @@ body {
 
 .admin-form-grid-span-2 {
     grid-column: span 2;
+}
+
+.admin-form-grid-span-full {
+    grid-column: 1 / -1;
 }
 
 .admin-form-grid-values {
@@ -4769,7 +4846,8 @@ body {
         grid-template-columns: 1fr;
     }
 
-    .admin-form-grid-span-2 {
+    .admin-form-grid-span-2,
+    .admin-form-grid-span-full {
         grid-column: auto;
     }
 }
@@ -5138,4 +5216,101 @@ body {
     border: 1px solid #ef9a9a;
     list-style: disc;
     padding-left: 2rem;
+}
+
+/* --------------------------------------------------
+   STATIC PAGES (public)
+-------------------------------------------------- */
+
+.static-page-title {
+    margin: 0 0 1.25rem;
+    color: #4079a5;
+    font-size: clamp(1.35rem, 4vw, 1.85rem);
+    line-height: 1.25;
+}
+
+.static-page-body {
+    font-family: Literata, Georgia, "Times New Roman", Times, serif;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: #2e2e2e;
+}
+
+.static-page-body::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.static-page-body p {
+    margin: 0 0 1.15em;
+    text-align: justify;
+    text-indent: 4ch;
+}
+
+.static-page-body p:last-child {
+    margin-bottom: 0;
+}
+
+.static-page-body h2,
+.static-page-body h3 {
+    clear: none;
+    color: #4079a5;
+    line-height: 1.25;
+}
+
+.static-page-body h2 {
+    margin: 1.5em 0 0.75em;
+    font-size: 1.35rem;
+}
+
+.static-page-body h3 {
+    margin: 1.25em 0 0.6em;
+    font-size: 1.15rem;
+}
+
+.static-page-body ul,
+.static-page-body ol {
+    margin: 0 0 1.15em;
+    padding-left: 1.5em;
+}
+
+.static-page-body img {
+    max-width: 100%;
+    height: auto;
+}
+
+.static-page-body img.static-page-img-left,
+.static-page-body img.align-left,
+.static-page-body img[style*="float: left"],
+.static-page-body img[style*="float:left"] {
+    float: left;
+    margin: 0 1.25em 1em 0;
+}
+
+.static-page-body img.static-page-img-right,
+.static-page-body img.align-right,
+.static-page-body img[style*="float: right"],
+.static-page-body img[style*="float:right"] {
+    float: right;
+    margin: 0 0 1em 1.25em;
+}
+
+.static-page-body a {
+    color: #4079a5;
+}
+
+/* --------------------------------------------------
+   STATIC PAGES (admin editor)
+-------------------------------------------------- */
+
+.admin-page-editor-field .tox-tinymce {
+    width: 100% !important;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.admin-page-body-field {
+    width: 100%;
+    box-sizing: border-box;
 }

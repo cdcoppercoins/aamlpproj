@@ -21,6 +21,16 @@
             </a>
         </li>
         <li>
+            <a href="{{ route('admin.pages.index') }}" @class(['is-active' => request()->routeIs('admin.pages.*')])>
+                Static pages
+            </a>
+        </li>
+        <li>
+            <a href="{{ route('admin.site-links.index') }}" @class(['is-active' => request()->routeIs('admin.site-links.*')])>
+                Site links
+            </a>
+        </li>
+        <li>
             <a href="{{ route('admin.catalog.sets.index') }}" @class(['is-active' => request()->routeIs('admin.catalog.*')])>
                 Catalog
             </a>

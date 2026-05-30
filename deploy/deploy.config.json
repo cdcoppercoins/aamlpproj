@@ -16,6 +16,7 @@
         "setinfo",
         "hero",
         "history-media",
-        "articles-media"
+        "articles-media",
+        "pages-media"
     ]
 }

@@ -24,7 +24,11 @@
           <li class="main-nav-more">
             <span class="main-nav-more-trigger" tabindex="0">MORE</span>
             <ul class="main-nav-dropdown-menu">
-              <li><a href="{{ route('about') }}">About</a></li>
+              @foreach ($siteLinks->get('header_more', collect()) as $link)
+                @if ($link->href())
+                  <li><a href="{{ $link->href() }}"@if ($link->isExternal()) target="_blank" rel="noopener noreferrer"@endif>{{ $link->label }}</a></li>
+                @endif
+              @endforeach
               <li><a href="{{ route('contribute') }}">Contribute</a></li>
             </ul>
           </li>

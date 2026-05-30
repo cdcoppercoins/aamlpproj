@@ -149,7 +149,7 @@
 
     <section class="home-actions">
         <p class="home-secondary-links">
-            New here? Read <a href="{{ route('about') }}">About</a> · Explore <a href="{{ route('history') }}">History</a>
+            New here? Read <a href="{{ route('pages.show', 'about') }}">About</a> · Explore <a href="{{ route('history') }}">History</a>
             · <a href="{{ route('contribute') }}">Contribute</a>
         </p>
     </section>
