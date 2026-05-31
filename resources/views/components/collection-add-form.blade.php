@@ -5,16 +5,14 @@
     @auth
         @if ($collectionEntry)
             <p class="collection-add-status">
-                In your collection
+                In your collection<br>
                 @if ($collectionEntry->is_wanted)
                     (want list)
                 @else
-                    · {{ $collectionEntry->ownedItemCount() }} {{ $collectionEntry->ownedItemCount() === 1 ? 'item' : 'items' }}
-                    @if ($collectionEntry->gradeSummary())
-                        · {{ $collectionEntry->gradeSummary() }}
-                    @endif
+                    {{ $collectionEntry->ownedItemCount() }} {{ $collectionEntry->ownedItemCount() === 1 ? 'item' : 'items' }}@if ($collectionEntry->gradeSummary()) · {{ $collectionEntry->gradeSummary() }}@endif
                 @endif
-                — <a href="{{ route('collection.edit', $collectionEntry) }}">Edit</a>
+                <br>
+                <a href="{{ route('collection.edit', $collectionEntry) }}">Edit/Add</a>
             </p>
         @else
             <form class="collection-add-form" method="post" action="{{ route('collection.store') }}">

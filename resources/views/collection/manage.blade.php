@@ -89,7 +89,7 @@
                             <th scope="col" class="col-jurisdiction">Jurisdiction</th>
                             <th scope="col" class="col-variety">Variety</th>
                             <th scope="col" class="col-items">Items</th>
-                            <th scope="col" class="col-value">Catalog value</th>
+                            <th scope="col" class="col-value">Value</th>
                             <th scope="col" class="col-want">Want</th>
                             <th scope="col" class="col-notes">Notes</th>
                         </tr>
@@ -138,7 +138,7 @@
                                         @else
                                             --
                                         @endif
-                                    </span>
+                                    </span><br>
                                 </td>
                                 <td class="col-want">
                                     <input type="hidden" name="items[{{ $plate->id }}][is_wanted]" value="0">

@@ -3638,6 +3638,7 @@ body {
     margin: 0;
     font-size: 0.82rem;
     color: #444;
+    line-height: 1.35;
 }
 
 .collection-add-status a,
@@ -3765,6 +3766,9 @@ body {
 .col-variety {
     min-width: 120px;
     max-width: 180px;
+}
+
+.collection-manage-table td.col-variety {
     color: #555;
 }
 
@@ -3993,13 +3997,19 @@ body {
 
 .col-value {
     min-width: 88px;
+    white-space: nowrap;
+}
+
+.collection-manage-table td.col-value {
     font-size: 0.82rem;
     color: #333;
-    white-space: nowrap;
+    vertical-align: top;
 }
 
 .collection-row-value {
     display: inline-block;
+    line-height: 1.4;
+    padding-top: 9px;
 }
 
 .collection-edit-catalog-value {
