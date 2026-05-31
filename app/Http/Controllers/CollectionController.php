@@ -276,11 +276,7 @@ class CollectionController extends Controller
 
     public function manage(Request $request)
     {
-        $setNames = DB::table('plates')
-            ->select('set_name', DB::raw('MAX(company) as company'), DB::raw('MIN(year) as year'), DB::raw('COUNT(*) as plate_count'))
-            ->groupBy('set_name')
-            ->orderBy('set_name')
-            ->get();
+        $setNames = $this->catalogSetNames();
 
         $setName = $request->query('set_name');
 
@@ -381,6 +377,478 @@ class CollectionController extends Controller
             . '.pdf';
 
         return $pdf->download($filename);
+    }
+
+    public function reportsIndex()
+    {
+        $missingFilterOptions = $this->missingReportFilterOptions(Auth::id());
+        $wantFilterOptions = $this->wantReportFilterOptions(Auth::id());
+
+        return view('collection.reports.index', [
+            'setNames' => $this->catalogSetNames(),
+            'reportDecades' => $missingFilterOptions['decades'],
+            'reportSets' => $missingFilterOptions['sets'],
+            'reportJurisdictions' => $missingFilterOptions['jurisdictions'],
+            'wantReportDecades' => $wantFilterOptions['decades'],
+            'wantReportSets' => $wantFilterOptions['sets'],
+            'wantReportJurisdictions' => $wantFilterOptions['jurisdictions'],
+        ]);
+    }
+
+    public function setInventoryReport(Request $request)
+    {
+        $validated = $request->validate([
+            'set_name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $setData = $this->resolveSetCollectionData($validated['set_name']);
+
+        if ($setData === null) {
+            return redirect()
+                ->route('collection.reports.index')
+                ->with('error', 'Set not found. Choose a set from the list.');
+        }
+
+        $plates = $setData['plates'];
+        $collectionByPlateId = $setData['collectionByPlateId'];
+
+        $haveCount = 0;
+        $missingCount = 0;
+        $wantedCount = 0;
+
+        foreach ($plates as $plate) {
+            $entry = $collectionByPlateId->get($plate->id);
+
+            if ($entry && ! $entry->is_wanted && $entry->ownedItemCount() > 0) {
+                $haveCount++;
+            } elseif ($entry?->is_wanted) {
+                $wantedCount++;
+            } else {
+                $missingCount++;
+            }
+        }
+
+        $setCatalogTotal = $this->catalogTotalForSet($plates, $collectionByPlateId);
+
+        return view('collection.reports.set-inventory', [
+            'setMeta' => $setData['setMeta'],
+            'plates' => $plates,
+            'collectionByPlateId' => $collectionByPlateId,
+            'haveCount' => $haveCount,
+            'missingCount' => $missingCount,
+            'wantedCount' => $wantedCount,
+            'totalInSet' => $plates->count(),
+            'setCatalogTotal' => $setCatalogTotal,
+            'generatedAt' => now(),
+        ]);
+    }
+
+    public function missingItemsReport(Request $request)
+    {
+        $validated = $request->validate([
+            'scope' => ['required', Rule::in(['all', 'decade', 'set', 'jurisdiction'])],
+            'decade' => ['nullable', 'integer', 'min:1000', 'max:9990'],
+            'set_name' => ['nullable', 'string', 'max:255'],
+            'jurisdiction' => ['nullable', 'string', 'max:64'],
+        ]);
+
+        $scope = $validated['scope'];
+        $filterOptions = $this->missingReportFilterOptions(Auth::id());
+
+        if ($filterOptions['sets']->isEmpty()) {
+            return redirect()
+                ->route('collection.reports.index')
+                ->withInput()
+                ->with('error', 'Record at least one owned item in a set before running this report.');
+        }
+
+        if ($scope === 'decade') {
+            if ($validated['decade'] === null || ! in_array((int) $validated['decade'], $filterOptions['decades']->all(), true)) {
+                return redirect()
+                    ->route('collection.reports.index')
+                    ->withInput()
+                    ->with('error', 'Choose a valid decade for this report.');
+            }
+        }
+
+        if ($scope === 'set') {
+            $validSetNames = $filterOptions['sets']->pluck('set_name')->all();
+            if ($validated['set_name'] === null || ! in_array($validated['set_name'], $validSetNames, true)) {
+                return redirect()
+                    ->route('collection.reports.index')
+                    ->withInput()
+                    ->with('error', 'Choose a valid set for this report.');
+            }
+        }
+
+        if ($scope === 'jurisdiction') {
+            $validJurisdictions = $filterOptions['jurisdictions']->all();
+            if ($validated['jurisdiction'] === null || ! in_array($validated['jurisdiction'], $validJurisdictions, true)) {
+                return redirect()
+                    ->route('collection.reports.index')
+                    ->withInput()
+                    ->with('error', 'Choose a valid jurisdiction for this report.');
+            }
+        }
+
+        $rows = $this->missingItemsForUser(
+            Auth::id(),
+            $scope,
+            isset($validated['decade']) ? (int) $validated['decade'] : null,
+            $validated['set_name'] ?? null,
+            $validated['jurisdiction'] ?? null
+        );
+
+        return view('collection.reports.missing-items', [
+            'rows' => $rows,
+            'scope' => $scope,
+            'scopeLabel' => $this->reportScopeLabel(
+                $scope,
+                $validated['decade'] ?? null,
+                $validated['set_name'] ?? null,
+                $validated['jurisdiction'] ?? null
+            ),
+            'qualifyingSetCount' => $filterOptions['sets']->count(),
+            'generatedAt' => now(),
+        ]);
+    }
+
+    public function wantListReport(Request $request)
+    {
+        $validated = $request->validate([
+            'scope' => ['required', Rule::in(['all', 'decade', 'set', 'jurisdiction'])],
+            'decade' => ['nullable', 'integer', 'min:1000', 'max:9990'],
+            'set_name' => ['nullable', 'string', 'max:255'],
+            'jurisdiction' => ['nullable', 'string', 'max:64'],
+        ]);
+
+        $scope = $validated['scope'];
+        $filterOptions = $this->wantReportFilterOptions(Auth::id());
+
+        if ($filterOptions['sets']->isEmpty()) {
+            return redirect()
+                ->route('collection.reports.index')
+                ->withInput()
+                ->with('error', 'Mark at least one plate on your want list before running this report.');
+        }
+
+        if ($scope === 'decade') {
+            if ($validated['decade'] === null || ! in_array((int) $validated['decade'], $filterOptions['decades']->all(), true)) {
+                return redirect()
+                    ->route('collection.reports.index')
+                    ->withInput()
+                    ->with('error', 'Choose a valid decade for this report.');
+            }
+        }
+
+        if ($scope === 'set') {
+            $validSetNames = $filterOptions['sets']->pluck('set_name')->all();
+            if ($validated['set_name'] === null || ! in_array($validated['set_name'], $validSetNames, true)) {
+                return redirect()
+                    ->route('collection.reports.index')
+                    ->withInput()
+                    ->with('error', 'Choose a valid set for this report.');
+            }
+        }
+
+        if ($scope === 'jurisdiction') {
+            $validJurisdictions = $filterOptions['jurisdictions']->all();
+            if ($validated['jurisdiction'] === null || ! in_array($validated['jurisdiction'], $validJurisdictions, true)) {
+                return redirect()
+                    ->route('collection.reports.index')
+                    ->withInput()
+                    ->with('error', 'Choose a valid jurisdiction for this report.');
+            }
+        }
+
+        $rows = $this->wantListItemsForUser(
+            Auth::id(),
+            $scope,
+            isset($validated['decade']) ? (int) $validated['decade'] : null,
+            $validated['set_name'] ?? null,
+            $validated['jurisdiction'] ?? null
+        );
+
+        return view('collection.reports.want-list', [
+            'rows' => $rows,
+            'scope' => $scope,
+            'scopeLabel' => $this->reportScopeLabel(
+                $scope,
+                $validated['decade'] ?? null,
+                $validated['set_name'] ?? null,
+                $validated['jurisdiction'] ?? null,
+                'All want list items'
+            ),
+            'wantListSetCount' => $filterOptions['sets']->count(),
+            'generatedAt' => now(),
+        ]);
+    }
+
+    /**
+     * @return array{decades: Collection<int, int>, sets: Collection<int, object>, jurisdictions: Collection<int, string>}
+     */
+    private function missingReportFilterOptions(int $userId): array
+    {
+        return $this->reportFilterOptionsForSetCodes($this->qualifyingSetCodesForUser($userId));
+    }
+
+    /**
+     * @return array{decades: Collection<int, int>, sets: Collection<int, object>, jurisdictions: Collection<int, string>}
+     */
+    private function wantReportFilterOptions(int $userId): array
+    {
+        $wantedPlateIds = DB::table('collection_items')
+            ->where('user_id', $userId)
+            ->where('is_wanted', true)
+            ->pluck('plate_id');
+
+        if ($wantedPlateIds->isEmpty()) {
+            return [
+                'decades' => collect(),
+                'sets' => collect(),
+                'jurisdictions' => collect(),
+            ];
+        }
+
+        $sets = DB::table('plates')
+            ->whereIn('id', $wantedPlateIds)
+            ->select('set_name', DB::raw('MAX(set_code) as set_code'), DB::raw('MIN(year) as year'), DB::raw('COUNT(*) as plate_count'))
+            ->groupBy('set_name')
+            ->orderBy('set_name')
+            ->get();
+
+        $plateMeta = DB::table('plates')
+            ->whereIn('id', $wantedPlateIds)
+            ->select('year', 'jurisdiction')
+            ->get();
+
+        $decades = $plateMeta
+            ->pluck('year')
+            ->filter(static fn ($year) => $year !== null && $year !== '')
+            ->map(static fn ($year) => (int) (floor(((int) $year) / 10) * 10))
+            ->unique()
+            ->sort()
+            ->values();
+
+        $jurisdictions = $plateMeta
+            ->pluck('jurisdiction')
+            ->filter(static fn ($value) => $value !== null && $value !== '')
+            ->map(static fn ($value) => (string) $value)
+            ->unique()
+            ->sort(static fn ($a, $b) => strcasecmp($a, $b))
+            ->values();
+
+        return [
+            'decades' => $decades,
+            'sets' => $sets,
+            'jurisdictions' => $jurisdictions,
+        ];
+    }
+
+    /**
+     * @return array{decades: Collection<int, int>, sets: Collection<int, object>, jurisdictions: Collection<int, string>}
+     */
+    private function reportFilterOptionsForSetCodes(array $setCodes): array
+    {
+        if ($setCodes === []) {
+            return [
+                'decades' => collect(),
+                'sets' => collect(),
+                'jurisdictions' => collect(),
+            ];
+        }
+
+        $sets = DB::table('plates')
+            ->select('set_name', DB::raw('MAX(set_code) as set_code'), DB::raw('MIN(year) as year'), DB::raw('COUNT(*) as plate_count'))
+            ->whereIn('set_code', $setCodes)
+            ->groupBy('set_name')
+            ->orderBy('set_name')
+            ->get();
+
+        $plateMeta = DB::table('plates')
+            ->whereIn('set_code', $setCodes)
+            ->whereNotNull('year')
+            ->select('year', 'jurisdiction')
+            ->get();
+
+        $decades = $plateMeta
+            ->pluck('year')
+            ->map(static fn ($year) => (int) (floor(((int) $year) / 10) * 10))
+            ->unique()
+            ->sort()
+            ->values();
+
+        $jurisdictions = $plateMeta
+            ->pluck('jurisdiction')
+            ->filter(static fn ($value) => $value !== null && $value !== '')
+            ->map(static fn ($value) => (string) $value)
+            ->unique()
+            ->sort(static fn ($a, $b) => strcasecmp($a, $b))
+            ->values();
+
+        return [
+            'decades' => $decades,
+            'sets' => $sets,
+            'jurisdictions' => $jurisdictions,
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function qualifyingSetCodesForUser(int $userId): array
+    {
+        return DB::table('collection_owned_items')
+            ->join('collection_items', 'collection_items.id', '=', 'collection_owned_items.collection_item_id')
+            ->join('plates', 'plates.id', '=', 'collection_items.plate_id')
+            ->where('collection_items.user_id', $userId)
+            ->where('collection_items.is_wanted', false)
+            ->distinct()
+            ->pluck('plates.set_code')
+            ->all();
+    }
+
+    /**
+     * @return Collection<int, object{plate: Plate, entry: CollectionItem|null, onWantList: bool}>
+     */
+    private function missingItemsForUser(
+        int $userId,
+        string $scope,
+        ?int $decade,
+        ?string $setName,
+        ?string $jurisdiction
+    ): Collection {
+        $qualifyingSetCodes = $this->qualifyingSetCodesForUser($userId);
+
+        if ($qualifyingSetCodes === []) {
+            return collect();
+        }
+
+        $platesQuery = Plate::query()
+            ->whereIn('set_code', $qualifyingSetCodes)
+            ->orderBy('set_name')
+            ->orderBy('sort_order')
+            ->orderBy('jurisdiction')
+            ->orderBy('variety_key');
+
+        if ($scope === 'decade' && $decade !== null) {
+            $platesQuery->whereBetween('year', [$decade, $decade + 9]);
+        }
+
+        if ($scope === 'set' && $setName !== null) {
+            $platesQuery->where('set_name', $setName);
+        }
+
+        if ($scope === 'jurisdiction' && $jurisdiction !== null) {
+            $platesQuery->where('jurisdiction', $jurisdiction);
+        }
+
+        $plates = $platesQuery->get();
+
+        if ($plates->isEmpty()) {
+            return collect();
+        }
+
+        $collectionByPlateId = CollectionItem::query()
+            ->with('ownedItems')
+            ->where('user_id', $userId)
+            ->whereIn('plate_id', $plates->pluck('id'))
+            ->get()
+            ->keyBy('plate_id');
+
+        return $plates
+            ->filter(static function (Plate $plate) use ($collectionByPlateId) {
+                $entry = $collectionByPlateId->get($plate->id);
+
+                return $entry === null || $entry->ownedItemCount() === 0;
+            })
+            ->values()
+            ->map(static function (Plate $plate) use ($collectionByPlateId) {
+                $entry = $collectionByPlateId->get($plate->id);
+
+                return (object) [
+                    'plate' => $plate,
+                    'entry' => $entry,
+                    'onWantList' => (bool) ($entry?->is_wanted),
+                ];
+            });
+    }
+
+    /**
+     * @return Collection<int, object{plate: Plate, entry: CollectionItem, notes: string|null}>
+     */
+    private function wantListItemsForUser(
+        int $userId,
+        string $scope,
+        ?int $decade,
+        ?string $setName,
+        ?string $jurisdiction
+    ): Collection {
+        $query = CollectionItem::query()
+            ->with(['plate'])
+            ->where('user_id', $userId)
+            ->where('is_wanted', true)
+            ->whereHas('plate', function ($plateQuery) use ($scope, $decade, $setName, $jurisdiction) {
+                if ($scope === 'decade' && $decade !== null) {
+                    $plateQuery->whereBetween('year', [$decade, $decade + 9]);
+                }
+
+                if ($scope === 'set' && $setName !== null) {
+                    $plateQuery->where('set_name', $setName);
+                }
+
+                if ($scope === 'jurisdiction' && $jurisdiction !== null) {
+                    $plateQuery->where('jurisdiction', $jurisdiction);
+                }
+            });
+
+        return $query
+            ->get()
+            ->sortBy(static function (CollectionItem $item) {
+                $plate = $item->plate;
+
+                return [
+                    $plate->set_name,
+                    $plate->sort_order ?? 0,
+                    $plate->jurisdiction ?? '',
+                    $plate->variety_key ?? '',
+                ];
+            })
+            ->values()
+            ->map(static function (CollectionItem $item) {
+                return (object) [
+                    'plate' => $item->plate,
+                    'entry' => $item,
+                    'notes' => $item->notes,
+                ];
+            });
+    }
+
+    private function reportScopeLabel(
+        string $scope,
+        ?int $decade,
+        ?string $setName,
+        ?string $jurisdiction,
+        string $allLabel = 'All qualifying sets'
+    ): string {
+        return match ($scope) {
+            'decade' => $decade !== null ? $decade.'s' : 'Decade',
+            'set' => $setName ?? 'Set',
+            'jurisdiction' => $jurisdiction !== null ? strtoupper($jurisdiction) : 'Jurisdiction',
+            default => $allLabel,
+        };
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, object>
+     */
+    private function catalogSetNames()
+    {
+        return DB::table('plates')
+            ->select('set_name', DB::raw('MAX(company) as company'), DB::raw('MIN(year) as year'), DB::raw('COUNT(*) as plate_count'))
+            ->groupBy('set_name')
+            ->orderBy('set_name')
+            ->get();
     }
 
     /**

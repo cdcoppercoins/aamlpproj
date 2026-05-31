@@ -34,6 +34,7 @@
 
     <section class="collection-toolbar" aria-label="Collection actions">
         <a class="home-primary-btn" href="{{ route('collection.manage') }}">Add or edit a set</a>
+        <a class="home-primary-btn home-primary-btn-secondary" href="{{ route('collection.reports.index') }}">Reports</a>
         <a class="home-primary-btn home-primary-btn-secondary" href="{{ route('search') }}">Catalog search</a>
         <a class="home-primary-btn home-primary-btn-secondary" href="{{ route('profile.edit') }}">Profile</a>
         <form method="post" action="{{ route('logout') }}" class="collection-logout-form">

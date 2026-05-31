@@ -1,5 +1,6 @@
 <header class="site-header">
   <div class="header-frame">
+    <a href="{{ route('home') }}" class="header-home-link" aria-label="Return to home page">
     <div class="header-inner banner-split">
       <img src="{{ asset('header_banner_left.png') }}"
            alt="MiniLicensePlates.com — miniature license plate reference site"
@@ -9,6 +10,7 @@
            class="site-banner site-banner-right"
            aria-hidden="true">
     </div>
+    </a>
   </div>
 
   <!-- NEW wrapper that is as wide as the content area and filled with white -->

@@ -64,6 +64,10 @@ Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')-
 Route::middleware(['auth', 'not.blocked'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/collection/reports', [CollectionController::class, 'reportsIndex'])->name('collection.reports.index');
+    Route::get('/collection/reports/set-inventory', [CollectionController::class, 'setInventoryReport'])->name('collection.reports.set-inventory');
+    Route::get('/collection/reports/missing-items', [CollectionController::class, 'missingItemsReport'])->name('collection.reports.missing-items');
+    Route::get('/collection/reports/want-list', [CollectionController::class, 'wantListReport'])->name('collection.reports.want-list');
     Route::get('/collection/members/{username}', [CollectionController::class, 'showMember'])->name('collection.members.show');
     Route::put('/collection/sets/{setCode}/visibility', [CollectionController::class, 'updateSetVisibility'])->name('collection.set.visibility');
     Route::get('/collection/manage', [CollectionController::class, 'manage'])->name('collection.manage');
