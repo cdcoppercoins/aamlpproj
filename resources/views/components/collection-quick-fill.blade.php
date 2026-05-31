@@ -1,12 +1,10 @@
 @php
-    $defaultQty = 1;
-    $defaultCondition = 'MT';
+    $defaultGrade = 'MT';
 @endphp
 <section class="collection-quick-fill" aria-label="Quick fill defaults">
     <h3 class="collection-quick-fill-title">Quick fill defaults</h3>
     <p class="collection-quick-fill-lead">
-        Own a complete run? Set a default quantity and condition, then fill every row at once
-        instead of entering each plate individually.
+        Own a complete run? Set how many items to add per plate and a default grade, then fill every row at once.
     </p>
 
     <form id="collection-quick-fill-form" method="post" action="{{ route('collection.manage.fill') }}" class="collection-quick-fill-form">
@@ -31,25 +29,25 @@
             @endif
 
             <label class="collection-quick-fill-field">
-                <span class="auth-label">Default quantity</span>
+                <span class="auth-label">Items per plate</span>
                 <input type="number"
-                       id="collection-default-qty"
-                       name="quantity"
-                       value="{{ $defaultQty }}"
+                       id="collection-default-item-count"
+                       name="item_count"
+                       value="1"
                        min="1"
                        max="9999"
-                       class="collection-manage-input collection-manage-qty"
+                       class="collection-manage-input"
                        required>
             </label>
 
             <label class="collection-quick-fill-field">
-                <span class="auth-label">Default condition</span>
-                <select id="collection-default-condition"
-                        name="condition"
-                        class="collection-manage-input collection-manage-condition">
+                <span class="auth-label">Default grade</span>
+                <select id="collection-default-grade"
+                        name="grade"
+                        class="collection-manage-input collection-manage-grade">
                     <option value="">— None —</option>
-                    @foreach ($conditions as $code => $label)
-                        <option value="{{ $code }}" @selected($code === $defaultCondition)>{{ $code }} — {{ $label }}</option>
+                    @foreach ($grades as $code => $label)
+                        <option value="{{ $code }}" @selected($code === $defaultGrade)>{{ $code }} — {{ $label }}</option>
                     @endforeach
                 </select>
             </label>

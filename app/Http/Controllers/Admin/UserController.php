@@ -44,10 +44,11 @@ class UserController extends Controller
         $user->loadCount('collectionItems');
 
         $collectionStats = DB::table('collection_items')
-            ->where('user_id', $user->id)
-            ->selectRaw('COUNT(*) as entry_count')
-            ->selectRaw('COALESCE(SUM(CASE WHEN is_wanted = 0 THEN quantity ELSE 0 END), 0) as owned_qty')
-            ->selectRaw('COALESCE(SUM(CASE WHEN is_wanted = 1 THEN quantity ELSE 0 END), 0) as wanted_qty')
+            ->leftJoin('collection_owned_items', 'collection_owned_items.collection_item_id', '=', 'collection_items.id')
+            ->where('collection_items.user_id', $user->id)
+            ->selectRaw('COUNT(DISTINCT collection_items.id) as entry_count')
+            ->selectRaw('COUNT(CASE WHEN collection_items.is_wanted = 0 THEN collection_owned_items.id END) as owned_qty')
+            ->selectRaw('COALESCE(SUM(CASE WHEN collection_items.is_wanted = 1 THEN 1 ELSE 0 END), 0) as wanted_qty')
             ->first();
 
         $setCount = (int) DB::table('collection_items')

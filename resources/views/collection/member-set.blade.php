@@ -29,8 +29,8 @@
                 <tr>
                     <th>Jurisdiction</th>
                     <th>Variety</th>
-                    <th>Qty</th>
-                    <th>Cond.</th>
+                    <th>Pcs</th>
+                    <th>Grade</th>
                     <th>Want</th>
                 </tr>
             </thead>
@@ -45,8 +45,8 @@
                             @endif
                         </td>
                         <td>{{ $plate->variety_notes ?: '—' }}</td>
-                        <td class="col-qty">{{ $item->is_wanted ? '—' : $item->quantity }}</td>
-                        <td class="col-condition">{{ $item->condition ?? '—' }}</td>
+                        <td class="col-qty">{{ $item->is_wanted ? '—' : $item->ownedItemCount() }}</td>
+                        <td class="col-grade">{{ $item->gradeSummary() ?: '—' }}</td>
                         <td class="col-want">{{ $item->is_wanted ? 'Yes' : '' }}</td>
                     </tr>
                 @endforeach

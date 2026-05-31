@@ -9,9 +9,9 @@
                 @if ($collectionEntry->is_wanted)
                     (want list)
                 @else
-                    · qty {{ $collectionEntry->quantity }}
-                    @if ($collectionEntry->condition)
-                        · {{ $collectionEntry->condition }}
+                    · {{ $collectionEntry->ownedItemCount() }} {{ $collectionEntry->ownedItemCount() === 1 ? 'item' : 'items' }}
+                    @if ($collectionEntry->gradeSummary())
+                        · {{ $collectionEntry->gradeSummary() }}
                     @endif
                 @endif
                 — <a href="{{ route('collection.edit', $collectionEntry) }}">Edit</a>
@@ -22,22 +22,17 @@
                 <input type="hidden" name="plate_id" value="{{ $plate->id }}">
                 <div class="collection-add-fields">
                     <label class="collection-add-field">
-                        <span class="collection-add-label">Qty</span>
-                        <input type="number" name="quantity" value="1" min="1" max="9999" class="collection-add-qty">
-                    </label>
-                    <label class="collection-add-field">
-                        <span class="collection-add-label collection-add-label--grid">Grade</span>
-                        <span class="collection-add-label collection-add-label--list">Cond.</span>
-                        <select name="condition" class="collection-add-condition">
+                        <span class="collection-add-label">Grade</span>
+                        <select name="grade" class="collection-add-grade">
                             <option value="">—</option>
-                            @foreach (CollectionItem::CONDITIONS as $code => $label)
+                            @foreach (CollectionItem::GRADES as $code => $label)
                                 <option value="{{ $code }}">{{ $code }}</option>
                             @endforeach
                         </select>
                     </label>
                 </div>
                 <div class="collection-add-buttons">
-                    <button type="submit" class="collection-add-btn">Add to collection</button>
+                    <button type="submit" class="collection-add-btn">Add item</button>
                     <button type="submit" name="is_wanted" value="1" class="collection-add-btn collection-add-btn-want">Want list</button>
                 </div>
             </form>

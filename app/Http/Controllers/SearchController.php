@@ -100,6 +100,7 @@ class SearchController extends Controller
         if ($results && $results->count() > 0 && auth()->check()) {
             $collectionEntries = auth()->user()
                 ->collectionItems()
+                ->with('ownedItems')
                 ->whereIn('plate_id', $results->pluck('id'))
                 ->get()
                 ->keyBy('plate_id');

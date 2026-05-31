@@ -2,7 +2,7 @@
 
 @section('title', 'Member Sign In | MiniLicensePlates.com')
 
-@section('meta_description', 'Sign in to track your miniature license plate collection — quantity, condition, and notes for each catalog listing.')
+@section('meta_description', 'Sign in to track your miniature license plate collection — individual items, grades, and notes for each catalog listing.')
 
 @section('robots', 'noindex, follow')
 
@@ -10,7 +10,7 @@
 <div class="home-page auth-page">
     <h1>Member sign in</h1>
     <p class="auth-lead">
-        Sign in to manage your personal collection — record what you own, condition, quantity, and notes.
+        Sign in to manage your personal collection — record each item you own, grades, and notes.
     </p>
 
     <form class="auth-form" method="post" action="{{ route('login') }}">

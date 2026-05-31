@@ -159,8 +159,8 @@
                 <th class="num">#</th>
                 <th class="jurisdiction">Jurisdiction</th>
                 <th class="variety">Variety</th>
-                <th class="qty">Qty</th>
-                <th class="cond">Cond</th>
+                <th class="qty">Pcs</th>
+                <th class="cond">Grade</th>
                 <th class="value">Value</th>
                 <th class="want">Want</th>
                 <th class="location">Location</th>
@@ -184,8 +184,8 @@
                         @endif
                     </td>
                     <td class="variety">{{ $plate->variety_notes ?: '—' }}</td>
-                    <td class="qty">{{ $entry && ! $entry->is_wanted ? $entry->quantity : ($entry && $entry->is_wanted ? '—' : '') }}</td>
-                    <td class="cond">{{ $entry?->condition ?? '' }}</td>
+                    <td class="qty">{{ $entry && ! $entry->is_wanted ? $entry->ownedItemCount() : ($entry && $entry->is_wanted ? '—' : '') }}</td>
+                    <td class="cond">{{ $entry?->gradeSummary() ?? '' }}</td>
                     <td class="value">
                         @if ($entry && ! $entry->is_wanted)
                             @php $entry->setRelation('plate', $plate); @endphp

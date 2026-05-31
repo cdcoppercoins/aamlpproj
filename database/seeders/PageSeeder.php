@@ -23,7 +23,7 @@ class PageSeeder extends Seeder
 
 <p>Because of profuse color-blindness I was drawn to collecting items with lots of color—something that fit perfectly with miniature license plates.</p>
 
-<p>Over the years I've built a collection of more than 4,000 pieces that includes nearly all of the well-known sets and varieties.</p>
+<p>Over the years I've built a collection of more than 4,000 items that includes nearly all of the well-known sets and varieties.</p>
 
 <p>Today I focus on the rarest and most obscure items, which makes collection growth a very challenging adventure. While in this hunt, I continue to learn everything I can about how these plates were issued and manufactured, searching for documentation, news articles, and first-hand knowledge to compile the most comprehensive and supported history of the subject. I'm also working toward writing and publishing a checklist and price guide as a part of a book about all the documentation and history I can find.</p>
 

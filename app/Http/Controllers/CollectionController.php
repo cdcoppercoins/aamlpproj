@@ -22,6 +22,7 @@ class CollectionController extends Controller
 
         $setSummaries = DB::table('collection_items')
             ->join('plates', 'plates.id', '=', 'collection_items.plate_id')
+            ->leftJoin('collection_owned_items', 'collection_owned_items.collection_item_id', '=', 'collection_items.id')
             ->leftJoin('collection_set_settings', function ($join) use ($userId) {
                 $join->on('collection_set_settings.set_code', '=', 'plates.set_code')
                     ->where('collection_set_settings.user_id', '=', $userId);
@@ -33,8 +34,8 @@ class CollectionController extends Controller
                 DB::raw('MAX(plates.set_name) as set_name'),
                 DB::raw('MAX(plates.company) as company'),
                 DB::raw('MIN(plates.year) as year'),
-                DB::raw('COUNT(*) as entry_count'),
-                DB::raw('SUM(CASE WHEN collection_items.is_wanted = 0 THEN collection_items.quantity ELSE 0 END) as owned_qty'),
+                DB::raw('COUNT(DISTINCT collection_items.id) as entry_count'),
+                DB::raw('COUNT(CASE WHEN collection_items.is_wanted = 0 THEN collection_owned_items.id END) as owned_qty'),
                 DB::raw('SUM(CASE WHEN collection_items.is_wanted = 1 THEN 1 ELSE 0 END) as wanted_count'),
                 DB::raw('COALESCE(MAX(collection_set_settings.is_public), 0) as is_public')
             )
@@ -42,9 +43,13 @@ class CollectionController extends Controller
             ->get();
 
         $stats = [
-            'owned' => Auth::user()->collectionItems()->where('is_wanted', false)->sum('quantity'),
+            'owned' => DB::table('collection_owned_items')
+                ->join('collection_items', 'collection_items.id', '=', 'collection_owned_items.collection_item_id')
+                ->where('collection_items.user_id', $userId)
+                ->where('collection_items.is_wanted', false)
+                ->count(),
             'wanted' => Auth::user()->collectionItems()->where('is_wanted', true)->count(),
-            'distinct_owned' => Auth::user()->collectionItems()->where('is_wanted', false)->count(),
+            'distinct_owned' => Auth::user()->collectionItems()->where('is_wanted', false)->whereHas('ownedItems')->count(),
             'set_count' => $setSummaries->count(),
         ];
 
@@ -52,13 +57,13 @@ class CollectionController extends Controller
 
         $itemsBySetCode = Auth::user()
             ->collectionItems()
-            ->with('plate')
+            ->with(['plate', 'ownedItems'])
             ->whereHas('plate')
             ->get()
             ->groupBy(fn (CollectionItem $item) => $item->plate->set_code);
 
         $catalogTotal = CollectionItem::sumOwnedLineValues(
-            Auth::user()->collectionItems()->with('plate')->where('is_wanted', false)->get()
+            Auth::user()->collectionItems()->with(['plate', 'ownedItems'])->where('is_wanted', false)->get()
         );
 
         foreach ($setSummaries as $set) {
@@ -161,6 +166,7 @@ class CollectionController extends Controller
             ->get();
 
         $collectionByPlateId = CollectionItem::query()
+            ->with('ownedItems')
             ->where('user_id', $member->id)
             ->whereIn('plate_id', $plates->pluck('id'))
             ->get()
@@ -194,6 +200,7 @@ class CollectionController extends Controller
                 $join->on('plates.id', '=', 'collection_items.plate_id')
                     ->on('plates.set_code', '=', 'collection_set_settings.set_code');
             })
+            ->leftJoin('collection_owned_items', 'collection_owned_items.collection_item_id', '=', 'collection_items.id')
             ->where('collection_set_settings.is_public', true)
             ->where('users.id', '!=', $excludeUserId)
             ->groupBy('users.id', 'users.username', 'users.name', 'users.profile_image')
@@ -202,7 +209,7 @@ class CollectionController extends Controller
                 'users.username',
                 'users.name',
                 'users.profile_image',
-                DB::raw('SUM(CASE WHEN collection_items.is_wanted = 0 THEN collection_items.quantity ELSE 0 END) as owned_qty'),
+                DB::raw('COUNT(CASE WHEN collection_items.is_wanted = 0 THEN collection_owned_items.id END) as owned_qty'),
                 DB::raw('COUNT(DISTINCT plates.set_code) as public_set_count')
             )
             ->having('owned_qty', '>', 0)
@@ -220,6 +227,7 @@ class CollectionController extends Controller
                 $join->on('plates.id', '=', 'collection_items.plate_id')
                     ->on('plates.set_code', '=', 'collection_set_settings.set_code');
             })
+            ->leftJoin('collection_owned_items', 'collection_owned_items.collection_item_id', '=', 'collection_items.id')
             ->where('collection_set_settings.user_id', $userId)
             ->where('collection_set_settings.is_public', true)
             ->groupBy('plates.set_code')
@@ -228,8 +236,8 @@ class CollectionController extends Controller
                 DB::raw('MAX(plates.set_name) as set_name'),
                 DB::raw('MAX(plates.company) as company'),
                 DB::raw('MIN(plates.year) as year'),
-                DB::raw('COUNT(*) as entry_count'),
-                DB::raw('SUM(CASE WHEN collection_items.is_wanted = 0 THEN collection_items.quantity ELSE 0 END) as owned_qty'),
+                DB::raw('COUNT(DISTINCT collection_items.id) as entry_count'),
+                DB::raw('COUNT(CASE WHEN collection_items.is_wanted = 0 THEN collection_owned_items.id END) as owned_qty'),
                 DB::raw('SUM(CASE WHEN collection_items.is_wanted = 1 THEN 1 ELSE 0 END) as wanted_count')
             )
             ->orderBy('set_name');
@@ -253,10 +261,13 @@ class CollectionController extends Controller
         $items = $plates
             ->map(fn (Plate $plate) => $collectionByPlateId->get($plate->id))
             ->filter()
-            ->each(function (CollectionItem $item) use ($plates, $collectionByPlateId) {
+            ->each(function (CollectionItem $item) use ($plates) {
                 $plate = $plates->firstWhere('id', $item->plate_id);
                 if ($plate) {
                     $item->setRelation('plate', $plate);
+                }
+                if (! $item->relationLoaded('ownedItems')) {
+                    $item->load('ownedItems');
                 }
             });
 
@@ -280,7 +291,7 @@ class CollectionController extends Controller
                 'setMeta' => null,
                 'plates' => null,
                 'collectionByPlateId' => collect(),
-                'conditions' => CollectionItem::CONDITIONS,
+                'grades' => CollectionItem::GRADES,
             ]);
         }
 
@@ -303,7 +314,7 @@ class CollectionController extends Controller
             'setMeta' => $setData['setMeta'],
             'plates' => $setData['plates'],
             'collectionByPlateId' => $setData['collectionByPlateId'],
-            'conditions' => CollectionItem::CONDITIONS,
+            'grades' => CollectionItem::GRADES,
             'setCatalogTotal' => $setCatalogTotal,
         ]);
     }
@@ -340,7 +351,7 @@ class CollectionController extends Controller
         }
 
         $ownedPlateCount = $collectionByPlateId->filter(
-            fn (CollectionItem $item) => ! $item->is_wanted && $item->quantity > 0
+            fn (CollectionItem $item) => ! $item->is_wanted && $item->ownedItemCount() > 0
         )->count();
 
         $wantedCount = $collectionByPlateId->filter(
@@ -402,6 +413,7 @@ class CollectionController extends Controller
 
         $collectionByPlateId = Auth::user()
             ->collectionItems()
+            ->with('ownedItems')
             ->whereIn('plate_id', $plates->pluck('id'))
             ->get()
             ->keyBy('plate_id');
@@ -415,15 +427,12 @@ class CollectionController extends Controller
 
     public function updateManage(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->validate(array_merge([
             'set_name' => ['required', 'string', 'max:255'],
             'items' => ['nullable', 'array'],
-            'items.*.quantity' => ['nullable', 'integer', 'min:0', 'max:9999'],
-            'items.*.condition' => ['nullable', Rule::in(array_keys(CollectionItem::CONDITIONS))],
             'items.*.is_wanted' => ['nullable', 'boolean'],
             'items.*.notes' => ['nullable', 'string', 'max:5000'],
-            'items.*.storage_location' => ['nullable', 'string', 'max:128'],
-        ]);
+        ], $this->ownedItemFieldRules('items.*.owned_items')));
 
         $setName = $validated['set_name'];
         $validPlateIds = Plate::query()
@@ -447,9 +456,10 @@ class CollectionController extends Controller
 
         foreach ($validPlateIds as $plateId) {
             $row = $items[$plateId] ?? [];
-            $quantity = isset($row['quantity']) && $row['quantity'] !== '' ? (int) $row['quantity'] : 0;
             $isWanted = ! empty($row['is_wanted']);
-            $shouldKeep = $quantity > 0 || $isWanted;
+            $ownedItemRows = $row['owned_items'] ?? [];
+            $hasOwnedItems = $this->submittedOwnedItemsHaveContent($ownedItemRows);
+            $shouldKeep = $isWanted || $hasOwnedItems;
 
             $existing = $existingByPlateId->get($plateId);
 
@@ -462,20 +472,25 @@ class CollectionController extends Controller
                 continue;
             }
 
-            $payload = [
-                'user_id' => Auth::id(),
-                'plate_id' => $plateId,
-                'quantity' => $quantity > 0 ? $quantity : 1,
-                'condition' => $row['condition'] ?? null,
-                'is_wanted' => $isWanted,
-                'notes' => $row['notes'] ?? null,
-                'storage_location' => $row['storage_location'] ?? null,
-            ];
-
             if ($existing) {
-                $existing->update($payload);
+                $item = $existing;
+                $item->update([
+                    'is_wanted' => $isWanted,
+                    'notes' => $row['notes'] ?? null,
+                ]);
             } else {
-                CollectionItem::create($payload);
+                $item = CollectionItem::create([
+                    'user_id' => Auth::id(),
+                    'plate_id' => $plateId,
+                    'is_wanted' => $isWanted,
+                    'notes' => $row['notes'] ?? null,
+                ]);
+            }
+
+            if ($isWanted) {
+                $item->ownedItems()->delete();
+            } else {
+                $item->syncOwnedItems($ownedItemRows);
             }
 
             $saved++;
@@ -496,8 +511,8 @@ class CollectionController extends Controller
     {
         $validated = $request->validate([
             'set_name' => ['required', 'string', 'max:255'],
-            'quantity' => ['required', 'integer', 'min:1', 'max:9999'],
-            'condition' => ['nullable', Rule::in(array_keys(CollectionItem::CONDITIONS))],
+            'item_count' => ['required', 'integer', 'min:1', 'max:9999'],
+            'grade' => ['nullable', Rule::in(CollectionItem::GRADE_CODES)],
             'mode' => ['required', Rule::in(['empty', 'all'])],
         ]);
 
@@ -510,6 +525,9 @@ class CollectionController extends Controller
         }
 
         $filled = 0;
+        $ownedItemRows = array_fill(0, $validated['item_count'], [
+            'grade' => $validated['grade'] ?? null,
+        ]);
 
         foreach ($setData['plates'] as $plate) {
             $existing = $setData['collectionByPlateId'][$plate->id] ?? null;
@@ -518,21 +536,18 @@ class CollectionController extends Controller
                 continue;
             }
 
-            $payload = [
-                'quantity' => $validated['quantity'],
-                'condition' => $validated['condition'] ?? null,
-                'is_wanted' => false,
-            ];
-
             if ($existing) {
-                $existing->update($payload);
+                $item = $existing;
+                $item->update(['is_wanted' => false]);
             } else {
-                CollectionItem::create(array_merge($payload, [
+                $item = CollectionItem::create([
                     'user_id' => Auth::id(),
                     'plate_id' => $plate->id,
-                ]));
+                    'is_wanted' => false,
+                ]);
             }
 
+            $item->syncOwnedItems($ownedItemRows);
             $filled++;
         }
 
@@ -555,15 +570,14 @@ class CollectionController extends Controller
             return false;
         }
 
-        return $existing->quantity <= 0;
+        return $existing->ownedItemCount() === 0;
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'plate_id' => ['required', 'integer', 'exists:plates,id'],
-            'quantity' => ['required', 'integer', 'min:1', 'max:9999'],
-            'condition' => ['nullable', Rule::in(array_keys(CollectionItem::CONDITIONS))],
+            'grade' => ['nullable', Rule::in(CollectionItem::GRADE_CODES)],
             'is_wanted' => ['sometimes', 'boolean'],
         ]);
 
@@ -577,13 +591,17 @@ class CollectionController extends Controller
             return back()->with('error', 'That plate is already in your collection. Edit it from My Collection.');
         }
 
-        CollectionItem::create([
+        $item = CollectionItem::create([
             'user_id' => Auth::id(),
             'plate_id' => $validated['plate_id'],
-            'quantity' => $validated['quantity'],
-            'condition' => $validated['condition'] ?? null,
             'is_wanted' => $isWanted,
         ]);
+
+        if (! $isWanted) {
+            $item->syncOwnedItems([[
+                'grade' => $validated['grade'] ?? null,
+            ]]);
+        }
 
         $message = $isWanted
             ? 'Added to your want list.'
@@ -596,11 +614,11 @@ class CollectionController extends Controller
     {
         $this->authorizeItem($collectionItem);
 
-        $collectionItem->load('plate');
+        $collectionItem->load(['plate', 'ownedItems']);
 
         return view('collection.edit', [
             'item' => $collectionItem,
-            'conditions' => CollectionItem::CONDITIONS,
+            'grades' => CollectionItem::GRADES,
         ]);
     }
 
@@ -608,25 +626,23 @@ class CollectionController extends Controller
     {
         $this->authorizeItem($collectionItem);
 
-        $validated = $request->validate([
-            'quantity' => ['required', 'integer', 'min:1', 'max:9999'],
-            'condition' => ['nullable', Rule::in(array_keys(CollectionItem::CONDITIONS))],
-            'acquired_date' => ['nullable', 'date'],
-            'price_paid' => ['nullable', 'numeric', 'min:0', 'max:999999.99'],
-            'storage_location' => ['nullable', 'string', 'max:128'],
+        $validated = $request->validate(array_merge([
             'notes' => ['nullable', 'string', 'max:5000'],
             'is_wanted' => ['sometimes', 'boolean'],
-        ]);
+        ], $this->ownedItemFieldRules('owned_items')));
+
+        $isWanted = $request->boolean('is_wanted');
 
         $collectionItem->update([
-            'quantity' => $validated['quantity'],
-            'condition' => $validated['condition'] ?? null,
-            'acquired_date' => $validated['acquired_date'] ?? null,
-            'price_paid' => $validated['price_paid'] ?? null,
-            'storage_location' => $validated['storage_location'] ?? null,
             'notes' => $validated['notes'] ?? null,
-            'is_wanted' => $request->boolean('is_wanted'),
+            'is_wanted' => $isWanted,
         ]);
+
+        if ($isWanted) {
+            $collectionItem->ownedItems()->delete();
+        } else {
+            $collectionItem->syncOwnedItems($validated['owned_items'] ?? []);
+        }
 
         return redirect()
             ->route('collection.index')
@@ -649,5 +665,42 @@ class CollectionController extends Controller
         if ($collectionItem->user_id !== Auth::id()) {
             abort(403);
         }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function ownedItemFieldRules(string $prefix): array
+    {
+        return [
+            $prefix => ['nullable', 'array'],
+            "{$prefix}.*.grade" => ['nullable', Rule::in(CollectionItem::GRADE_CODES)],
+            "{$prefix}.*.acquired_date" => ['nullable', 'date'],
+            "{$prefix}.*.price_paid" => ['nullable', 'numeric', 'min:0', 'max:999999.99'],
+            "{$prefix}.*.storage_location" => ['nullable', 'string', 'max:128'],
+            "{$prefix}.*.notes" => ['nullable', 'string', 'max:5000'],
+        ];
+    }
+
+    /**
+     * @param  array<int, mixed>|null  $rows
+     */
+    private function submittedOwnedItemsHaveContent(?array $rows): bool
+    {
+        if (! is_array($rows)) {
+            return false;
+        }
+
+        foreach ($rows as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            if (CollectionItem::ownedItemPayloadHasContent(CollectionItem::normalizeOwnedItemPayload($row))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

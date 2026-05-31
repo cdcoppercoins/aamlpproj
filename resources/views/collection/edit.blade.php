@@ -27,9 +27,9 @@
     </p>
 
     @php $item->setRelation('plate', $plate); @endphp
-    @if (! $item->is_wanted && $item->condition)
+    @if (! $item->is_wanted && $item->ownedLineValue() !== null)
         <p class="collection-edit-catalog-value">
-            Catalog value at {{ $item->condition }} (private): <strong>{{ $item->formattedOwnedLineValue() }}</strong>
+            Catalog value at {{ $item->gradeSummary() }} (private): <strong>{{ $item->formattedOwnedLineValue() }}</strong>
         </p>
     @endif
 
@@ -37,39 +37,20 @@
         @csrf
         @method('PUT')
 
-        <label class="auth-field">
-            <span class="auth-label">Quantity</span>
-            <input type="number" name="quantity" value="{{ old('quantity', $item->quantity) }}" min="1" max="9999" required>
-        </label>
+        <div class="auth-field">
+            <span class="auth-label">Owned items</span>
+            <p class="auth-field-help">Each physical plate gets a permanent, auto-assigned serial (plate year + 5 digits, e.g. 193800001). Serial numbers are unique site-wide and cannot be changed or reused.</p>
+            @include('components.collection-items-editor', [
+                'namePrefix' => 'owned_items',
+                'itemRows' => old('owned_items', $item->ownedItemsFormRows()),
+                'gradeOptions' => $grades,
+                'plateLabel' => $plate->jurisdiction ? strtoupper($plate->jurisdiction) : 'plate',
+            ])
+        </div>
 
         <label class="auth-field">
-            <span class="auth-label">Condition</span>
-            <select name="condition">
-                <option value="">— Not set —</option>
-                @foreach ($conditions as $code => $label)
-                    <option value="{{ $code }}" @selected(old('condition', $item->condition) === $code)>{{ $label }}</option>
-                @endforeach
-            </select>
-        </label>
-
-        <label class="auth-field">
-            <span class="auth-label">Date acquired</span>
-            <input type="date" name="acquired_date" value="{{ old('acquired_date', $item->acquired_date?->format('Y-m-d')) }}">
-        </label>
-
-        <label class="auth-field">
-            <span class="auth-label">Price paid (each or total)</span>
-            <input type="number" name="price_paid" value="{{ old('price_paid', $item->price_paid) }}" min="0" step="0.01" placeholder="0.00">
-        </label>
-
-        <label class="auth-field">
-            <span class="auth-label">Storage location</span>
-            <input type="text" name="storage_location" value="{{ old('storage_location', $item->storage_location) }}" maxlength="128" placeholder="e.g. Binder 3, page 12">
-        </label>
-
-        <label class="auth-field">
-            <span class="auth-label">Private notes</span>
-            <textarea name="notes" rows="4" maxlength="5000">{{ old('notes', $item->notes) }}</textarea>
+            <span class="auth-label">Entry notes</span>
+            <textarea name="notes" rows="3" maxlength="5000" placeholder="Notes about this catalog listing in your collection">{{ old('notes', $item->notes) }}</textarea>
         </label>
 
         <label class="auth-checkbox">
@@ -84,3 +65,7 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+    @include('components.collection-items-script')
+@endpush

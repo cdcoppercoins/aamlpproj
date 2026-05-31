@@ -2897,6 +2897,7 @@ body {
     font-size: 0.8rem;
 }
 
+.gallery-results-container.is-list .gallery-result-list-collection .collection-add-grade,
 .gallery-results-container.is-list .gallery-result-list-collection .collection-add-condition {
     width: 52px;
     padding: 3px 4px;
@@ -3594,6 +3595,7 @@ body {
     font-size: 0.85rem;
 }
 
+.collection-add-grade,
 .collection-add-condition {
     padding: 4px 6px;
     border: 1px solid #c5d5e0;
@@ -3780,8 +3782,191 @@ body {
     text-align: center;
 }
 
+.collection-manage-grade,
 .collection-manage-condition {
     width: 72px;
+}
+
+.collection-copy-grades {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 88px;
+}
+
+.collection-copy-grades--compact {
+    min-width: 72px;
+    gap: 4px;
+}
+
+.collection-copy-grade {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.collection-copy-grade-label {
+    flex: 0 0 auto;
+    font-size: 0.72rem;
+    color: #666;
+    min-width: 2.5rem;
+}
+
+.collection-copy-grades--compact .collection-copy-grade-label {
+    min-width: 1.5rem;
+}
+
+.collection-copy-grade-select {
+    width: 100%;
+    min-width: 0;
+    font-size: 0.82rem;
+}
+
+.collection-edit-form .collection-copy-grades {
+    margin-top: 8px;
+}
+
+.collection-items-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.collection-items-editor--compact {
+    min-width: 180px;
+}
+
+.collection-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.collection-item-row {
+    padding: 10px 12px;
+    border: 1px solid #d8e4ec;
+    border-radius: 4px;
+    background: #fafcfd;
+}
+
+.collection-item-row--compact {
+    display: grid;
+    grid-template-columns: 1.8rem minmax(52px, 1fr) minmax(64px, 1.2fr) auto;
+    gap: 6px;
+    align-items: center;
+    padding: 4px;
+    background: transparent;
+    border: none;
+}
+
+.collection-item-row-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.collection-item-row-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.collection-item-row--compact .collection-item-row-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #666;
+}
+
+.collection-item-row-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.collection-item-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.collection-item-field--wide {
+    grid-column: 1 / -1;
+}
+
+.collection-item-field-label {
+    font-size: 0.82rem;
+    color: #666;
+}
+
+.collection-item-grade,
+.collection-item-serial,
+.collection-item-serial-display,
+.collection-item-acquired,
+.collection-item-price,
+.collection-item-storage,
+.collection-item-notes {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 0.85rem;
+}
+
+.collection-item-serial-display {
+    font-variant-numeric: tabular-nums;
+    color: #333;
+}
+
+.collection-item-row--compact .collection-item-serial-display {
+    font-size: 0.78rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.collection-item-remove-btn {
+    border: none;
+    background: transparent;
+    color: #888;
+    cursor: pointer;
+    font-size: 0.82rem;
+    padding: 0;
+}
+
+.collection-item-row--compact .collection-item-remove-btn {
+    font-size: 1.1rem;
+    line-height: 1;
+    width: 1.5rem;
+}
+
+.collection-item-remove-btn:hover {
+    color: #c0392b;
+}
+
+.collection-items-add-btn {
+    align-self: flex-start;
+    border: 1px solid #c5d5e0;
+    background: #fff;
+    color: #4079a5;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+
+.collection-items-add-btn:hover {
+    background: #f4f8fb;
+}
+
+.col-items {
+    min-width: 190px;
+    vertical-align: top;
+}
+
+.auth-field-help {
+    margin: 4px 0 0;
+    font-size: 0.88rem;
+    color: #666;
 }
 
 .collection-manage-location {
@@ -4173,6 +4358,7 @@ body {
 }
 
 .collection-member-readonly-table .col-qty,
+.collection-member-readonly-table .col-grade,
 .collection-member-readonly-table .col-condition,
 .collection-member-readonly-table .col-want {
     text-align: center;
