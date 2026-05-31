@@ -1,0 +1,34 @@
+
+
+cd d:\aamlpproj
+.\scripts\Build-DeployRelease.ps1 -OpenFolder
+
+from deploy/out...upload all /Laravel and /public_html files and folders
+
+from server terminal: php /home/minilp/laravel/artisan migrate --force
+
+Catalog plate data (if you added plates locally)
+Migrations won’t copy plate rows. With shell you can either:
+
+Option A — Admin CSV import (still fine): https://minilicenseplates.com → Admin → Catalog → Import
+
+Option B — Artisan import (if you upload a CSV to the server):
+
+cd /home/minilp/laravel
+php artisan plates:import /home/minilp/path/to/your.csv
+Other useful checks
+cd /home/minilp/laravel
+php artisan migrate:status
+Shows which migrations have run.
+
+tail -40 storage/logs/laravel.log
+If the site shows a 500 error after deploy.
+
+Updated deploy flow for you
+
+Build package on PC → upload via FileZilla (as before)
+SSH in as minilp
+cd /home/minilp/laravel && php artisan migrate --force && php artisan view:clear && php artisan cache:clear
+Import catalog CSV (admin or plates:import) if you added data
+Upload new images to public_html/plates/ if needed
+Test https://minilicenseplates.com with Ctrl+F5
