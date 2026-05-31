@@ -3987,6 +3987,10 @@ body {
     min-width: 140px;
 }
 
+.collection-manage-storage {
+    min-width: 120px;
+}
+
 .collection-set-catalog-total {
     margin: 8px 0 0;
     font-size: 0.95rem;
@@ -4095,6 +4099,11 @@ body {
 .collection-quick-fill-field-set {
     flex: 1 1 280px;
     min-width: 200px;
+}
+
+.collection-quick-fill-field--wide {
+    flex: 1 1 320px;
+    min-width: 240px;
 }
 
 .collection-quick-fill-actions {
@@ -4290,11 +4299,6 @@ body {
     vertical-align: middle;
 }
 
-.collection-report-table--checklist tbody td {
-    height: 2.6rem;
-    padding: 6px 8px;
-}
-
 .collection-report-table--checklist th.col-check,
 .collection-report-table--checklist td.col-check {
     width: 2rem;
@@ -4312,11 +4316,6 @@ body {
     background: transparent;
 }
 
-.collection-report-table--checklist .collection-report-sort-btn {
-    min-height: 2.2rem;
-    padding: 8px 8px;
-}
-
 .collection-report-check-box {
     display: inline-block;
     width: 14px;
@@ -4332,9 +4331,9 @@ body {
     align-items: center;
     justify-content: flex-start;
     width: 100%;
-    min-height: 2.75rem;
+    min-height: 2.4375rem;
     margin: 0;
-    padding: 10px 8px;
+    padding: 8px 6px;
     border: none;
     background: transparent;
     color: inherit;
@@ -4444,20 +4443,20 @@ body {
 }
 
 .collection-report-table th {
-    padding: 10px 8px;
+    padding: 8px 6px;
     text-align: left;
     font-weight: 600;
     white-space: nowrap;
 }
 
 .collection-report-table td {
-    padding: 8px;
+    padding: 6px;
     vertical-align: middle;
     box-sizing: border-box;
 }
 
 .collection-report-table tbody td {
-    height: 3.25rem;
+    height: 2.4375rem;
     border-bottom: 1px solid #999;
 }
 

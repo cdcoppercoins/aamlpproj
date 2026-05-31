@@ -91,6 +91,7 @@
                             <th scope="col" class="col-items">Items</th>
                             <th scope="col" class="col-value">Value</th>
                             <th scope="col" class="col-want">Want</th>
+                            <th scope="col" class="col-storage">Storage</th>
                             <th scope="col" class="col-notes">Notes</th>
                         </tr>
                     </thead>
@@ -149,6 +150,15 @@
                                            @checked(old('items.'.$plate->id.'.is_wanted', $entry?->is_wanted))
                                            aria-label="Want list for {{ $plate->jurisdiction ?? 'plate' }}">
                                 </td>
+                                <td class="col-storage">
+                                    <input type="text"
+                                           name="items[{{ $plate->id }}][storage_location]"
+                                           value="{{ old('items.'.$plate->id.'.storage_location', $entry?->ownedItems->first()?->storage_location) }}"
+                                           class="collection-manage-input collection-manage-storage"
+                                           maxlength="128"
+                                           placeholder="Binder, box…"
+                                           aria-label="Storage for {{ $plate->jurisdiction ?? 'plate' }}">
+                                </td>
                                 <td class="col-notes">
                                     <input type="text"
                                            name="items[{{ $plate->id }}][notes]"
@@ -191,6 +201,8 @@
     var modeSelect = document.getElementById('collection-fill-mode');
     var countInput = document.getElementById('collection-default-item-count');
     var gradeSelect = document.getElementById('collection-default-grade');
+    var storageInput = document.getElementById('collection-default-storage');
+    var notesInput = document.getElementById('collection-default-notes');
 
     function formatMoney(amount) {
         return '$' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -303,6 +315,8 @@
         if (!countInput || !gradeSelect || !modeSelect) return;
         var count = countInput.value;
         var grade = gradeSelect.value;
+        var storage = storageInput ? storageInput.value : '';
+        var notes = notesInput ? notesInput.value : '';
         var fillAll = modeSelect.value === 'all';
         var rows = document.querySelectorAll('[data-collection-row]');
         var applied = 0;
@@ -315,8 +329,12 @@
 
             if (wantField) wantField.checked = false;
             if (container && typeof window.collectionReplaceItems === 'function') {
-                window.collectionReplaceItems(container, count, grade);
+                window.collectionReplaceItems(container, count, grade, storage);
             }
+            var storageField = row.querySelector('.collection-manage-storage');
+            if (storageField) storageField.value = storage;
+            var notesField = row.querySelector('.collection-manage-notes');
+            if (notesField) notesField.value = notes;
             row.classList.add('collection-manage-row-has-entry');
             applied++;
         });

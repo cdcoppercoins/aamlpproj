@@ -900,6 +900,7 @@ class CollectionController extends Controller
             'items' => ['nullable', 'array'],
             'items.*.is_wanted' => ['nullable', 'boolean'],
             'items.*.notes' => ['nullable', 'string', 'max:5000'],
+            'items.*.storage_location' => ['nullable', 'string', 'max:128'],
         ], $this->ownedItemFieldRules('items.*.owned_items')));
 
         $setName = $validated['set_name'];
@@ -926,6 +927,16 @@ class CollectionController extends Controller
             $row = $items[$plateId] ?? [];
             $isWanted = ! empty($row['is_wanted']);
             $ownedItemRows = $row['owned_items'] ?? [];
+            $rowStorage = trim((string) ($row['storage_location'] ?? ''));
+            if ($rowStorage !== '') {
+                foreach ($ownedItemRows as $index => $ownedRow) {
+                    if (! is_array($ownedRow)) {
+                        continue;
+                    }
+
+                    $ownedItemRows[$index]['storage_location'] = $rowStorage;
+                }
+            }
             $hasOwnedItems = $this->submittedOwnedItemsHaveContent($ownedItemRows);
             $shouldKeep = $isWanted || $hasOwnedItems;
 
@@ -982,6 +993,8 @@ class CollectionController extends Controller
             'item_count' => ['required', 'integer', 'min:1', 'max:9999'],
             'grade' => ['nullable', Rule::in(CollectionItem::GRADE_CODES)],
             'mode' => ['required', Rule::in(['empty', 'all'])],
+            'storage_location' => ['nullable', 'string', 'max:128'],
+            'notes' => ['nullable', 'string', 'max:5000'],
         ]);
 
         $setData = $this->resolveSetCollectionData($validated['set_name']);
@@ -993,9 +1006,19 @@ class CollectionController extends Controller
         }
 
         $filled = 0;
-        $ownedItemRows = array_fill(0, $validated['item_count'], [
+        $ownedItemPayload = [
             'grade' => $validated['grade'] ?? null,
-        ]);
+            'storage_location' => CollectionItem::normalizeOwnedItemPayload([
+                'storage_location' => $validated['storage_location'] ?? null,
+            ])['storage_location'],
+        ];
+        $ownedItemRows = [];
+        for ($i = 0; $i < $validated['item_count']; $i++) {
+            $ownedItemRows[] = $ownedItemPayload;
+        }
+        $entryNotes = CollectionItem::normalizeOwnedItemPayload([
+            'notes' => $validated['notes'] ?? null,
+        ])['notes'];
 
         foreach ($setData['plates'] as $plate) {
             $existing = $setData['collectionByPlateId'][$plate->id] ?? null;
@@ -1006,12 +1029,16 @@ class CollectionController extends Controller
 
             if ($existing) {
                 $item = $existing;
-                $item->update(['is_wanted' => false]);
+                $item->update([
+                    'is_wanted' => false,
+                    'notes' => $entryNotes,
+                ]);
             } else {
                 $item = CollectionItem::create([
                     'user_id' => Auth::id(),
                     'plate_id' => $plate->id,
                     'is_wanted' => false,
+                    'notes' => $entryNotes,
                 ]);
             }
 

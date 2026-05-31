@@ -4,7 +4,7 @@
 <section class="collection-quick-fill" aria-label="Quick fill defaults">
     <h3 class="collection-quick-fill-title">Quick fill defaults</h3>
     <p class="collection-quick-fill-lead">
-        Own a complete run? Set how many items to add per plate and a default grade, then fill every row at once.
+        Own a complete run? Set how many items to add per plate, a default grade, storage, and notes, then fill every row at once.
     </p>
 
     <form id="collection-quick-fill-form" method="post" action="{{ route('collection.manage.fill') }}" class="collection-quick-fill-form">
@@ -58,6 +58,28 @@
                     <option value="empty" @selected($selectedSet)>Empty rows only</option>
                     <option value="all" @selected(! $selectedSet)>Entire set (overwrite existing)</option>
                 </select>
+            </label>
+
+            <label class="collection-quick-fill-field">
+                <span class="auth-label">Storage</span>
+                <input type="text"
+                       id="collection-default-storage"
+                       name="storage_location"
+                       value=""
+                       maxlength="128"
+                       class="collection-manage-input"
+                       placeholder="Binder, box…">
+            </label>
+
+            <label class="collection-quick-fill-field collection-quick-fill-field--wide">
+                <span class="auth-label">Notes</span>
+                <input type="text"
+                       id="collection-default-notes"
+                       name="notes"
+                       value=""
+                       maxlength="5000"
+                       class="collection-manage-input"
+                       placeholder="Private notes for each plate">
             </label>
         </div>
 
