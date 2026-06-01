@@ -1,0 +1,6 @@
+{
+    "sshHost": "minilicenseplates.com",
+    "sshUser": "minilp",
+    "sshPort": 22,
+    "sshKeyPath": ""
+}

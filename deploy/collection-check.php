@@ -96,4 +96,56 @@ try {
     echo '  At: ' . $e->getFile() . ':' . $e->getLine() . "\n";
 }
 
+echo "\nCollection reports deploy check:\n";
+
+$reportFiles = [
+    'routes/web.php' => 'collection.reports.index',
+    'app/Http/Controllers/CollectionController.php' => 'function reportsIndex',
+    'resources/views/collection/index.blade.php' => 'collection.reports.index',
+    'resources/views/collection/reports/index.blade.php' => 'Collection reports',
+    'resources/views/components/collection-reports-sort-script.blade.php' => 'data-sortable-report',
+];
+
+foreach ($reportFiles as $rel => $needle) {
+    $path = $laravelRoot . '/' . $rel;
+    if (! is_file($path)) {
+        echo "  MISSING file: $rel\n";
+        continue;
+    }
+    $raw = file_get_contents($path) ?: '';
+    $ok = str_contains($raw, $needle);
+    echo '  ' . $rel . ': ' . ($ok ? 'OK' : "FOUND but missing “{$needle}” — re-upload") . "\n";
+}
+
+$reportsDir = $laravelRoot . '/resources/views/collection/reports';
+if (is_dir($reportsDir)) {
+    $views = glob($reportsDir . '/*.blade.php') ?: [];
+    echo '  reports views: ' . count($views) . " file(s)\n";
+} else {
+    echo "  MISSING directory: resources/views/collection/reports/\n";
+}
+
+$cssPath = dirname(__DIR__) . '/public_html/main.css';
+if (is_file($cssPath)) {
+    $css = file_get_contents($cssPath) ?: '';
+    echo '  public_html/main.css has report styles: ' . (str_contains($css, 'collection-reports-accordion') ? 'OK' : 'NO — re-upload main.css') . "\n";
+} else {
+    echo "  public_html/main.css: NOT FOUND\n";
+}
+
+echo "\n/collection/reports route test:\n";
+try {
+    $request = \Illuminate\Http\Request::create('/collection/reports', 'GET');
+    $response = $app->handle($request);
+    echo '  HTTP status: ' . $response->getStatusCode() . "\n";
+    if ($response->getStatusCode() >= 400) {
+        echo substr((string) $response->getContent(), 0, 1200) . "\n";
+    } elseif (! str_contains((string) $response->getContent(), 'Collection reports')) {
+        echo "  WARNING: 200 response but page text looks wrong (view cache or old template).\n";
+    }
+} catch (\Throwable $e) {
+    echo '  ERROR: ' . $e->getMessage() . "\n";
+    echo '  At: ' . $e->getFile() . ':' . $e->getLine() . "\n";
+}
+
 echo "\nDone. Delete collection-check.php from public_html when finished.\n";

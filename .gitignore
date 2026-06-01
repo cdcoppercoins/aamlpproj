@@ -26,6 +26,7 @@
 /vendor
 /mlp_code
 /deploy/out
+/deploy/deploy.local.json
 Homestead.json
 Homestead.yaml
 Thumbs.db
