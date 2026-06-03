@@ -154,6 +154,9 @@ elseif (-not (Test-Path (Join-Path $ProjectRoot 'vendor\autoload.php'))) {
 Write-Step "Building release at deploy\out\$stamp"
 New-Item -ItemType Directory -Path $laravelOut -Force | Out-Null
 
+$buildStampText = "$stamp`n$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+Set-Content -Path (Join-Path $laravelOut 'DEPLOY_BUILD.txt') -Value $buildStampText -Encoding UTF8
+
 $excludeDirs = @('node_modules', 'tests', '.git', '.github', 'mlp_code', 'deploy')
 $excludeFiles = @('*.log', '.env', '.env.*', 'Thumbs.db', '.DS_Store')
 
@@ -226,6 +229,10 @@ foreach ($asset in $config.publicHtmlAssets) {
 $indexTemplate = Join-Path $ProjectRoot 'deploy\public_html-index.php'
 if (Test-Path $indexTemplate) {
     Copy-Item $indexTemplate (Join-Path $publicHtmlOut 'index.php') -Force
+}
+$applyDeployTemplate = Join-Path $ProjectRoot 'deploy\apply-deploy.php'
+if (Test-Path $applyDeployTemplate) {
+    Copy-Item $applyDeployTemplate (Join-Path $publicHtmlOut 'apply-deploy.php') -Force
 }
 
 # Instructions
@@ -328,11 +335,16 @@ Set-Content -Path (Join-Path $outRoot 'MANIFEST.txt') -Value $manifestLines -Enc
 
 # Zip (optional convenience)
 $zipPath = Join-Path $outRoot 'laravel.zip'
+$publicZipPath = Join-Path $outRoot 'public_html.zip'
 $releaseZipPath = Join-Path $outRoot 'release.zip'
 if (Get-Command Compress-Archive -ErrorAction SilentlyContinue) {
     Write-Step "Creating laravel.zip"
     if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
     Compress-Archive -Path (Join-Path $laravelOut '*') -DestinationPath $zipPath -CompressionLevel Optimal
+
+    Write-Step "Creating public_html.zip"
+    if (Test-Path $publicZipPath) { Remove-Item $publicZipPath -Force }
+    Compress-Archive -Path (Join-Path $publicHtmlOut '*') -DestinationPath $publicZipPath -CompressionLevel Optimal
 
     Write-Step "Creating release.zip (laravel + public_html)"
     if (Test-Path $releaseZipPath) { Remove-Item $releaseZipPath -Force }
@@ -346,6 +358,9 @@ Write-Host "  public_html: deploy\out\$stamp\public_html\  -> server $remotePubl
 Write-Host "  Guide:       deploy\out\$stamp\UPLOAD_INSTRUCTIONS.txt"
 if (Test-Path $zipPath) {
     Write-Host "  Zip:         deploy\out\$stamp\laravel.zip"
+}
+if (Test-Path $publicZipPath) {
+    Write-Host "  public_html: deploy\out\$stamp\public_html.zip  (FTP: upload to $remoteHome/)"
 }
 if (Test-Path $releaseZipPath) {
     Write-Host "  Both:        deploy\out\$stamp\release.zip  (extract in $remoteHome/)"

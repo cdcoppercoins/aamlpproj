@@ -1,4 +1,5 @@
 {
+    "skipSsh": true,
     "projectRoot": "d:\\aamlpproj",
     "remoteLaravelRoot": "/laravel",
     "remotePublicHtml": "/public_html",

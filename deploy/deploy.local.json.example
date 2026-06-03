@@ -2,5 +2,13 @@
     "sshHost": "minilicenseplates.com",
     "sshUser": "minilp",
     "sshPort": 22,
-    "sshKeyPath": ""
+    "sshKeyPath": "",
+
+    "ftpHost": "ftp.minilicenseplates.com",
+    "ftpUser": "chuck@minilicenseplates.com",
+    "ftpPassword": "YOUR_FTP_PASSWORD_HERE",
+    "ftpPort": 21,
+
+    "deployApplyUrl": "https://minilicenseplates.com/apply-deploy.php",
+    "deployApplyToken": "SAME_TOKEN_AS_SERVER_ENV"
 }

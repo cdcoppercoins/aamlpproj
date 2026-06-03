@@ -33,6 +33,8 @@
     </form>
 
     <p class="auth-footer">
+        <a href="{{ route('password.request') }}">Forgot your password?</a>
+        ·
         New member? <a href="{{ route('register') }}">Create an account</a>
     </p>
 </div>

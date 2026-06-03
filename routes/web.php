@@ -17,6 +17,8 @@ use App\Http\Controllers\NewsletterSubscriberController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ArticleController;
@@ -57,6 +59,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [LoginController::class, 'store']);
     Route::get('/register', [RegisterController::class, 'create'])->name('register');
     Route::post('/register', [RegisterController::class, 'store']);
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'create'])->name('password.request');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])->name('password.email');
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class, 'store'])->name('password.update');
 });
 
 Route::post('/logout', [LoginController::class, 'destroy'])->middleware('auth')->name('logout');
@@ -73,6 +79,7 @@ Route::middleware(['auth', 'not.blocked'])->group(function () {
     Route::get('/collection/manage', [CollectionController::class, 'manage'])->name('collection.manage');
     Route::get('/collection/manage/pdf', [CollectionController::class, 'managePdf'])->name('collection.manage.pdf');
     Route::put('/collection/manage', [CollectionController::class, 'updateManage'])->name('collection.manage.update');
+    Route::put('/collection/manage/row', [CollectionController::class, 'updateManageRow'])->name('collection.manage.update-row');
     Route::post('/collection/manage/fill', [CollectionController::class, 'fillManageSet'])->name('collection.manage.fill');
     Route::get('/collection', [CollectionController::class, 'index'])->name('collection.index');
     Route::post('/collection', [CollectionController::class, 'store'])->name('collection.store');

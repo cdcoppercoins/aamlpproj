@@ -925,54 +925,14 @@ class CollectionController extends Controller
 
         foreach ($validPlateIds as $plateId) {
             $row = $items[$plateId] ?? [];
-            $isWanted = ! empty($row['is_wanted']);
-            $ownedItemRows = $row['owned_items'] ?? [];
-            $rowStorage = trim((string) ($row['storage_location'] ?? ''));
-            if ($rowStorage !== '') {
-                foreach ($ownedItemRows as $index => $ownedRow) {
-                    if (! is_array($ownedRow)) {
-                        continue;
-                    }
-
-                    $ownedItemRows[$index]['storage_location'] = $rowStorage;
-                }
-            }
-            $hasOwnedItems = $this->submittedOwnedItemsHaveContent($ownedItemRows);
-            $shouldKeep = $isWanted || $hasOwnedItems;
-
             $existing = $existingByPlateId->get($plateId);
+            $result = $this->persistManagePlateRow(Auth::id(), $plateId, $row, $existing);
 
-            if (! $shouldKeep) {
-                if ($existing) {
-                    $existing->delete();
-                    $removed++;
-                }
-
-                continue;
+            if ($result === 'saved') {
+                $saved++;
+            } elseif ($result === 'removed') {
+                $removed++;
             }
-
-            if ($existing) {
-                $item = $existing;
-                $item->update([
-                    'is_wanted' => $isWanted,
-                    'notes' => $row['notes'] ?? null,
-                ]);
-            } else {
-                $item = CollectionItem::create([
-                    'user_id' => Auth::id(),
-                    'plate_id' => $plateId,
-                    'is_wanted' => $isWanted,
-                    'notes' => $row['notes'] ?? null,
-                ]);
-            }
-
-            if ($isWanted) {
-                $item->ownedItems()->delete();
-            } else {
-                $item->syncOwnedItems($ownedItemRows);
-            }
-
-            $saved++;
         }
 
         $message = "Set saved — {$saved} " . ($saved === 1 ? 'entry' : 'entries') . ' updated';
@@ -980,6 +940,77 @@ class CollectionController extends Controller
             $message .= ", {$removed} removed";
         }
         $message .= '.';
+
+        return redirect()
+            ->route('collection.manage', ['set_name' => $setName])
+            ->with('success', $message);
+    }
+
+    public function updateManageRow(Request $request)
+    {
+        $plateId = (int) $request->input('plate_id');
+
+        $validated = $request->validate(array_merge([
+            'set_name' => ['required', 'string', 'max:255'],
+            'plate_id' => ['required', 'integer'],
+            "items.{$plateId}.is_wanted" => ['nullable', 'boolean'],
+            "items.{$plateId}.notes" => ['nullable', 'string', 'max:5000'],
+            "items.{$plateId}.storage_location" => ['nullable', 'string', 'max:128'],
+        ], $this->ownedItemFieldRules("items.{$plateId}.owned_items")));
+
+        $setName = $validated['set_name'];
+
+        $plate = Plate::query()
+            ->where('set_name', $setName)
+            ->where('id', $plateId)
+            ->first();
+
+        if ($plate === null) {
+            $message = 'That plate is not in this set.';
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $message], 422);
+            }
+
+            return back()->with('error', $message);
+        }
+
+        $existing = CollectionItem::query()
+            ->where('user_id', Auth::id())
+            ->where('plate_id', $plateId)
+            ->first();
+
+        $items = $request->input('items', []);
+        $row = is_array($items[$plateId] ?? null) ? $items[$plateId] : [];
+        $result = $this->persistManagePlateRow(Auth::id(), $plateId, $row, $existing);
+
+        $label = $plate->jurisdiction ? strtoupper($plate->jurisdiction) : 'Plate';
+        $message = $result === 'removed'
+            ? "{$label} removed from your collection."
+            : "{$label} saved.";
+
+        if ($request->expectsJson()) {
+            $item = CollectionItem::query()
+                ->where('user_id', Auth::id())
+                ->where('plate_id', $plateId)
+                ->with('ownedItems')
+                ->first();
+
+            $valueLabel = '--';
+            $hasEntry = $item !== null;
+
+            if ($item && ! $item->is_wanted) {
+                $item->setRelation('plate', $plate);
+                $valueLabel = $item->formattedOwnedLineValue();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'value_label' => $valueLabel,
+                'has_entry' => $hasEntry,
+            ]);
+        }
 
         return redirect()
             ->route('collection.manage', ['set_name' => $setName])
@@ -1160,6 +1191,63 @@ class CollectionController extends Controller
         if ($collectionItem->user_id !== Auth::id()) {
             abort(403);
         }
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @return 'saved'|'removed'|'unchanged'
+     */
+    private function persistManagePlateRow(int $userId, int $plateId, array $row, ?CollectionItem $existing): string
+    {
+        $isWanted = ! empty($row['is_wanted']);
+        $ownedItemRows = $row['owned_items'] ?? [];
+        $rowStorage = trim((string) ($row['storage_location'] ?? ''));
+
+        if ($rowStorage !== '') {
+            foreach ($ownedItemRows as $index => $ownedRow) {
+                if (! is_array($ownedRow)) {
+                    continue;
+                }
+
+                $ownedItemRows[$index]['storage_location'] = $rowStorage;
+            }
+        }
+
+        $hasOwnedItems = $this->submittedOwnedItemsHaveContent($ownedItemRows);
+        $shouldKeep = $isWanted || $hasOwnedItems;
+
+        if (! $shouldKeep) {
+            if ($existing) {
+                $existing->delete();
+
+                return 'removed';
+            }
+
+            return 'unchanged';
+        }
+
+        if ($existing) {
+            $item = $existing;
+            $item->update([
+                'is_wanted' => $isWanted,
+                'notes' => $row['notes'] ?? null,
+            ]);
+        } else {
+            $item = CollectionItem::create([
+                'user_id' => $userId,
+                'plate_id' => $plateId,
+                'is_wanted' => $isWanted,
+                'notes' => $row['notes'] ?? null,
+            ]);
+        }
+
+        if ($isWanted) {
+            $item->ownedItems()->delete();
+        } else {
+            $item->syncOwnedItems($ownedItemRows);
+        }
+
+        return 'saved';
     }
 
     /**

@@ -76,12 +76,22 @@
             'grades' => $grades,
         ])
 
-        <form class="collection-manage-table-form" method="post" action="{{ route('collection.manage.update') }}">
+        <section class="collection-manage-save-help" aria-label="How saving works">
+            <p>
+                Use <strong>Save row</strong> on a line when you only changed that plate.
+                The bar at the bottom of the screen saves <strong>every row on this page</strong> at once — use it before you download a PDF or leave the page.
+            </p>
+        </section>
+
+        <form id="collection-manage-form"
+              class="collection-manage-table-form"
+              method="post"
+              action="{{ route('collection.manage.update') }}">
             @csrf
             @method('PUT')
             <input type="hidden" name="set_name" value="{{ $selectedSet }}">
 
-            <div class="collection-manage-table-wrap">
+            <div class="collection-manage-table-wrap" id="collection-manage-table">
                 <table class="collection-manage-table">
                     <thead>
                         <tr>
@@ -93,6 +103,7 @@
                             <th scope="col" class="col-want">Want</th>
                             <th scope="col" class="col-storage">Storage</th>
                             <th scope="col" class="col-notes">Notes</th>
+                            <th scope="col" class="col-save">Save</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -104,6 +115,7 @@
                             @endphp
                             <tr class="collection-manage-row @if($entry) collection-manage-row-has-entry @endif"
                                 data-collection-row
+                                data-plate-id="{{ $plate->id }}"
                                 data-display-values='@json($plate->catalogDisplayValuesByCondition())'
                                 data-numeric-values='@json($plate->catalogNumericValuesByCondition())'>
                                 <td class="col-thumb">
@@ -168,6 +180,15 @@
                                            placeholder="Private notes"
                                            aria-label="Notes for {{ $plate->jurisdiction ?? 'plate' }}">
                                 </td>
+                                <td class="col-save">
+                                    <button type="button"
+                                            class="collection-manage-row-save"
+                                            data-save-row
+                                            data-plate-id="{{ $plate->id }}">
+                                        Save row
+                                    </button>
+                                    <span class="collection-manage-row-save-status" data-row-save-status aria-live="polite"></span>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -175,7 +196,6 @@
             </div>
 
             <p class="collection-manage-actions">
-                <button type="submit" class="home-primary-btn">Save entire set</button>
                 <a class="home-primary-btn home-primary-btn-secondary"
                    href="{{ route('collection.manage.pdf', ['set_name' => $selectedSet, 'scope' => 'checklist']) }}">
                     Download PDF checklist
@@ -188,6 +208,21 @@
                 <a class="collection-manage-cancel" href="{{ route('collection.index') }}">Back to my collection</a>
             </p>
         </form>
+
+        <div class="collection-manage-sticky-bar"
+             id="collection-manage-sticky-bar"
+             role="region"
+             aria-label="Save all rows"
+             hidden>
+            <p class="collection-manage-sticky-text">
+                Save all changes on this page before downloading a PDF or leaving.
+            </p>
+            <button type="submit"
+                    form="collection-manage-form"
+                    class="home-primary-btn collection-manage-sticky-save">
+                Save entire set
+            </button>
+        </div>
     @elseif ($selectedSet)
         <p class="collection-empty">No plates found for this set.</p>
     @endif
@@ -197,6 +232,124 @@
 @include('components.collection-items-script')
 <script>
 (function () {
+    var managePage = document.querySelector('.collection-manage-page');
+    var tableRegion = document.getElementById('collection-manage-table');
+    var stickyBar = document.getElementById('collection-manage-sticky-bar');
+    var saveRowUrl = @json(route('collection.manage.update-row'));
+    var csrfToken = @json(csrf_token());
+    var setName = @json($selectedSet);
+
+    function setStickyBarVisible(show) {
+        if (! stickyBar) {
+            return;
+        }
+        stickyBar.hidden = ! show;
+        if (managePage) {
+            managePage.classList.toggle('collection-manage-page--sticky-visible', show);
+        }
+    }
+
+    if (tableRegion && stickyBar) {
+        if ('IntersectionObserver' in window) {
+            var stickyObserver = new IntersectionObserver(function (entries) {
+                setStickyBarVisible(entries[0].isIntersecting);
+            }, { threshold: 0 });
+            stickyObserver.observe(tableRegion);
+        } else {
+            setStickyBarVisible(true);
+        }
+    }
+
+    function buildRowFormData(row) {
+        var formData = new FormData();
+        formData.append('_token', csrfToken);
+        formData.append('_method', 'PUT');
+        formData.append('set_name', setName);
+        formData.append('plate_id', row.getAttribute('data-plate-id') || '');
+
+        row.querySelectorAll('input, select, textarea').forEach(function (el) {
+            if (! el.name || el.disabled) {
+                return;
+            }
+            if (el.type === 'checkbox') {
+                if (el.checked) {
+                    formData.append(el.name, el.value);
+                }
+            } else if (el.type === 'radio') {
+                if (el.checked) {
+                    formData.append(el.name, el.value);
+                }
+            } else {
+                formData.append(el.name, el.value);
+            }
+        });
+
+        return formData;
+    }
+
+    document.querySelectorAll('[data-save-row]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var row = btn.closest('[data-collection-row]');
+            if (! row) {
+                return;
+            }
+
+            var statusEl = row.querySelector('[data-row-save-status]');
+            var originalLabel = btn.textContent;
+            btn.disabled = true;
+            if (statusEl) {
+                statusEl.textContent = 'Saving…';
+            }
+
+            fetch(saveRowUrl, {
+                method: 'POST',
+                body: buildRowFormData(row),
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                credentials: 'same-origin',
+            })
+                .then(function (response) {
+                    return response.json().then(function (data) {
+                        if (! response.ok) {
+                            throw new Error(data.message || 'Save failed.');
+                        }
+                        return data;
+                    });
+                })
+                .then(function (data) {
+                    if (statusEl) {
+                        statusEl.textContent = data.message || 'Saved';
+                    }
+                    if (data.has_entry) {
+                        row.classList.add('collection-manage-row-has-entry');
+                    } else {
+                        row.classList.remove('collection-manage-row-has-entry');
+                    }
+                    var valueEl = row.querySelector('.collection-row-value');
+                    if (valueEl && data.value_label !== undefined) {
+                        valueEl.textContent = data.value_label;
+                    }
+                    recalculateSetTotal();
+                    setTimeout(function () {
+                        if (statusEl) {
+                            statusEl.textContent = '';
+                        }
+                    }, 3000);
+                })
+                .catch(function (err) {
+                    if (statusEl) {
+                        statusEl.textContent = err.message || 'Save failed';
+                    }
+                })
+                .finally(function () {
+                    btn.disabled = false;
+                    btn.textContent = originalLabel;
+                });
+        });
+    });
+
     var applyBtn = document.getElementById('collection-apply-to-form');
     var modeSelect = document.getElementById('collection-fill-mode');
     var countInput = document.getElementById('collection-default-item-count');
