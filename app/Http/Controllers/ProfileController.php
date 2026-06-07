@@ -28,12 +28,19 @@ class ProfileController extends Controller
             'address' => ['nullable', 'string', 'max:1000'],
             'profile_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:2048'],
             'remove_profile_image' => ['nullable', 'boolean'],
+            'member_newsletter_opt_in' => ['nullable', 'boolean'],
         ]);
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];
         $user->phone = $validated['phone'] ?? null;
         $user->address = $validated['address'] ?? null;
+
+        if ($request->boolean('member_newsletter_opt_in')) {
+            $user->member_newsletter_opt_out_at = null;
+        } else {
+            $user->member_newsletter_opt_out_at = $user->member_newsletter_opt_out_at ?? now();
+        }
 
         if ($request->boolean('remove_profile_image')) {
             $this->deleteProfileImage($user);

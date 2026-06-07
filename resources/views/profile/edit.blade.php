@@ -73,6 +73,15 @@
             <textarea name="address" rows="4" maxlength="1000" placeholder="Optional — street, city, state, ZIP">{{ old('address', $user->address) }}</textarea>
         </label>
 
+        <label class="auth-checkbox profile-newsletter-opt-in">
+            <input type="checkbox"
+                   name="member_newsletter_opt_in"
+                   value="1"
+                   @checked(old('member_newsletter_opt_in', $user->member_newsletter_opt_out_at === null))>
+            Email me site news and member updates
+        </label>
+        <p class="auth-hint">Uncheck to stop member newsletters. Footer news sign-up is separate.</p>
+
         <p class="auth-actions">
             <button type="submit" class="home-primary-btn">Save profile</button>
             <a class="home-primary-btn home-primary-btn-secondary" href="{{ route('collection.index') }}">Cancel</a>

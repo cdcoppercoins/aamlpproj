@@ -41,7 +41,7 @@
             </a>
         </li>
         <li>
-            <a href="{{ route('admin.newsletter.index') }}" @class(['is-active' => request()->routeIs('admin.newsletter.*')])>
+            <a href="{{ route('admin.newsletter.campaigns.index') }}" @class(['is-active' => request()->routeIs('admin.newsletter.*')])>
                 Newsletter
             </a>
         </li>

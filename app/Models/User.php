@@ -34,6 +34,7 @@ class User extends Authenticatable implements CanResetPasswordContract
         'is_blocked',
         'blocked_at',
         'blocked_reason',
+        'member_newsletter_opt_out_at',
     ];
 
     /**
@@ -59,7 +60,15 @@ class User extends Authenticatable implements CanResetPasswordContract
             'is_admin' => 'boolean',
             'is_blocked' => 'boolean',
             'blocked_at' => 'datetime',
+            'member_newsletter_opt_out_at' => 'datetime',
         ];
+    }
+
+    public function receivesMemberNewsletter(): bool
+    {
+        return ! $this->is_blocked
+            && $this->member_newsletter_opt_out_at === null
+            && trim((string) $this->email) !== '';
     }
 
     public function isAdmin(): bool

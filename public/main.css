@@ -5603,6 +5603,90 @@ body.member-message-modal-open {
     background: #fff8f8;
 }
 
+.admin-panel-actions {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.admin-newsletter-body-field {
+    width: 100%;
+    min-height: 320px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    padding: 10px 12px;
+    border: 1px solid #c5d5e0;
+    border-radius: 6px;
+    resize: vertical;
+}
+
+.admin-newsletter-confirm-list {
+    margin: 0 0 18px;
+    padding-left: 1.2rem;
+    line-height: 1.55;
+}
+
+.admin-newsletter-preview-box {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #d4e2ec;
+}
+
+.admin-newsletter-preview-body {
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #d4e2ec;
+    border-radius: 6px;
+    line-height: 1.55;
+}
+
+.admin-newsletter-email-preview {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.admin-newsletter-progress-bar {
+    margin-top: 12px;
+    height: 12px;
+    background: #e2ebf2;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.admin-newsletter-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4079a5, #264a62);
+    transition: width 0.25s ease;
+}
+
+.admin-detail-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px 20px;
+    margin: 0 0 16px;
+}
+
+.admin-detail-list dt {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #667788;
+}
+
+.admin-detail-list dd {
+    margin: 4px 0 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1a3344;
+}
+
+.profile-newsletter-opt-in {
+    margin-top: 8px;
+}
+
 .admin-panel-header {
     display: flex;
     align-items: center;

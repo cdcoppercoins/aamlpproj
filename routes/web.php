@@ -14,6 +14,8 @@ use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ContributeController;
 use App\Http\Controllers\NewsletterSubscriberController;
+use App\Http\Controllers\MemberNewsletterUnsubscribeController;
+use App\Http\Controllers\Admin\NewsletterCampaignController as AdminNewsletterCampaignController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -53,6 +55,9 @@ Route::get('/articles/{slug}', [ArticleController::class, 'show'])->name('articl
 Route::get('/contribute', [ContributeController::class, 'index'])->name('contribute');
 Route::post('/contribute', [ContributeController::class, 'store'])->name('contribute.store');
 Route::post('/newsletter/subscribe', [NewsletterSubscriberController::class, 'store'])->name('newsletter.subscribe');
+Route::get('/newsletter/member-unsubscribe/{user}', [MemberNewsletterUnsubscribeController::class, 'show'])
+    ->middleware('signed')
+    ->name('newsletter.member-unsubscribe');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
@@ -104,6 +109,21 @@ Route::middleware(['auth', 'not.blocked', 'admin'])->prefix('admin')->name('admi
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
     Route::get('/newsletter', [AdminNewsletterController::class, 'index'])->name('newsletter.index');
     Route::delete('/newsletter/{subscriber}', [AdminNewsletterController::class, 'destroy'])->name('newsletter.destroy');
+
+    Route::get('/newsletter/campaigns', [AdminNewsletterCampaignController::class, 'index'])->name('newsletter.campaigns.index');
+    Route::get('/newsletter/campaigns/create', [AdminNewsletterCampaignController::class, 'create'])->name('newsletter.campaigns.create');
+    Route::post('/newsletter/campaigns', [AdminNewsletterCampaignController::class, 'store'])->name('newsletter.campaigns.store');
+    Route::get('/newsletter/campaigns/{campaign}', [AdminNewsletterCampaignController::class, 'show'])->name('newsletter.campaigns.show');
+    Route::get('/newsletter/campaigns/{campaign}/edit', [AdminNewsletterCampaignController::class, 'edit'])->name('newsletter.campaigns.edit');
+    Route::match(['put', 'post'], '/newsletter/campaigns/{campaign}', [AdminNewsletterCampaignController::class, 'update'])->name('newsletter.campaigns.update');
+    Route::delete('/newsletter/campaigns/{campaign}', [AdminNewsletterCampaignController::class, 'destroy'])->name('newsletter.campaigns.destroy');
+    Route::get('/newsletter/campaigns/{campaign}/preview', [AdminNewsletterCampaignController::class, 'preview'])->name('newsletter.campaigns.preview');
+    Route::post('/newsletter/campaigns/{campaign}/test-send', [AdminNewsletterCampaignController::class, 'testSend'])->name('newsletter.campaigns.test-send');
+    Route::get('/newsletter/campaigns/{campaign}/confirm-send', [AdminNewsletterCampaignController::class, 'confirmSend'])->name('newsletter.campaigns.confirm-send');
+    Route::post('/newsletter/campaigns/{campaign}/send', [AdminNewsletterCampaignController::class, 'initiateSend'])->name('newsletter.campaigns.send');
+    Route::get('/newsletter/campaigns/{campaign}/sending', [AdminNewsletterCampaignController::class, 'sending'])->name('newsletter.campaigns.sending');
+    Route::post('/newsletter/campaigns/{campaign}/send-batch', [AdminNewsletterCampaignController::class, 'sendBatch'])->name('newsletter.campaigns.send-batch');
+    Route::post('/newsletter/campaigns/{campaign}/cancel', [AdminNewsletterCampaignController::class, 'cancel'])->name('newsletter.campaigns.cancel');
 
     Route::get('/home-hero', [HomeHeroController::class, 'index'])->name('home-hero.index');
     Route::put('/home-hero/settings', [HomeHeroController::class, 'updateSettings'])->name('home-hero.settings.update');

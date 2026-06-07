@@ -80,7 +80,8 @@ class SearchController extends Controller
             }
 
             $results = $query
-                ->orderBy('set_name')
+                ->orderBy('year')
+                ->orderBy('set_code')
                 ->orderedForCatalog()
                 ->paginate(12)
                 ->appends($request->query());

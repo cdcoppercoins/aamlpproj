@@ -67,6 +67,23 @@ foreach ($roots as $root) {
             echo 'site_links url column: ' . (in_array('url', $linkCols, true) ? 'OK' : 'MISSING (run php artisan migrate)') . "\n";
         }
 
+        if (\Illuminate\Support\Facades\Schema::hasTable('collection_owned_items')) {
+            $ownedCols = \Illuminate\Support\Facades\Schema::getColumnListing('collection_owned_items');
+            echo 'collection_owned_items listing_type: ' . (in_array('listing_type', $ownedCols, true) ? 'OK' : 'MISSING (marketplace 500 — run migrate)') . "\n";
+            echo 'collection_owned_items listing_notes: ' . (in_array('listing_notes', $ownedCols, true) ? 'OK' : 'MISSING (run migrate)') . "\n";
+        } else {
+            echo 'collection_owned_items table: MISSING (run php artisan migrate)' . "\n";
+        }
+
+        echo 'member_message_threads table: ' . (\Illuminate\Support\Facades\Schema::hasTable('member_message_threads') ? 'OK' : 'MISSING (messages 500 — run migrate)') . "\n";
+        echo 'member_messages table: ' . (\Illuminate\Support\Facades\Schema::hasTable('member_messages') ? 'OK' : 'MISSING (run migrate)') . "\n";
+
+        echo 'member_newsletter_campaigns table: ' . (\Illuminate\Support\Facades\Schema::hasTable('member_newsletter_campaigns') ? 'OK' : 'MISSING (run migrate)') . "\n";
+        if (\Illuminate\Support\Facades\Schema::hasTable('users')) {
+            $userCols = \Illuminate\Support\Facades\Schema::getColumnListing('users');
+            echo 'users member_newsletter_opt_out_at: ' . (in_array('member_newsletter_opt_out_at', $userCols, true) ? 'OK' : 'MISSING (run migrate)') . "\n";
+        }
+
         foreach (['/', '/login'] as $testPath) {
             $request = \Illuminate\Http\Request::create($testPath, 'GET');
             $response = $app->handle($request);

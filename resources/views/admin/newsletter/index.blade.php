@@ -12,6 +12,9 @@
         <p class="home-welcome">Site administration</p>
         <h1 class="home-title">Newsletter subscribers</h1>
         <p class="home-lead">Email addresses collected from the site footer sign-up form.</p>
+        <p class="admin-panel-actions">
+            <a class="home-primary-btn" href="{{ route('admin.newsletter.campaigns.index') }}">Member email newsletters</a>
+        </p>
     </section>
 
     <section class="admin-panel">
