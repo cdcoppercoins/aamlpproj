@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class Plate extends Model
 {
@@ -180,6 +182,65 @@ class Plate extends Model
         }
 
         return '$' . number_format($total, 2, '.', ',');
+    }
+
+    /**
+     * Plate label from catalog notes for the 1968 Maple Leaf set (e.g. "Plate #01").
+     */
+    public function catalogPlateNotesLine(): ?string
+    {
+        $setCode = strtolower((string) ($this->set_code ?? ''));
+        $isMapleLeaf1968 = in_array($setCode, ['m68', 'm68ml'], true)
+            || str_contains((string) ($this->set_name ?? ''), '1968 Maple Leaf');
+
+        if (! $isMapleLeaf1968) {
+            return null;
+        }
+
+        $notes = trim((string) ($this->notes ?? ''));
+
+        return $notes !== '' ? $notes : null;
+    }
+
+    /**
+     * Card/checklist number stored in catalog notes for a few sets (e.g. 1950 Stop & Go).
+     */
+    public function catalogCardNumber(): ?string
+    {
+        $notes = trim((string) ($this->notes ?? ''));
+        if ($notes === '' || ! preg_match('/^\d+[a-z]?$/i', $notes)) {
+            return null;
+        }
+
+        return $notes;
+    }
+
+    public function scopeOrderedForCatalog(Builder $query): Builder
+    {
+        return $query
+            ->orderBy('sort_order')
+            ->orderBy('variety_key')
+            ->orderBy('id');
+    }
+
+    /**
+     * @param  Collection<int, Plate>  $plates
+     */
+    public static function platesUseCatalogCardNumbers(Collection $plates): bool
+    {
+        $withNotes = $plates
+            ->filter(fn (Plate $plate) => trim((string) ($plate->notes ?? '')) !== '')
+            ->count();
+
+        if ($withNotes < 5) {
+            return false;
+        }
+
+        $cardLike = $plates
+            ->filter(fn (Plate $plate) => $plate->catalogCardNumber() !== null)
+            ->count();
+
+        return $cardLike >= (int) ceil($withNotes * 0.8);
     }
 
     public static function formatInches(mixed $value): ?string

@@ -8,6 +8,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CollectionOwnedItem extends Model
 {
+    public const LISTING_TYPES = [
+        '' => 'Not listed',
+        'sale' => 'For sale',
+        'trade' => 'For trade',
+        'both' => 'Sale or trade',
+    ];
+
     protected $table = 'collection_owned_items';
 
     protected $fillable = [
@@ -18,6 +25,8 @@ class CollectionOwnedItem extends Model
         'price_paid',
         'storage_location',
         'notes',
+        'listing_type',
+        'listing_notes',
         'sort_order',
     ];
 
@@ -65,4 +74,32 @@ class CollectionOwnedItem extends Model
 
         return ($grade === '' || $grade === null) ? null : (string) $grade;
     }
+
+    public function isListed(): bool
+    {
+        $type = trim((string) ($this->listing_type ?? ''));
+
+        return $type !== '' && array_key_exists($type, array_diff_key(self::LISTING_TYPES, ['' => '']));
+    }
+
+    public function listingLabel(): string
+    {
+        $type = trim((string) ($this->listing_type ?? ''));
+
+        return self::LISTING_TYPES[$type] ?? self::LISTING_TYPES[''];
+    }
+
+    public static function normalizeListingType(mixed $value): ?string
+    {
+        $value = trim((string) ($value ?? ''));
+
+        if ($value === '') {
+            return null;
+        }
+
+        return array_key_exists($value, array_diff_key(self::LISTING_TYPES, ['' => '']))
+            ? $value
+            : null;
+    }
 }
+

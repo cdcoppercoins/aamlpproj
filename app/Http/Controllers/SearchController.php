@@ -81,8 +81,7 @@ class SearchController extends Controller
 
             $results = $query
                 ->orderBy('set_name')
-                ->orderBy('sort_order')
-                ->orderBy('jurisdiction')
+                ->orderedForCatalog()
                 ->paginate(12)
                 ->appends($request->query());
         }

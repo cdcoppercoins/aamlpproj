@@ -17,6 +17,10 @@
 @yield('content')
 @include('components.footer')
 </div>
+@auth
+    @include('components.member-message-modal')
+    @include('components.member-messages-script')
+@endauth
 @stack('scripts')
 </body>
 </html>

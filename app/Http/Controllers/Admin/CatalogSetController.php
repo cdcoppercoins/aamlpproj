@@ -93,10 +93,7 @@ class CatalogSetController extends Controller
 
         $platesQuery = Plate::query()
             ->where('set_code', $setCode)
-            ->orderBy('sort_order')
-            ->orderBy('jurisdiction')
-            ->orderBy('serial_number')
-            ->orderBy('id');
+            ->orderedForCatalog();
 
         if ($search = trim((string) $request->query('q'))) {
             $platesQuery->where(function ($builder) use ($search) {

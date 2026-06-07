@@ -26,5 +26,5 @@
             ])
         @endforeach
     </div>
-    <button type="button" class="collection-items-add-btn" data-add-item>Add item</button>
+    <button type="button" class="collection-items-add-btn" data-add-item>{{ $compact ? '+ Add' : 'Add item' }}</button>
 </div>

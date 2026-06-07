@@ -156,7 +156,7 @@
     <table>
         <thead>
             <tr>
-                <th class="num">#</th>
+                <th class="num">{{ ! empty($usesCatalogCardNumbers) ? 'Card' : '#' }}</th>
                 <th class="jurisdiction">Jurisdiction</th>
                 <th class="variety">Variety</th>
                 <th class="qty">Pcs</th>
@@ -176,7 +176,13 @@
                         : '';
                 @endphp
                 <tr class="{{ $rowClass }}">
-                    <td class="num">{{ $index + 1 }}</td>
+                    <td class="num">
+                        @if (! empty($usesCatalogCardNumbers))
+                            {{ $plate->catalogCardNumber() ?: '—' }}
+                        @else
+                            {{ $index + 1 }}
+                        @endif
+                    </td>
                     <td class="jurisdiction">
                         {{ $plate->jurisdiction ? strtoupper($plate->jurisdiction) : '—' }}
                         @if ($plate->serial_number)
@@ -193,7 +199,7 @@
                         @endif
                     </td>
                     <td class="want">{{ $entry?->is_wanted ? 'Yes' : '' }}</td>
-                    <td class="location">{{ $entry?->storage_location ?? '' }}</td>
+                    <td class="location">{{ $entry?->storageLocationSummary() ?? '' }}</td>
                     <td class="notes">{{ $entry?->notes ?? '' }}</td>
                 </tr>
             @endforeach

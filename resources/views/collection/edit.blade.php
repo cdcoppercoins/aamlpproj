@@ -44,8 +44,25 @@
                 'namePrefix' => 'owned_items',
                 'itemRows' => old('owned_items', $item->ownedItemsFormRows()),
                 'gradeOptions' => $grades,
+                'listingTypes' => $listingTypes,
                 'plateLabel' => $plate->jurisdiction ? strtoupper($plate->jurisdiction) : 'plate',
+                'plateId' => $plate->id,
             ])
+            <div class="collection-listing-want-matches"
+                 id="collection-listing-want-matches"
+                 data-plate-id="{{ $plate->id }}"
+                 data-want-matches-url="{{ route('collection.marketplace.want-matches') }}"
+                 hidden>
+                <p class="collection-listing-want-matches-title"><strong>Want list matches</strong> for this catalog plate</p>
+                <p class="collection-listing-want-matches-body" data-want-matches-body></p>
+            </div>
+            @if ($wantListMatches->isNotEmpty())
+                <p class="auth-field-help collection-listing-want-matches-static">
+                    {{ $wantListMatches->count() }} {{ Str::plural('member', $wantListMatches->count()) }} currently want this plate:
+                    {{ $wantListMatches->pluck('username')->join(', ') }}.
+                    Listing it for sale or trade will appear on the member marketplace.
+                </p>
+            @endif
         </div>
 
         <label class="auth-field">
@@ -68,4 +85,5 @@
 
 @push('scripts')
     @include('components.collection-items-script')
+    @include('components.collection-listing-want-matches-script')
 @endpush

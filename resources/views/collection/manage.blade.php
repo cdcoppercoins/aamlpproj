@@ -92,17 +92,24 @@
             <input type="hidden" name="set_name" value="{{ $selectedSet }}">
 
             <div class="collection-manage-table-wrap" id="collection-manage-table">
-                <table class="collection-manage-table">
+                <table class="collection-manage-table collection-manage-table--dense">
+                    <colgroup>
+                        <col class="col-plate">
+                        <col class="col-items">
+                        <col class="col-value">
+                        <col class="col-want">
+                        <col class="col-storage">
+                        <col class="col-notes">
+                        <col class="col-save">
+                    </colgroup>
                     <thead>
                         <tr>
-                            <th scope="col" class="col-thumb">Photo</th>
-                            <th scope="col" class="col-jurisdiction">Jurisdiction</th>
-                            <th scope="col" class="col-variety">Variety</th>
-                            <th scope="col" class="col-items">Items</th>
-                            <th scope="col" class="col-value">Value</th>
-                            <th scope="col" class="col-want">Want</th>
-                            <th scope="col" class="col-storage">Storage</th>
-                            <th scope="col" class="col-notes">Notes</th>
+                            <th scope="col" class="col-plate" title="Jurisdiction and variety">Plate</th>
+                            <th scope="col" class="col-items" title="Owned copies — grade and offer">Items</th>
+                            <th scope="col" class="col-value" title="Catalog value at your grades">Val</th>
+                            <th scope="col" class="col-want" title="Want list">W</th>
+                            <th scope="col" class="col-storage" title="Storage location">Store</th>
+                            <th scope="col" class="col-notes" title="Private notes">Notes</th>
                             <th scope="col" class="col-save">Save</th>
                         </tr>
                     </thead>
@@ -118,20 +125,26 @@
                                 data-plate-id="{{ $plate->id }}"
                                 data-display-values='@json($plate->catalogDisplayValuesByCondition())'
                                 data-numeric-values='@json($plate->catalogNumericValuesByCondition())'>
-                                <td class="col-thumb">
-                                    <img src="{{ $frontUrl ?? $placeholder }}"
-                                         alt=""
-                                         class="collection-manage-thumb"
-                                         onerror="this.onerror=null;this.src='{{ $placeholder }}';">
-                                </td>
-                                <td class="col-jurisdiction">
-                                    <span class="collection-manage-jurisdiction">{{ $plate->jurisdiction ? strtoupper($plate->jurisdiction) : '—' }}</span>
-                                    @if ($plate->serial_number)
-                                        <span class="collection-manage-serial">#{{ $plate->serial_number }}</span>
-                                    @endif
-                                </td>
-                                <td class="col-variety">
-                                    {{ $plate->variety_notes ?: '—' }}
+                                <td class="col-plate">
+                                    <div class="collection-manage-plate-cell">
+                                        <img src="{{ $frontUrl ?? $placeholder }}"
+                                             alt=""
+                                             class="collection-manage-thumb"
+                                             onerror="this.onerror=null;this.src='{{ $placeholder }}';">
+                                        <div class="collection-manage-plate-text">
+                                            @if (! empty($usesCatalogCardNumbers) && ($cardNo = $plate->catalogCardNumber()))
+                                                <span class="collection-manage-card-no">Card {{ $cardNo }}</span>
+                                            @endif
+                                            <span class="collection-manage-jurisdiction">{{ $plate->jurisdiction ? strtoupper($plate->jurisdiction) : '—' }}</span>
+                                            @if ($plateNotesLine = $plate->catalogPlateNotesLine())
+                                                <span class="collection-manage-plate-notes" title="{{ $plateNotesLine }}">{{ $plateNotesLine }}</span>
+                                            @endif
+                                            @if ($plate->serial_number)
+                                                <span class="collection-manage-serial">#{{ $plate->serial_number }}</span>
+                                            @endif
+                                            <span class="collection-manage-variety" title="{{ $plate->variety_notes ?: '' }}">{{ $plate->variety_notes ?: '—' }}</span>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="col-items">
                                     @include('components.collection-items-editor', [
@@ -140,7 +153,9 @@
                                         'gradeOptions' => $grades,
                                         'inputClass' => 'collection-manage-input',
                                         'compact' => true,
-                                        'plateLabel' => $plate->jurisdiction ? strtoupper($plate->jurisdiction) : 'plate',
+                                        'plateLabel' => (! empty($usesCatalogCardNumbers) && ($cardNo = $plate->catalogCardNumber()))
+                                            ? 'Card '.$cardNo
+                                            : ($plate->jurisdiction ? strtoupper($plate->jurisdiction) : 'plate'),
                                     ])
                                 </td>
                                 <td class="col-value">
@@ -149,9 +164,9 @@
                                             @php $entry->setRelation('plate', $plate); @endphp
                                             {{ $entry->formattedOwnedLineValue() }}
                                         @else
-                                            --
+                                            —
                                         @endif
-                                    </span><br>
+                                    </span>
                                 </td>
                                 <td class="col-want">
                                     <input type="hidden" name="items[{{ $plate->id }}][is_wanted]" value="0">
@@ -168,7 +183,7 @@
                                            value="{{ old('items.'.$plate->id.'.storage_location', $entry?->ownedItems->first()?->storage_location) }}"
                                            class="collection-manage-input collection-manage-storage"
                                            maxlength="128"
-                                           placeholder="Binder, box…"
+                                           placeholder="Loc."
                                            aria-label="Storage for {{ $plate->jurisdiction ?? 'plate' }}">
                                 </td>
                                 <td class="col-notes">
@@ -177,7 +192,7 @@
                                            value="{{ old('items.'.$plate->id.'.notes', $entry?->notes) }}"
                                            class="collection-manage-input collection-manage-notes"
                                            maxlength="500"
-                                           placeholder="Private notes"
+                                           placeholder="Notes"
                                            aria-label="Notes for {{ $plate->jurisdiction ?? 'plate' }}">
                                 </td>
                                 <td class="col-save">
@@ -185,7 +200,7 @@
                                             class="collection-manage-row-save"
                                             data-save-row
                                             data-plate-id="{{ $plate->id }}">
-                                        Save row
+                                        Save
                                     </button>
                                     <span class="collection-manage-row-save-status" data-row-save-status aria-live="polite"></span>
                                 </td>
@@ -212,8 +227,7 @@
         <div class="collection-manage-sticky-bar"
              id="collection-manage-sticky-bar"
              role="region"
-             aria-label="Save all rows"
-             hidden>
+             aria-label="Save all rows">
             <p class="collection-manage-sticky-text">
                 Save all changes on this page before downloading a PDF or leaving.
             </p>
@@ -233,7 +247,6 @@
 <script>
 (function () {
     var managePage = document.querySelector('.collection-manage-page');
-    var tableRegion = document.getElementById('collection-manage-table');
     var stickyBar = document.getElementById('collection-manage-sticky-bar');
     var saveRowUrl = @json(route('collection.manage.update-row'));
     var csrfToken = @json(csrf_token());
@@ -249,15 +262,8 @@
         }
     }
 
-    if (tableRegion && stickyBar) {
-        if ('IntersectionObserver' in window) {
-            var stickyObserver = new IntersectionObserver(function (entries) {
-                setStickyBarVisible(entries[0].isIntersecting);
-            }, { threshold: 0 });
-            stickyObserver.observe(tableRegion);
-        } else {
-            setStickyBarVisible(true);
-        }
+    if (stickyBar) {
+        setStickyBarVisible(true);
     }
 
     function buildRowFormData(row) {

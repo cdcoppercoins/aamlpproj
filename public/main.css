@@ -3722,10 +3722,51 @@ body {
     background: #fff;
 }
 
+.collection-manage-table-wrap:has(.collection-manage-table--dense) {
+    overflow-x: visible;
+}
+
 .collection-manage-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.88rem;
+}
+
+.collection-manage-table--dense {
+    table-layout: fixed;
+    font-size: 0.7rem;
+}
+
+.collection-manage-table--dense thead {
+    font-size: 0.68rem;
+}
+
+.collection-manage-table--dense .col-plate {
+    width: 17%;
+}
+
+.collection-manage-table--dense .col-items {
+    width: 27%;
+}
+
+.collection-manage-table--dense .col-value {
+    width: 8%;
+}
+
+.collection-manage-table--dense .col-want {
+    width: 4%;
+}
+
+.collection-manage-table--dense .col-storage {
+    width: 13%;
+}
+
+.collection-manage-table--dense .col-notes {
+    width: 20%;
+}
+
+.collection-manage-table--dense .col-save {
+    width: 11%;
 }
 
 .collection-manage-table thead {
@@ -3740,6 +3781,21 @@ body {
     white-space: nowrap;
 }
 
+.collection-manage-table--dense th,
+.collection-manage-table--dense td {
+    padding: 3px 4px;
+    line-height: 1.25;
+}
+
+.collection-manage-table--dense th.col-want,
+.collection-manage-table--dense td.col-want,
+.collection-manage-table--dense th.col-value,
+.collection-manage-table--dense td.col-value,
+.collection-manage-table--dense th.col-save,
+.collection-manage-table--dense td.col-save {
+    text-align: center;
+}
+
 .collection-manage-table td {
     padding: 8px;
     border-bottom: 1px solid #e8eef3;
@@ -3750,11 +3806,28 @@ body {
     background: #f4faf4;
 }
 
+.collection-manage-plate-cell {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+}
+
+.collection-manage-plate-text {
+    min-width: 0;
+    flex: 1;
+}
+
 .collection-manage-thumb {
     width: 48px;
     height: auto;
     display: block;
     border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.collection-manage-table--dense .collection-manage-thumb {
+    width: 28px;
 }
 
 .collection-manage-jurisdiction {
@@ -3763,10 +3836,45 @@ body {
     color: #333;
 }
 
+.collection-manage-table--dense .collection-manage-jurisdiction {
+    font-size: 0.72rem;
+}
+
+.collection-manage-card-no {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #264a62;
+}
+
+.collection-manage-table--dense .collection-manage-card-no {
+    font-size: 0.68rem;
+    line-height: 1.2;
+}
+
 .collection-manage-serial {
     display: block;
     font-size: 0.78rem;
     color: #888;
+}
+
+.collection-manage-table--dense .collection-manage-serial {
+    font-size: 0.62rem;
+    line-height: 1.2;
+}
+
+.collection-manage-plate-notes,
+.collection-manage-variety {
+    display: block;
+    color: #666;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.collection-manage-table--dense .collection-manage-plate-notes,
+.collection-manage-table--dense .collection-manage-variety {
+    font-size: 0.62rem;
 }
 
 .col-variety {
@@ -3785,6 +3893,12 @@ body {
     border-radius: 3px;
     font-size: 0.85rem;
     box-sizing: border-box;
+}
+
+.collection-manage-table--dense .collection-manage-input {
+    padding: 2px 4px;
+    font-size: 0.68rem;
+    min-height: 1.35rem;
 }
 
 .collection-manage-qty {
@@ -3843,13 +3957,21 @@ body {
 }
 
 .collection-items-editor--compact {
-    min-width: 180px;
+    min-width: 0;
+}
+
+.collection-manage-table--dense .collection-items-editor--compact {
+    gap: 2px;
 }
 
 .collection-items-list {
     display: flex;
     flex-direction: column;
     gap: 6px;
+}
+
+.collection-manage-table--dense .collection-items-list {
+    gap: 2px;
 }
 
 .collection-item-row {
@@ -3861,10 +3983,10 @@ body {
 
 .collection-item-row--compact {
     display: grid;
-    grid-template-columns: 1.8rem minmax(52px, 1fr) minmax(64px, 1.2fr) auto;
-    gap: 6px;
+    grid-template-columns: 1.25rem minmax(2.5rem, 1fr) minmax(3rem, 1fr) 1.1rem;
+    gap: 3px;
     align-items: center;
-    padding: 4px;
+    padding: 0;
     background: transparent;
     border: none;
 }
@@ -3884,9 +4006,10 @@ body {
 }
 
 .collection-item-row--compact .collection-item-row-label {
-    font-size: 0.72rem;
+    font-size: 0.62rem;
     font-weight: 600;
     color: #666;
+    cursor: default;
 }
 
 .collection-item-row-fields {
@@ -3973,6 +4096,24 @@ body {
     vertical-align: top;
 }
 
+.collection-manage-table--dense .col-items {
+    min-width: 0;
+    vertical-align: top;
+}
+
+.collection-manage-table--dense .collection-item-grade,
+.collection-manage-table--dense .collection-item-listing {
+    padding: 1px 2px;
+    font-size: 0.65rem;
+    min-height: 1.25rem;
+}
+
+.collection-manage-table--dense .collection-items-add-btn {
+    padding: 1px 5px;
+    font-size: 0.62rem;
+    margin-top: 2px;
+}
+
 .auth-field-help {
     margin: 4px 0 0;
     font-size: 0.88rem;
@@ -4010,16 +4151,30 @@ body {
     white-space: nowrap;
 }
 
+.collection-manage-table--dense .col-value {
+    min-width: 0;
+}
+
 .collection-manage-table td.col-value {
     font-size: 0.82rem;
     color: #333;
     vertical-align: top;
 }
 
+.collection-manage-table--dense td.col-value {
+    font-size: 0.65rem;
+    vertical-align: middle;
+}
+
 .collection-row-value {
     display: inline-block;
     line-height: 1.4;
     padding-top: 9px;
+}
+
+.collection-manage-table--dense .collection-row-value {
+    padding-top: 0;
+    line-height: 1.2;
 }
 
 .collection-edit-catalog-value {
@@ -4055,11 +4210,22 @@ body {
     margin: 0;
 }
 
+.collection-manage-table--dense .collection-manage-location,
+.collection-manage-table--dense .collection-manage-storage,
+.collection-manage-table--dense .collection-manage-notes {
+    min-width: 0;
+}
+
 .collection-manage-table th.col-save,
 .collection-manage-table td.col-save {
     width: 6.5rem;
     text-align: center;
     vertical-align: middle;
+}
+
+.collection-manage-table--dense th.col-save,
+.collection-manage-table--dense td.col-save {
+    width: auto;
 }
 
 .collection-manage-row-save {
@@ -4075,6 +4241,17 @@ body {
     border: 1px solid #4079a5;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.collection-manage-table--dense .collection-manage-row-save {
+    padding: 2px 3px;
+    font-size: 0.6rem;
+    border-radius: 2px;
+}
+
+.collection-manage-table--dense .collection-manage-row-save-status {
+    font-size: 0.55rem;
+    line-height: 1.2;
 }
 
 .collection-manage-row-save:hover {
@@ -4316,6 +4493,406 @@ body {
     font-size: 0.92rem;
     color: #555;
     line-height: 1.5;
+}
+
+/* --------------------------------------------------
+   COLLECTION GUIDE (help)
+-------------------------------------------------- */
+
+.collection-guide-page {
+    padding-bottom: 48px;
+}
+
+.collection-guide-header {
+    margin-bottom: 28px;
+}
+
+.collection-guide-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 16px 0 0;
+}
+
+.collection-guide-sections {
+    max-width: 52rem;
+}
+
+.collection-guide-subtitle {
+    margin: 20px 0 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #4079a5;
+}
+
+.collection-guide-list {
+    margin: 0 0 12px;
+    padding-left: 1.25rem;
+    line-height: 1.55;
+    color: #444;
+}
+
+.collection-guide-list li {
+    margin-bottom: 6px;
+}
+
+.collection-guide-figure {
+    margin: 16px 0 20px;
+    padding: 0;
+}
+
+.collection-guide-figure--wide .collection-guide-img {
+    max-width: 100%;
+}
+
+.collection-guide-img,
+.collection-guide-svg {
+    display: block;
+    max-width: 100%;
+    min-height: 80px;
+    border: 1px solid #d8e4ec;
+    border-radius: 4px;
+    background: #fff;
+}
+
+.collection-guide-svg svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    vertical-align: top;
+}
+
+.collection-guide-caption {
+    margin-top: 8px;
+    font-size: 0.88rem;
+    color: #666;
+    line-height: 1.45;
+}
+
+.collection-guide-img-missing {
+    margin: 0;
+    padding: 12px;
+    font-size: 0.88rem;
+    color: #666;
+    background: #f8f8f8;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+}
+
+/* --------------------------------------------------
+   MEMBER MARKETPLACE & MESSAGES
+-------------------------------------------------- */
+
+.collection-marketplace-page {
+    padding-bottom: 48px;
+}
+
+.collection-marketplace-header {
+    margin-bottom: 20px;
+}
+
+.collection-marketplace-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 16px 0 0;
+}
+
+.collection-marketplace-table .collection-marketplace-offer {
+    display: inline-block;
+    font-weight: 600;
+    color: #4079a5;
+}
+
+.collection-marketplace-offer-notes {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.collection-marketplace-row--want-match {
+    background: #fff8f0;
+}
+
+.collection-marketplace-want-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #8a4b00;
+    background: #ffe8c8;
+    border-radius: 3px;
+}
+
+.collection-item-listing {
+    min-width: 4.5rem;
+    max-width: 7rem;
+}
+
+.collection-listing-want-matches {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: #fff8f0;
+    border-left: 3px solid #fab95b;
+    border-radius: 0 4px 4px 0;
+}
+
+.collection-listing-want-matches-title {
+    margin: 0 0 6px;
+    font-size: 0.95rem;
+}
+
+.collection-listing-want-matches-body {
+    margin: 0;
+    font-size: 0.92rem;
+    color: #444;
+}
+
+.collection-listing-want-matches-static {
+    margin-top: 10px;
+}
+
+.collection-my-listings {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.collection-my-listing-card {
+    margin-bottom: 14px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #d8e4ec;
+    border-radius: 4px;
+}
+
+.collection-my-listing-title {
+    margin: 0 0 6px;
+    font-size: 1.05rem;
+    color: #4079a5;
+}
+
+.collection-my-listing-meta,
+.collection-my-listing-notes,
+.collection-my-listing-want {
+    margin: 0 0 8px;
+    font-size: 0.92rem;
+    color: #555;
+}
+
+.collection-my-listing-actions {
+    margin: 0;
+}
+
+body.member-message-modal-open {
+    overflow: hidden;
+}
+
+.member-message-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.member-message-modal[hidden] {
+    display: none;
+}
+
+.member-message-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.member-message-modal-panel {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    width: min(960px, 100%);
+    max-height: min(88vh, 720px);
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+}
+
+.member-message-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #4079a5;
+    color: #fff;
+}
+
+.member-message-modal-title {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.member-message-modal-close {
+    border: none;
+    background: transparent;
+    color: #fff;
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.member-message-modal-layout {
+    display: grid;
+    grid-template-columns: minmax(220px, 280px) 1fr;
+    min-height: 360px;
+    max-height: calc(min(88vh, 720px) - 56px);
+}
+
+.member-message-thread-list {
+    border-right: 1px solid #d8e4ec;
+    background: #f4f8fb;
+    overflow-y: auto;
+}
+
+.member-message-thread-list-empty {
+    margin: 16px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.member-message-thread-items {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.member-message-thread-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    border-bottom: 1px solid #d8e4ec;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+}
+
+.member-message-thread-btn:hover,
+.member-message-thread-btn.is-active {
+    background: #fff;
+}
+
+.member-message-thread-btn-title {
+    font-weight: 600;
+    color: #4079a5;
+}
+
+.member-message-thread-btn-preview {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.member-message-thread-unread {
+    margin-top: 4px;
+    padding: 1px 7px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #fff;
+    background: #c45c26;
+    border-radius: 10px;
+}
+
+.member-message-conversation {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.member-message-conversation-empty {
+    margin: auto;
+    padding: 24px;
+    max-width: 28rem;
+    text-align: center;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.member-message-conversation-active {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+}
+
+.member-message-conversation-subject {
+    margin: 0;
+    padding: 12px 16px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 1px solid #d8e4ec;
+    background: #fafcfd;
+}
+
+.member-message-log {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    background: #fff;
+}
+
+.member-message-item {
+    max-width: 85%;
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    white-space: pre-wrap;
+}
+
+.member-message-item--mine {
+    margin-left: auto;
+    background: #e8f2f8;
+    color: #234;
+}
+
+.member-message-item--theirs {
+    margin-right: auto;
+    background: #f4f4f4;
+    color: #333;
+}
+
+.member-message-compose {
+    padding: 12px 16px 16px;
+    border-top: 1px solid #d8e4ec;
+    background: #fafcfd;
+}
+
+.member-message-compose-actions {
+    margin: 8px 0 0;
+}
+
+@media (max-width: 720px) {
+    .member-message-modal-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+    }
+
+    .member-message-thread-list {
+        max-height: 180px;
+        border-right: none;
+        border-bottom: 1px solid #d8e4ec;
+    }
 }
 
 .collection-report-form {
@@ -4922,6 +5499,10 @@ body {
 .collection-member-readonly-table .col-condition,
 .collection-member-readonly-table .col-want {
     text-align: center;
+}
+
+.collection-member-readonly-table .col-location {
+    min-width: 100px;
 }
 
 .collection-member-want-row {

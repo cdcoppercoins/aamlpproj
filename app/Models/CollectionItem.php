@@ -125,6 +125,28 @@ class CollectionItem extends Model
         return implode(', ', $parts);
     }
 
+    public function storageLocationSummary(): string
+    {
+        if ($this->is_wanted) {
+            return '';
+        }
+
+        $locations = [];
+
+        $values = $this->relationLoaded('ownedItems')
+            ? $this->ownedItems->pluck('storage_location')
+            : $this->ownedItems()->pluck('storage_location');
+
+        foreach ($values as $location) {
+            $location = trim((string) ($location ?? ''));
+            if ($location !== '' && ! in_array($location, $locations, true)) {
+                $locations[] = $location;
+            }
+        }
+
+        return implode('; ', $locations);
+    }
+
     public function ownedLineValue(): ?float
     {
         if ($this->is_wanted || ! $this->relationLoaded('plate')) {
@@ -277,6 +299,8 @@ class CollectionItem extends Model
             'price_paid' => isset($row['price_paid']) && $row['price_paid'] !== '' ? $row['price_paid'] : null,
             'storage_location' => self::nullableString($row['storage_location'] ?? null, 128),
             'notes' => self::nullableString($row['notes'] ?? null, 5000),
+            'listing_type' => CollectionOwnedItem::normalizeListingType($row['listing_type'] ?? null),
+            'listing_notes' => self::nullableString($row['listing_notes'] ?? null, 500),
         ];
     }
 
@@ -318,6 +342,8 @@ class CollectionItem extends Model
                 'price_paid' => $ownedItem->price_paid,
                 'storage_location' => $ownedItem->storage_location,
                 'notes' => $ownedItem->notes,
+                'listing_type' => $ownedItem->listing_type,
+                'listing_notes' => $ownedItem->listing_notes,
             ];
         })->all();
     }

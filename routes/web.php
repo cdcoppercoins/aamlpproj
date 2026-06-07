@@ -81,6 +81,14 @@ Route::middleware(['auth', 'not.blocked'])->group(function () {
     Route::put('/collection/manage', [CollectionController::class, 'updateManage'])->name('collection.manage.update');
     Route::put('/collection/manage/row', [CollectionController::class, 'updateManageRow'])->name('collection.manage.update-row');
     Route::post('/collection/manage/fill', [CollectionController::class, 'fillManageSet'])->name('collection.manage.fill');
+    Route::get('/collection/guide', [CollectionController::class, 'guide'])->name('collection.guide');
+    Route::get('/collection/marketplace', [\App\Http\Controllers\CollectionMarketplaceController::class, 'index'])->name('collection.marketplace.index');
+    Route::get('/collection/marketplace/my-listings', [\App\Http\Controllers\CollectionMarketplaceController::class, 'myListings'])->name('collection.marketplace.my-listings');
+    Route::get('/collection/marketplace/want-matches', [\App\Http\Controllers\CollectionMarketplaceController::class, 'wantMatches'])->name('collection.marketplace.want-matches');
+    Route::get('/collection/messages/unread-count', [\App\Http\Controllers\MemberMessageController::class, 'unreadCount'])->name('collection.messages.unread-count');
+    Route::get('/collection/messages/threads', [\App\Http\Controllers\MemberMessageController::class, 'threads'])->name('collection.messages.threads');
+    Route::get('/collection/messages/threads/{thread}', [\App\Http\Controllers\MemberMessageController::class, 'show'])->name('collection.messages.show');
+    Route::post('/collection/messages', [\App\Http\Controllers\MemberMessageController::class, 'store'])->name('collection.messages.store');
     Route::get('/collection', [CollectionController::class, 'index'])->name('collection.index');
     Route::post('/collection', [CollectionController::class, 'store'])->name('collection.store');
     Route::get('/collection/{collectionItem}/edit', [CollectionController::class, 'edit'])->name('collection.edit');

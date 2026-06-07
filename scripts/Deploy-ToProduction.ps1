@@ -62,46 +62,49 @@ function Invoke-DeployApply([hashtable] $Config) {
         return
     }
 
-    Write-Step "Finishing on server (unzip + migrate)"
+    Write-Step "Finishing on server (caches + migrate)"
     $applyUrl = $url.TrimEnd('/') + '?token=' + [Uri]::EscapeDataString($token)
 
+    $body = ''
     try {
-        $body = ''
-        $sawExtract = $false
-        for ($attempt = 1; $attempt -le 30; $attempt++) {
-            $response = Invoke-WebRequest -Uri $applyUrl -UseBasicParsing -TimeoutSec 90
-            $body = $response.Content
-            Write-Host $body
-
-            if ($body -match 'EXTRACT_STARTED|EXTRACT_IN_PROGRESS|Starting background unzip') {
-                $sawExtract = $true
-                Write-Host "Waiting for server unzip ($attempt/30)..." -ForegroundColor Cyan
-                Start-Sleep -Seconds 20
-                continue
-            }
-
-            break
-        }
-
-        if ($body -match 'ZIP_EXTRACT_FAILED') {
-            throw 'Server cannot unzip. cPanel File Manager: select release.zip -> Extract, then run this bat again.'
-        }
-        if ($sawExtract -and $body -notmatch 'ZIP_EXTRACT_OK|Deploy apply finished') {
-            throw 'Unzip did not finish in time. Wait 2 minutes and run this bat again (do not re-upload).'
-        }
-        if ($body -notmatch 'Manage Save row button: OK') {
-            throw 'Files on server are still old. Re-upload release.zip and run this bat again.'
-        }
-
-        Write-Host ''
-        Write-Host 'Deploy OK - new files are on the server.' -ForegroundColor Green
-        return $true
+        $response = Invoke-WebRequest -Uri $applyUrl -UseBasicParsing -TimeoutSec 300
+        $body = $response.Content
     }
     catch {
+        $webResp = $_.Exception.Response
+        if ($null -ne $webResp) {
+            $stream = $webResp.GetResponseStream()
+            if ($null -ne $stream) {
+                $reader = New-Object System.IO.StreamReader($stream)
+                $body = $reader.ReadToEnd()
+                $reader.Close()
+            }
+        }
+        if ([string]::IsNullOrWhiteSpace($body)) {
+            Write-Host ''
+            Write-Host "FAILED: $($_.Exception.Message)" -ForegroundColor Red
+            return $false
+        }
+    }
+
+    Write-Host $body
+
+    if ($body -notmatch 'DEPLOY_APPLY_OK') {
         Write-Host ''
-        Write-Host "FAILED: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host 'FAILED: Server finish did not complete.' -ForegroundColor Red
+        Write-Host "Open in browser: $($applyUrl)" -ForegroundColor Yellow
+        Write-Host 'Or run Deploy-Test-Finish.bat to see the full server message.' -ForegroundColor Yellow
         return $false
     }
+
+    if ($body -match 'vendor: MISSING') {
+        Write-Host ''
+        Write-Host 'WARNING: server is missing vendor/. Run with -IncludeVendor once (large upload).' -ForegroundColor Yellow
+    }
+
+    Write-Host ''
+    Write-Host 'Deploy OK.' -ForegroundColor Green
+    return $true
 }
 
 $ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
@@ -140,6 +143,7 @@ $config = @{
     deployApplyUrl = 'https://minilicenseplates.com/apply-deploy.php'
     deployApplyToken = ''
     skipSsh = $true
+    ftpUseTls = $true
 }
 
 $config = Merge-Config $config $baseConfig
@@ -147,8 +151,7 @@ $config = Merge-Config $config $localConfig
 
 if ($ApplyOnly) {
     Write-Host ""
-    Write-Host 'MLP deploy - finish on server' -ForegroundColor Cyan
-    Write-Host '  Use after FileZilla uploaded release.zip to /home/minilp/' -ForegroundColor DarkGray
+    Write-Host 'MLP deploy - finish on server only' -ForegroundColor Cyan
     Write-Host ""
     if (-not (Invoke-DeployApply -Config $config)) {
         exit 1
@@ -172,10 +175,10 @@ if (-not $SkipBuild) {
     Write-Step "Building release package"
     $buildScript = Join-Path $PSScriptRoot 'Build-DeployRelease.ps1'
     if ($IncludeVendor) {
-        & $buildScript -IncludeVendor
+        & $buildScript -IncludeVendor -SkipZip
     }
     else {
-        & $buildScript
+        & $buildScript -SkipZip
     }
 }
 
@@ -196,9 +199,11 @@ if (-not (Test-Path $laravelOut) -or -not (Test-Path $publicHtmlOut)) {
 }
 
 # Copy finish helper into public_html each deploy
-$applyDeploySource = Join-Path $ProjectRoot 'deploy\apply-deploy.php'
-if (Test-Path $applyDeploySource) {
-    Copy-Item $applyDeploySource (Join-Path $publicHtmlOut 'apply-deploy.php') -Force
+foreach ($helper in @('apply-deploy.php', 'setup-env.php')) {
+    $src = Join-Path $ProjectRoot "deploy\$helper"
+    if (Test-Path $src) {
+        Copy-Item $src (Join-Path $publicHtmlOut $helper) -Force
+    }
 }
 
 $uploaded = $false
@@ -300,32 +305,14 @@ if (-not $uploaded) {
         }
     }
 
-    $laravelZip = Join-Path $outRoot.FullName 'laravel.zip'
-    $publicZip = Join-Path $outRoot.FullName 'public_html.zip'
-    $releaseZip = Join-Path $outRoot.FullName 'release.zip'
-
-    if (-not (Test-Path $publicZip)) {
-        Write-Step "Creating public_html.zip for FTP"
-        if (Test-Path $publicZip) { Remove-Item $publicZip -Force }
-        Compress-Archive -Path (Join-Path $publicHtmlOut '*') -DestinationPath $publicZip -CompressionLevel Optimal
-    }
-
-    if (-not (Test-Path $laravelZip)) {
-        Write-Step "Creating laravel.zip for FTP"
-        if (Test-Path $laravelZip) { Remove-Item $laravelZip -Force }
-        Compress-Archive -Path (Join-Path $laravelOut '*') -DestinationPath $laravelZip -CompressionLevel Optimal
-    }
-
     if ($FtpManual) {
         Write-Host ""
-        Write-Host 'FileZilla upload - manual' -ForegroundColor Yellow
-        Write-Host '  Upload BOTH files to /home/minilp/ on the server:' -ForegroundColor White
-        Write-Host "    $publicZip"
-        Write-Host "    $laravelZip"
-        Write-Host '  public_html.zip is small; laravel.zip is the big one.' -ForegroundColor DarkGray
+        Write-Host 'FileZilla: upload changed files only' -ForegroundColor Yellow
+        Write-Host "  $($laravelOut)\*  ->  $($config['remoteLaravelPath'])/"
+        Write-Host "  $($publicHtmlOut)\*  ->  $($config['remotePublicHtml'])/"
         Write-Host ""
         Start-Process explorer.exe $outRoot.FullName
-        Read-Host "Press Enter when FileZilla upload is finished"
+        Read-Host "Press Enter when upload is finished"
         $uploaded = $true
         if (-not (Invoke-DeployApply -Config $config)) {
             exit 1
@@ -338,8 +325,26 @@ if (-not $uploaded) {
         exit 0
     }
 
-    Write-Step "Uploading via FTP to $($config['ftpHost']) (public_html.zip + laravel.zip)"
-    $ftpOk = Send-DeployFtpPackage `
+    if (-not (Get-WinScpComPath)) {
+        Write-Host ""
+        Write-Host "Install WinSCP for fast deploy (one-time):" -ForegroundColor Yellow
+        Write-Host "  https://winscp.net/eng/download.php" -ForegroundColor White
+        Write-Host "  Then run Deploy-Now.bat again." -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "Or use FileZilla: upload laravel\ and public_html\ folders from:" -ForegroundColor Yellow
+        Write-Host "  $($outRoot.FullName)" -ForegroundColor White
+        Write-Host "  Then run Deploy-FileZilla-Finish.bat" -ForegroundColor Yellow
+        Start-Process explorer.exe $outRoot.FullName
+        throw "WinSCP not installed."
+    }
+
+    Write-Step "Uploading changed files via WinSCP to $($config['ftpHost'])"
+    $useTls = $true
+    if ($null -ne $config['ftpUseTls']) {
+        $useTls = [bool]$config['ftpUseTls']
+    }
+
+    $ftpOk = Send-DeployFtpSync `
         -LaravelLocal $laravelOut `
         -PublicHtmlLocal $publicHtmlOut `
         -RemoteLaravel $config['remoteLaravelRoot'] `
@@ -348,18 +353,18 @@ if (-not $uploaded) {
         -FtpUser $config['ftpUser'] `
         -FtpPassword $config['ftpPassword'] `
         -FtpPort ([int] $config['ftpPort']) `
-        -ReleaseZipPath $releaseZip
+        -UseTls $useTls
 
     if (-not $ftpOk) {
-        throw "FTP upload failed."
+        throw "WinSCP upload failed. Fix FTP/TLS, then run Deploy-Now.bat again."
     }
 
     $uploaded = $true
+}
 
-    if (-not $usedSsh) {
-        if (-not (Invoke-DeployApply -Config $config)) {
-            exit 1
-        }
+if ($uploaded -and -not $usedSsh) {
+    if (-not (Invoke-DeployApply -Config $config)) {
+        exit 1
     }
 }
 

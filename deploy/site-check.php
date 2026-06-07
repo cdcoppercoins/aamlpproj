@@ -67,12 +67,17 @@ foreach ($roots as $root) {
             echo 'site_links url column: ' . (in_array('url', $linkCols, true) ? 'OK' : 'MISSING (run php artisan migrate)') . "\n";
         }
 
-        $request = \Illuminate\Http\Request::create('/', 'GET');
-        $response = $app->handle($request);
-        echo 'Home page test status: ' . $response->getStatusCode() . "\n";
-        if ($response->getStatusCode() >= 400) {
-            echo "Response snippet:\n" . substr((string) $response->getContent(), 0, 800) . "\n";
+        foreach (['/', '/login'] as $testPath) {
+            $request = \Illuminate\Http\Request::create($testPath, 'GET');
+            $response = $app->handle($request);
+            echo "Route {$testPath} test status: " . $response->getStatusCode() . "\n";
+            if ($testPath === '/' && $response->getStatusCode() >= 400) {
+                echo "Response snippet:\n" . substr((string) $response->getContent(), 0, 800) . "\n";
+            }
         }
+
+        $publicHtaccess = dirname(__DIR__) . '/public_html/.htaccess';
+        echo 'public_html/.htaccess: ' . (is_file($publicHtaccess) ? 'OK' : 'MISSING (causes 404 on /login)') . "\n";
     } catch (\Throwable $e) {
         echo "ERROR: " . $e->getMessage() . "\n";
         echo 'At: ' . $e->getFile() . ':' . $e->getLine() . "\n";

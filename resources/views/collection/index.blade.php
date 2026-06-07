@@ -34,7 +34,10 @@
 
     <section class="collection-toolbar" aria-label="Collection actions">
         <a class="home-primary-btn" href="{{ route('collection.manage') }}">Add or edit a set</a>
+        <a class="home-primary-btn home-primary-btn-secondary" href="{{ route('collection.marketplace.index') }}">Marketplace</a>
+        <a class="home-primary-btn home-primary-btn-secondary" href="{{ route('collection.guide') }}">How to use</a>
         <a class="home-primary-btn home-primary-btn-secondary" href="{{ route('collection.reports.index') }}">Reports</a>
+        <button type="button" class="home-primary-btn home-primary-btn-secondary" data-member-messages-open>Messages</button>
         <a class="home-primary-btn home-primary-btn-secondary" href="{{ route('search') }}">Catalog search</a>
         <a class="home-primary-btn home-primary-btn-secondary" href="{{ route('profile.edit') }}">Profile</a>
         <form method="post" action="{{ route('logout') }}" class="collection-logout-form">
@@ -54,7 +57,7 @@
         <section class="collection-sets" aria-label="Your sets">
             <h2 class="home-section-title">Your sets</h2>
             <p class="collection-sets-intro">
-                Each row is a catalog set where you have recorded plates. Choose <strong>Public</strong> to let other signed-in members view that set&rsquo;s contents (not your private notes or storage locations).
+                Each row is a catalog set where you have recorded plates. Choose <strong>Public</strong> to let other signed-in members view that set&rsquo;s contents, including storage locations you entered (your row notes stay private).
             </p>
 
             <ul class="collection-set-list">

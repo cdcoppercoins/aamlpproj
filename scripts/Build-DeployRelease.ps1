@@ -24,7 +24,8 @@
 [CmdletBinding()]
 param(
     [switch] $IncludeVendor,
-    [switch] $OpenFolder
+    [switch] $OpenFolder,
+    [switch] $SkipZip
 )
 
 $ErrorActionPreference = 'Stop'
@@ -226,6 +227,11 @@ foreach ($asset in $config.publicHtmlAssets) {
         Copy-TreeFiltered -Source $src -Destination $dst -ExcludeDirNames @('plates') -ExcludeFilePatterns $excludeFiles
     }
 }
+$htaccessSrc = Join-Path $ProjectRoot 'public\.htaccess'
+if (Test-Path $htaccessSrc) {
+    Copy-Item $htaccessSrc (Join-Path $publicHtmlOut '.htaccess') -Force
+}
+
 $indexTemplate = Join-Path $ProjectRoot 'deploy\public_html-index.php'
 if (Test-Path $indexTemplate) {
     Copy-Item $indexTemplate (Join-Path $publicHtmlOut 'index.php') -Force
@@ -333,11 +339,11 @@ Get-ChildItem -Path $laravelOut -Recurse -File | ForEach-Object {
 }
 Set-Content -Path (Join-Path $outRoot 'MANIFEST.txt') -Value $manifestLines -Encoding UTF8
 
-# Zip (optional convenience)
+# Zip (optional — slow; use -SkipZip for normal deploys)
 $zipPath = Join-Path $outRoot 'laravel.zip'
 $publicZipPath = Join-Path $outRoot 'public_html.zip'
 $releaseZipPath = Join-Path $outRoot 'release.zip'
-if (Get-Command Compress-Archive -ErrorAction SilentlyContinue) {
+if (-not $SkipZip -and (Get-Command Compress-Archive -ErrorAction SilentlyContinue)) {
     Write-Step "Creating laravel.zip"
     if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
     Compress-Archive -Path (Join-Path $laravelOut '*') -DestinationPath $zipPath -CompressionLevel Optimal
@@ -366,7 +372,7 @@ if (Test-Path $releaseZipPath) {
     Write-Host "  Both:        deploy\out\$stamp\release.zip  (extract in $remoteHome/)"
 }
 Write-Host ""
-Write-Host "Next: open UPLOAD_INSTRUCTIONS.txt and follow steps 1-6." -ForegroundColor Green
+Write-Host "Next: run Deploy-Now.bat (WinSCP uploads changed files only)." -ForegroundColor Green
 
 if ($OpenFolder) {
     Start-Process explorer.exe $outRoot

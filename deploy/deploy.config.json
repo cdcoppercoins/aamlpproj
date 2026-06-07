@@ -1,12 +1,13 @@
 {
     "skipSsh": true,
     "projectRoot": "d:\\aamlpproj",
-    "remoteLaravelRoot": "/laravel",
-    "remotePublicHtml": "/public_html",
+    "remoteLaravelRoot": "laravel",
+    "remotePublicHtml": "public_html",
     "remoteHome": "/home/minilp",
     "remoteLaravelPath": "/home/minilp/laravel",
     "remotePublicHtmlPath": "/home/minilp/public_html",
     "ftpHost": "ftp.minilicenseplates.com",
+    "ftpUseTls": true,
     "ftpUser": "chuck@minilicenseplates.com",
     "liveUrl": "https://minilicenseplates.com",
     "publicHtmlAssets": [

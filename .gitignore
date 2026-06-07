@@ -27,6 +27,7 @@
 /mlp_code
 /deploy/out
 /deploy/deploy.local.json
+/deploy/.setup-env-token
 Homestead.json
 Homestead.yaml
 Thumbs.db

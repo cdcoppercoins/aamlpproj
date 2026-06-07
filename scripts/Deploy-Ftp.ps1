@@ -16,6 +16,23 @@ function Get-WinScpComPath {
     return $null
 }
 
+function Get-WinScpOpenLine {
+    param(
+        [string] $FtpHost,
+        [string] $FtpUser,
+        [string] $FtpPassword,
+        [int] $FtpPort = 21,
+        [bool] $UseTls = $true
+    )
+
+    $escapedPassword = $FtpPassword -replace '"', '""'
+    $escapedUser = [Uri]::EscapeDataString($FtpUser)
+    $scheme = if ($UseTls) { 'ftpes' } else { 'ftp' }
+
+    # -certificate=* auto-accepts host cert (batch mode otherwise answers Cancel)
+    return "open ${scheme}://${escapedUser}@${FtpHost}:${FtpPort}/ -password=""$escapedPassword"" -certificate=*"
+}
+
 function Send-WinScpFolderSync {
     param(
         [string] $LocalPath,
@@ -23,7 +40,8 @@ function Send-WinScpFolderSync {
         [string] $FtpHost,
         [string] $FtpUser,
         [string] $FtpPassword,
-        [int] $FtpPort = 21
+        [int] $FtpPort = 21,
+        [bool] $UseTls = $true
     )
 
     $winScp = Get-WinScpComPath
@@ -31,23 +49,27 @@ function Send-WinScpFolderSync {
         return $false
     }
 
-    $remotePath = $RemotePath.TrimEnd('/') + '/'
+    # Relative path (no leading /) — FTP home is /home/minilp; /laravel becomes laravel/laravel
+    $remotePath = ($RemotePath -replace '\\', '/').Trim('/')
+    if ($remotePath -ne '') {
+        $remotePath = $remotePath + '/'
+    }
     $scriptPath = [System.IO.Path]::GetTempFileName() + '.txt'
     $logPath = [System.IO.Path]::GetTempFileName() + '.log'
 
-    $escapedPassword = $FtpPassword -replace '"', '""'
-    $escapedUser = [Uri]::EscapeDataString($FtpUser)
+    $openLine = Get-WinScpOpenLine -FtpHost $FtpHost -FtpUser $FtpUser -FtpPassword $FtpPassword -FtpPort $FtpPort -UseTls $UseTls
+    # Never use -delete: server has vendor, storage, .env not in the deploy package
     $script = @"
 option batch abort
 option confirm off
-open ftp://${escapedUser}@${FtpHost}:${FtpPort}/ -password="$escapedPassword"
-synchronize remote -delete "$LocalPath" "$remotePath"
+$openLine
+synchronize remote "$LocalPath" "$remotePath"
 exit
 "@
 
     try {
         Set-Content -Path $scriptPath -Value $script -Encoding ASCII
-        & $winScp "/ini=nul" "/log=$logPath" "/script=$scriptPath"
+        & $winScp "/ini=nul" "/certificate=*" "/log=$logPath" "/script=$scriptPath"
         if ($LASTEXITCODE -ne 0) {
             if (Test-Path $logPath) {
                 Get-Content $logPath -Tail 30 | ForEach-Object { Write-Host $_ }
@@ -221,7 +243,8 @@ function Send-WinScpFilePut {
         [string] $FtpHost,
         [string] $FtpUser,
         [string] $FtpPassword,
-        [int] $FtpPort = 21
+        [int] $FtpPort = 21,
+        [bool] $UseTls = $true
     )
 
     $winScp = Get-WinScpComPath
@@ -229,21 +252,20 @@ function Send-WinScpFilePut {
         return $false
     }
 
-    $escapedPassword = $FtpPassword -replace '"', '""'
-    $escapedUser = [Uri]::EscapeDataString($FtpUser)
+    $openLine = Get-WinScpOpenLine -FtpHost $FtpHost -FtpUser $FtpUser -FtpPassword $FtpPassword -FtpPort $FtpPort -UseTls $UseTls
     $remoteName = $RemoteFileName.TrimStart('/')
     $scriptPath = [System.IO.Path]::GetTempFileName() + '.txt'
     $script = @"
 option batch abort
 option confirm off
-open ftp://${escapedUser}@${FtpHost}:${FtpPort}/ -password="$escapedPassword"
+$openLine
 put "$LocalFile" $remoteName
 exit
 "@
 
     try {
         Set-Content -Path $scriptPath -Value $script -Encoding ASCII
-        & $winScp "/ini=nul" "/script=$scriptPath"
+        & $winScp "/ini=nul" "/certificate=*" "/script=$scriptPath"
         return ($LASTEXITCODE -eq 0)
     }
     finally {
@@ -330,6 +352,35 @@ function Send-DeployFtpZipRelease {
     return (Send-FtpZipFile -LocalFile $ReleaseZipPath -RemoteFileName 'release.zip' -FtpHost $FtpHost -FtpUser $FtpUser -FtpPassword $FtpPassword -FtpPort $FtpPort)
 }
 
+function Send-DeployFtpSync {
+    param(
+        [string] $LaravelLocal,
+        [string] $PublicHtmlLocal,
+        [string] $RemoteLaravel,
+        [string] $RemotePublicHtml,
+        [string] $FtpHost,
+        [string] $FtpUser,
+        [string] $FtpPassword,
+        [int] $FtpPort = 21,
+        [bool] $UseTls = $true
+    )
+
+    $winScp = Get-WinScpComPath
+    if (-not $winScp) {
+        return $false
+    }
+
+    $remoteLaravel = ($RemoteLaravel -replace '\\', '/').Trim('/')
+    $remotePublic = ($RemotePublicHtml -replace '\\', '/').Trim('/')
+
+    $tlsNote = if ($UseTls) { ' (FTPS)' } else { '' }
+    Write-Host "WinSCP sync$tlsNote - changed files only..." -ForegroundColor Cyan
+    $okLaravel = Send-WinScpFolderSync -LocalPath $LaravelLocal -RemotePath $remoteLaravel -FtpHost $FtpHost -FtpUser $FtpUser -FtpPassword $FtpPassword -FtpPort $FtpPort -UseTls $UseTls
+    $okPublic = Send-WinScpFolderSync -LocalPath $PublicHtmlLocal -RemotePath $remotePublic -FtpHost $FtpHost -FtpUser $FtpUser -FtpPassword $FtpPassword -FtpPort $FtpPort -UseTls $UseTls
+
+    return ($okLaravel -and $okPublic)
+}
+
 function Send-DeployFtpPackage {
     param(
         [string] $LaravelLocal,
@@ -343,6 +394,12 @@ function Send-DeployFtpPackage {
         [string] $ReleaseZipPath = ''
     )
 
+    if (Send-DeployFtpSync -LaravelLocal $LaravelLocal -PublicHtmlLocal $PublicHtmlLocal `
+            -RemoteLaravel $RemoteLaravel -RemotePublicHtml $RemotePublicHtml `
+            -FtpHost $FtpHost -FtpUser $FtpUser -FtpPassword $FtpPassword -FtpPort $FtpPort) {
+        return $true
+    }
+
     if ($ReleaseZipPath -and (Test-Path $ReleaseZipPath)) {
         $laravelZip = Join-Path (Split-Path $ReleaseZipPath -Parent) 'laravel.zip'
         $publicZip = Join-Path (Split-Path $ReleaseZipPath -Parent) 'public_html.zip'
@@ -353,15 +410,5 @@ function Send-DeployFtpPackage {
             -FtpHost $FtpHost -FtpUser $FtpUser -FtpPassword $FtpPassword -FtpPort $FtpPort
     }
 
-    $remoteLaravel = ($RemoteLaravel -replace '\\', '/').Trim('/')
-    $remotePublic = ($RemotePublicHtml -replace '\\', '/').Trim('/')
-
-    if (Get-WinScpComPath) {
-        Write-Host "Using WinSCP to upload (faster)..." -ForegroundColor Cyan
-        $okLaravel = Send-WinScpFolderSync -LocalPath $LaravelLocal -RemotePath "/$remoteLaravel" -FtpHost $FtpHost -FtpUser $FtpUser -FtpPassword $FtpPassword -FtpPort $FtpPort
-        $okPublic = Send-WinScpFolderSync -LocalPath $PublicHtmlLocal -RemotePath "/$remotePublic" -FtpHost $FtpHost -FtpUser $FtpUser -FtpPassword $FtpPassword -FtpPort $FtpPort
-        return ($okLaravel -and $okPublic)
-    }
-
-    throw "release.zip missing and WinSCP not installed. Re-run deploy or install WinSCP from winscp.net"
+    return $false
 }

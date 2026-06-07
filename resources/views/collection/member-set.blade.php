@@ -27,10 +27,14 @@
         <table class="collection-manage-table collection-member-readonly-table">
             <thead>
                 <tr>
+                    @if (! empty($usesCatalogCardNumbers))
+                        <th>Card</th>
+                    @endif
                     <th>Jurisdiction</th>
                     <th>Variety</th>
                     <th>Pcs</th>
                     <th>Grade</th>
+                    <th>Location</th>
                     <th>Want</th>
                 </tr>
             </thead>
@@ -38,6 +42,9 @@
                 @foreach ($entries as $plate)
                     @php $item = $collectionByPlateId[$plate->id]; @endphp
                     <tr class="@if($item->is_wanted) collection-member-want-row @else collection-manage-row-has-entry @endif">
+                        @if (! empty($usesCatalogCardNumbers))
+                            <td class="col-card">{{ $plate->catalogCardNumber() ?: '—' }}</td>
+                        @endif
                         <td>
                             {{ $plate->jurisdiction ? strtoupper($plate->jurisdiction) : '—' }}
                             @if ($plate->serial_number)
@@ -47,6 +54,7 @@
                         <td>{{ $plate->variety_notes ?: '—' }}</td>
                         <td class="col-qty">{{ $item->is_wanted ? '—' : $item->ownedItemCount() }}</td>
                         <td class="col-grade">{{ $item->gradeSummary() ?: '—' }}</td>
+                        <td class="col-location">{{ $item->storageLocationSummary() ?: '—' }}</td>
                         <td class="col-want">{{ $item->is_wanted ? 'Yes' : '' }}</td>
                     </tr>
                 @endforeach

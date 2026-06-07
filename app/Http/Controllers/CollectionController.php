@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CollectionItem;
+use App\Models\CollectionOwnedItem;
 use App\Models\CollectionSetSetting;
 use App\Models\Plate;
 use App\Models\User;
@@ -16,6 +17,11 @@ use Illuminate\Validation\Rule;
 
 class CollectionController extends Controller
 {
+    public function guide()
+    {
+        return view('collection.guide');
+    }
+
     public function index(Request $request)
     {
         $userId = Auth::id();
@@ -160,9 +166,7 @@ class CollectionController extends Controller
 
         $plates = Plate::query()
             ->where('set_name', $setName)
-            ->orderBy('sort_order')
-            ->orderBy('jurisdiction')
-            ->orderBy('variety_key')
+            ->orderedForCatalog()
             ->get();
 
         $collectionByPlateId = CollectionItem::query()
@@ -183,6 +187,7 @@ class CollectionController extends Controller
             'setMeta' => $setMeta,
             'entries' => $entries,
             'collectionByPlateId' => $collectionByPlateId,
+            'usesCatalogCardNumbers' => Plate::platesUseCatalogCardNumbers($plates),
         ]);
     }
 
@@ -312,6 +317,7 @@ class CollectionController extends Controller
             'collectionByPlateId' => $setData['collectionByPlateId'],
             'grades' => CollectionItem::GRADES,
             'setCatalogTotal' => $setCatalogTotal,
+            'usesCatalogCardNumbers' => $setData['usesCatalogCardNumbers'],
         ]);
     }
 
@@ -367,6 +373,7 @@ class CollectionController extends Controller
             'wantedCount' => $wantedCount,
             'totalInSet' => $setData['plates']->count(),
             'setCatalogTotal' => $setCatalogTotal,
+            'usesCatalogCardNumbers' => $setData['usesCatalogCardNumbers'],
         ])->setPaper('letter', 'portrait');
 
         $filename = Str::slug($setData['setMeta']->set_name)
@@ -727,9 +734,7 @@ class CollectionController extends Controller
         $platesQuery = Plate::query()
             ->whereIn('set_code', $qualifyingSetCodes)
             ->orderBy('set_name')
-            ->orderBy('sort_order')
-            ->orderBy('jurisdiction')
-            ->orderBy('variety_key');
+            ->orderedForCatalog();
 
         if ($scope === 'decade' && $decade !== null) {
             $platesQuery->whereBetween('year', [$decade, $decade + 9]);
@@ -810,8 +815,8 @@ class CollectionController extends Controller
                 return [
                     $plate->set_name,
                     $plate->sort_order ?? 0,
-                    $plate->jurisdiction ?? '',
                     $plate->variety_key ?? '',
+                    $plate->id,
                 ];
             })
             ->values()
@@ -874,9 +879,7 @@ class CollectionController extends Controller
 
         $plates = Plate::query()
             ->where('set_name', $setName)
-            ->orderBy('sort_order')
-            ->orderBy('jurisdiction')
-            ->orderBy('variety_key')
+            ->orderedForCatalog()
             ->get();
 
         $collectionByPlateId = Auth::user()
@@ -890,6 +893,7 @@ class CollectionController extends Controller
             'setMeta' => $setMeta,
             'plates' => $plates,
             'collectionByPlateId' => $collectionByPlateId,
+            'usesCatalogCardNumbers' => Plate::platesUseCatalogCardNumbers($plates),
         ];
     }
 
@@ -1142,9 +1146,16 @@ class CollectionController extends Controller
 
         $collectionItem->load(['plate', 'ownedItems']);
 
+        $wantListMatches = \App\Support\CollectionWantListMatcher::matchesForPlate(
+            $collectionItem->plate_id,
+            Auth::id()
+        );
+
         return view('collection.edit', [
             'item' => $collectionItem,
             'grades' => CollectionItem::GRADES,
+            'listingTypes' => CollectionOwnedItem::LISTING_TYPES,
+            'wantListMatches' => $wantListMatches,
         ]);
     }
 
@@ -1262,6 +1273,8 @@ class CollectionController extends Controller
             "{$prefix}.*.price_paid" => ['nullable', 'numeric', 'min:0', 'max:999999.99'],
             "{$prefix}.*.storage_location" => ['nullable', 'string', 'max:128'],
             "{$prefix}.*.notes" => ['nullable', 'string', 'max:5000'],
+            "{$prefix}.*.listing_type" => ['nullable', Rule::in(['sale', 'trade', 'both'])],
+            "{$prefix}.*.listing_notes" => ['nullable', 'string', 'max:500'],
         ];
     }
 
